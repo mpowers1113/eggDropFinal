@@ -104,3 +104,8 @@ body {
 .flex-column {
   flex-direction: column;
 }
+
+.instructions-button {
+  padding: 1rem 2rem;
+  font-size: 18px;
+}
