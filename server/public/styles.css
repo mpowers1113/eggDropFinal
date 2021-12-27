@@ -122,7 +122,30 @@ h1 {
   right: 0;
   width: 100%;
   text-align: center;
-  z-index: 1000;
   z-index: 2;
   background: rgba(0, 0, 0, 0.8);
+}
+
+.dark-brown {
+  color: var(--darkbrown-color);
+}
+
+.login {
+  margin-top: 2rem;
+}
+
+.light {
+  font-weight: 500;
+}
+
+.question {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+}
+
+.instructions-button {
+  padding: 1rem 2rem;
+  font-size: 18px;
 }

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import InstructionsButton from '../UI/instructionsButton';
+import Instructions from './instructions';
 import Logo from '../UI/logo';
 import Button from '../UI/button';
 import Input from '../UI/input';
@@ -10,6 +12,7 @@ import decodeToken from '../lib/decode-token';
 
 const Login = props => {
   const [signUp, setSignUp] = useState(false);
+  const [instructions, setInstructions] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [validLoginInput, setValidLoginInput] = useState(true);
@@ -17,6 +20,7 @@ const Login = props => {
 
   const loginClickHandler = () => sendLoginData(loginData);
   const signUpClickHandler = () => setSignUp(!signUp);
+  const toggleInstructionsHandler = () => setInstructions(!instructions);
 
   const onFocusInputHandler = () => setValidLoginInput(true);
   const usernameHandler = event => setUsername(event.target.value);
@@ -59,6 +63,8 @@ const Login = props => {
   return (
     <div>
       {signUp && !user && <SignUp closeModal={signUpClickHandler} setNewUser={setUser}/>}
+      {!instructions && <InstructionsButton click={toggleInstructionsHandler} />}
+      {instructions && <Instructions onFinish={toggleInstructionsHandler} />}
       {!user && <ColumnWrapper>
         <Logo />
         <Input onFocus={onFocusInputHandler}onChange={usernameHandler}className={'sign-up-input login'} type={'text'} id={'username'} />
