@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+:root {
+  --darkbrown-color: #c16500;
+  --light-brown: #df9830;
+  --dark-grey: #2d2d2d;
+  --egg-white: rgb(238, 235, 235);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  font-family: "Montserrat", sans-serif;
+  background-color: var(--egg-white);
+  height: 100vh;
+}
+
+.container {
+  width: 1000px;
+}
+
+.row {
+  display: flex;
+}
+
+.column-80 {
+  flex-basis: 90%;
+}
+
+.column-50 {
+  flex-basis: 60%;
+  padding-top: 0.5rem;
+}
+
+.column-20 {
+  flex-basis: 20%;
+}
+
+.column-third {
+  flex-basis: calc(100% / 3);
+}
+
+.margin-none {
+  margin: 0;
+}
+
+.padding-none {
+  padding: 0;
+}
+
+.column-full {
+  flex-basis: 100%;
+}
+
+.justify-align-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.form-group {
+  width: 1000px;
+}
+
+.line-break div {
+  height: 1px;
+  width: 4rem;
+  background-color: rgba(196, 196, 196, 0.55);
+  margin: 0 1.5rem;
+}
+
+.line-break {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1rem;
+}
+
+.auto-margin {
+  margin: auto;
+}
+
+.mb1 {
+  margin-bottom: 1rem;
+}
+
+.login {
+  margin-top: 2rem;
+}
+
+.flex-column {
+  flex-direction: column;
+}

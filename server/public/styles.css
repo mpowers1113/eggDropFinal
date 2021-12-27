@@ -1,0 +1,128 @@
+.button {
+  color: whitesmoke;
+  background-color: #c16500;
+  width: 100%;
+  min-height: 51px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  letter-spacing: 0.2rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+}
+
+.button:hover {
+  background-color: #a75702;
+}
+
+.space-between {
+  justify-content: space-between;
+  margin: auto;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  height: 50px;
+  border-radius: 6px;
+  padding-left: 10px;
+  margin-bottom: 10px;
+  border: 1px;
+  border-color: #d7d8d8;
+  border-style: solid;
+  font-family: "Atlas Grotesque", sans-serif;
+  font-size: 18px;
+  background-color: rgba(223, 152, 48, 0.5);
+  color: #c16500;
+}
+
+input::placeholder {
+  color: var(--darkbrown-color);
+}
+
+input:focus {
+  background-color: rgba(223, 152, 48, 0.3);
+  outline: none;
+  color: #c16500;
+}
+
+h1 {
+  color: #717171;
+}
+
+.egg-logo {
+  background-image: url("./egg.svg");
+  background-position: center;
+  height: 200px;
+  width: 200px;
+  background-repeat: no-repeat;
+  margin-bottom: 0.3rem;
+}
+
+.sign-up-input {
+  border-bottom: 1px solid var(--darkbrown-color);
+  background-color: transparent;
+  border-right: none;
+  border-radius: 0%;
+  border-left: none;
+  border-top: none;
+  width: 100%;
+}
+
+.sign-up-input::placeholder {
+  color: var(--light-brown);
+  letter-spacing: 0.15rem;
+}
+
+.sign-up-input:focus {
+  background-color: transparent;
+}
+
+.sign-up-column {
+  padding-top: 2rem;
+  position: fixed;
+  background-color: var(--egg-white);
+  width: 100%;
+  height: 70vh;
+  bottom: 0;
+  border-top-left-radius: 5rem;
+  border-top-right-radius: 5rem;
+  z-index: 5;
+}
+
+.submit-sign-up {
+  margin-top: 2rem;
+}
+
+.password-check {
+  color: red;
+}
+
+.egg-text {
+  color: #c16500;
+  font-weight: 700;
+  font-size: 50px;
+}
+
+.drop-text {
+  color: #df9830;
+  font-weight: 700;
+  font-size: 50px;
+}
+
+.overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 1000;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.8);
+}
