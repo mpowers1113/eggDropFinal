@@ -144,3 +144,8 @@ h1 {
   right: 5px;
   cursor: pointer;
 }
+
+.instructions-button {
+  padding: 1rem 2rem;
+  font-size: 18px;
+}
