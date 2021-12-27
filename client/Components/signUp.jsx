@@ -52,15 +52,16 @@ const SignUp = props => {
 
   return (
     <div className="overlay" id='overlay' onClick={closeSignUpHandler}>
-        <ColumnWrapper className={'sign-up-column'}>
-            <Input className={'sign-up-input'} type={'text'} id={'Username'} onChange={usernameChangeHandler}/>
-            <Input className={'sign-up-input'} type={'password'} id={'Password'} onChange={passwordChangeHandler}/>
-            <Input className={'sign-up-input'} type={'password'} id={'Re-enter Password'} onChange={retypePasswordChangeHandler}/>
-            {passwordMatch === false ? <div className="justify-align-center"><p className="passwordCheck">Passwords must match...</p></div> : ''}
-            <Input className={'sign-up-input'} type={'email'} id={'Email'} onChange={emailChangeHandler} />
-            {validSignUp === false && <div className="justify-align-center"><p className="password-check">Passwords must match...</p></div>}
-            <Button text={'Submit'} diabled={!passwordMatch} className={'submit-sign-up'} click={username.length > 0 ? sendSubmissionData : props.closeModal} />
-        </ColumnWrapper></div>
+      <ColumnWrapper className={'sign-up-column'}>
+          <Input className={'sign-up-input'} type={'text'} id={'Username'} onChange={usernameChangeHandler}/>
+          <Input className={'sign-up-input'} type={'password'} id={'Password'} onChange={passwordChangeHandler}/>
+          <Input className={'sign-up-input'} type={'password'} id={'Re-enter Password'} onChange={retypePasswordChangeHandler}/>
+          {passwordMatch === false ? <div className="justify-align-center"><p className="passwordCheck">Passwords must match...</p></div> : ''}
+          <Input className={'sign-up-input'} type={'email'} id={'Email'} onChange={emailChangeHandler} />
+          {validSignUp === false && <div className="justify-align-center"><p className="password-check">Passwords must match...</p></div>}
+          <Button text={'Submit'} diabled={!passwordMatch} className={'submit-sign-up'} click={username.length > 0 ? sendSubmissionData : props.closeModal} />
+      </ColumnWrapper>
+    </div>
   );
 };
 
