@@ -35,7 +35,9 @@ module.exports = {
     static: {
       directory: serverPublicPath,
       publicPath: '/',
-      watch: true
+      watch: {
+        ignored: path.join(serverPublicPath, 'images')
+      }
     },
     proxy: {
       '/api': `http://localhost:${process.env.PORT}`

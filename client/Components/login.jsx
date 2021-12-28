@@ -9,6 +9,8 @@ import ColumnWrapper from '../UI/column-wrapper';
 import SignUp from './signUp';
 import ClientError from '../../server/client-error';
 import decodeToken from '../lib/decode-token';
+import Map from './map';
+import { UserContext } from '../Context/userContext';
 
 const Login = props => {
   const [signUp, setSignUp] = useState(false);
@@ -65,9 +67,10 @@ const Login = props => {
       {signUp && !user && <SignUp closeModal={signUpClickHandler} setNewUser={setUser}/>}
       {!instructions && <InstructionsButton click={toggleInstructionsHandler} />}
       {instructions && <Instructions onFinish={toggleInstructionsHandler} />}
+      {user && <UserContext.Provider value={user}><Map /></UserContext.Provider>}
       {!user && <ColumnWrapper>
         <Logo />
-        <Input onFocus={onFocusInputHandler}onChange={usernameHandler}className={'sign-up-input login'} type={'text'} id={'username'} />
+        <Input onFocus={onFocusInputHandler} onChange={usernameHandler} className={'sign-up-input login'} type={'text'} id={'username'} />
         <Input onFocus={onFocusInputHandler} className={'sign-up-input mb1'} type={'password'} id={'password'} onChange={passwordHandler} />
         {validLoginInput === 'empty' && <div className="row justify-align-center"><p className="password-check">username and password cannot be empty</p></div>}
         {validLoginInput === 'invalid' && <div className="row justify-align-center"><p className="password-check">invalid login</p></div>}

@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const ClientError = require('./client-error');
 const errorMiddleware = require('./error-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
+const uploadsMiddleware = require('./uploadsMiddleware');
 const app = express();
 
 const publicPath = path.join(__dirname, 'public');
@@ -21,6 +22,33 @@ const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
+  }
+});
+
+app.post('/api/egg', uploadsMiddleware, (req, res, next) => {
+  const message = 'message';
+  if (message in req.body) {
+    const { message, latitude, longitude, user } = req.body;
+    if (!message) throw new ClientError(400, 'message is a required field');
+    const filePath = '/images/' + req.file.filename;
+    const sql = `insert into "egg" ("message", "photoUrl", "longitude", "latitude", "creator")
+                 values ($1, $2, $3, $4, $5)
+                 returning *
+                 `;
+    const params = [message, filePath, longitude, latitude, user];
+    return db.query(sql, params)
+      .then(result => {
+        const [image] = result.rows;
+        res.json(image);
+      }).catch(err => next(err));
+  } else {
+    const sql = `
+              select *
+              from "egg"
+              `;
+    db.query(sql)
+      .then(result => res.status(200).json(result.rows))
+      .catch(err => next(err));
   }
 });
 
