@@ -1,16 +1,14 @@
-import React, { useState, useRef, useCallback, useContext, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useContext } from 'react';
 import EggIcon from '../UI/egg-icon';
 import MapGL, { Marker, GeolocateControl } from 'react-map-gl';
 import Geocoder from 'react-map-gl-geocoder';
-import Navbar from './navbar';
 import CreateEgg from './createEggModal';
 import { UserContext } from '../Context/userContext';
-
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibXBvd2VyczExMTMiLCJhIjoiY2t4Mmo3MTl1MWlyNzJucDJ1d2xtZXA4aiJ9.w4OiI4e8mDRubQC-0vJs3g';
 
 const Map2 = props => {
 
   const user = useContext(UserContext);
+  const [verified, setVerified] = useState(false);
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
 
@@ -21,31 +19,24 @@ const Map2 = props => {
     clearEggData();
   };
 
-  useEffect(() => {
-    const getEggs = () => {
-      if (!user) return;
-      fetch('/api/egg', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId: user.id })
-      }).then(res => {
-        if (!res.ok) throw new Error('something went wrong fetching user data');
-        return res.json();
-      }).then(res => {
-        const eggs = [];
-        for (const egg of res) {
-          const eggLocation = { id: +egg.Id, longitude: +egg.longitude, latitude: +egg.latitude };
-          eggs.push(eggLocation);
-        }
-        if (eggs.length === 0) return;
-        setEggMarkers(eggs);
-      }).catch(err => console.error(err));
+  const getKey = () => {
+    const token = window.localStorage.getItem('eggDrop8081proDgge');
+    const req = {
+      method: 'GET',
+      headers: {
+        'x-access-token': token
+      }
     };
-    getEggs();
-  }, []);
+    fetch('/api/key', req).then(res => res.json())
+      .then(res => setVerified(res))
+      .catch(err => console.error(err));
+  };
+
+  try {
+    getKey();
+  } catch (error) {
+    console.error(error);
+  }
 
   const prepareDropHandler = event => {
     setEggLocation({
@@ -80,7 +71,7 @@ const Map2 = props => {
 
   return (
     <div className='row'>
-      {user && <MapGL
+      {verified && <MapGL
         onDblClick={prepareDropHandler}
         ref={mapRef}
         {...viewport}
@@ -88,9 +79,9 @@ const Map2 = props => {
         height="100vh"
         mapStyle="mapbox://styles/mapbox/streets-v11"
         onViewportChange={handleViewportChange}
-        mapboxApiAccessToken={MAPBOX_TOKEN}
+        mapboxApiAccessToken={verified}
       >
-      {eggMarkers.length > 0 && eggMarkers.map(markers =>
+      {eggMarkers.map(markers =>
       <Marker key = {markers.longitude} longitude={markers.longitude} latitude={markers.latitude}>
       <EggIcon/>
       </Marker>)}
@@ -98,7 +89,7 @@ const Map2 = props => {
       <Geocoder
       mapRef={mapRef}
       onViewportChange={handleGeocoderViewportChange}
-      mapboxApiAccessToken={MAPBOX_TOKEN}
+      mapboxApiAccessToken={verified}
       position="top-right"
       />
       <GeolocateControl
@@ -109,7 +100,6 @@ const Map2 = props => {
       />
       {eggLocation !== null && <CreateEgg user={user} clear={clearEggData} eggLocation={eggLocation} drop={dropEgg}/>}
 
-      <Navbar />
       </MapGL>}
     </div>
   );

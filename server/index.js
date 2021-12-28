@@ -25,33 +25,6 @@ const db = new pg.Pool({
   }
 });
 
-app.post('/api/egg', uploadsMiddleware, (req, res, next) => {
-  const message = 'message';
-  if (message in req.body) {
-    const { message, latitude, longitude, user } = req.body;
-    if (!message) throw new ClientError(400, 'message is a required field');
-    const filePath = '/images/' + req.file.filename;
-    const sql = `insert into "egg" ("message", "photoUrl", "longitude", "latitude", "creator")
-                 values ($1, $2, $3, $4, $5)
-                 returning *
-                 `;
-    const params = [message, filePath, longitude, latitude, user];
-    return db.query(sql, params)
-      .then(result => {
-        const [image] = result.rows;
-        res.json(image);
-      }).catch(err => next(err));
-  } else {
-    const sql = `
-              select *
-              from "egg"
-              `;
-    db.query(sql)
-      .then(result => res.status(200).json(result.rows))
-      .catch(err => next(err));
-  }
-});
-
 app.post('/api/auth/sign-up', (req, res, next) => {
   const { username, password, email } = req.body;
   if (!username || !password || !email) {
@@ -61,10 +34,10 @@ app.post('/api/auth/sign-up', (req, res, next) => {
     .hash(password)
     .then(hashedPassword => {
       const sql = `
-          insert into "users" ("username", "hashedPassword", "email")
-          values($1, $2, $3)
-          returning "Id", "username", "email"
-          `;
+    insert into "users" ("username", "hashedPassword", "email")
+    values($1, $2, $3)
+    returning "Id", "username", "email"
+    `;
       const params = [username, hashedPassword, email];
       return db.query(sql, params);
     })
@@ -81,9 +54,9 @@ app.post('/api/auth/sign-in', (req, res, next) => {
   const { username, password } = req.body;
   if (!username || !password) throw new ClientError(401, 'invalid login');
   const sql = `
-    select *
-    from "users"
-    where "username" = $1
+  select *
+  from "users"
+  where "username" = $1
   `;
   const params = [username];
   db.query(sql, params)
@@ -104,6 +77,31 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 });
 
 app.use(authorizationMiddleware);
+
+app.post('/api/egg', uploadsMiddleware, (req, res, next) => {
+  const { id } = req.user;
+  const { message, latitude, longitude } = req.body;
+  if (!message) throw new ClientError(400, 'message is a required field');
+  const filePath = '/images/' + req.file.filename;
+  const sql = `insert into "egg" ("message", "photoUrl", "longitude", "latitude", "creator")
+  values ($1, $2, $3, $4, $5)
+  returning *
+  `;
+  const params = [message, filePath, longitude, latitude, id];
+  return db.query(sql, params)
+    .then(result => {
+      const [image] = result.rows;
+      res.json(image);
+    }).catch(err => next(err));
+}
+);
+
+app.get('/api/key', (req, res, next) => {
+  const { id } = req.user;
+  if (!id) throw new ClientError(400, 'invalid user');
+  const key = process.env.MAPBOX_API_KEY;
+  return res.json(key);
+});
 
 app.use(errorMiddleware);
 

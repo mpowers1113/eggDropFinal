@@ -5,9 +5,7 @@ class CreateEgg extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: '',
-      user: this.props.user.username,
-      userId: this.props.user.id
+      message: ''
     };
     this.fileInputRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -21,15 +19,19 @@ class CreateEgg extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData();
+    const token = window.localStorage.getItem('eggDrop8081proDgge');
     formData.append('message', this.state.message);
     formData.append('image', this.fileInputRef.current.files[0]);
     formData.append('longitude', this.props.eggLocation.longitude);
     formData.append('latitude', this.props.eggLocation.latitude);
-    formData.append('user', this.state.userId);
-    fetch('/api/egg', {
+    const req = {
       method: 'POST',
+      headers: {
+        'x-access-token': token
+      },
       body: formData
-    })
+    };
+    fetch('/api/egg', req)
       .then(res => res.json())
       .then(this.props.drop())
       .catch(err => console.error(err));
