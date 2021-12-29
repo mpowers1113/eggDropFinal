@@ -98,6 +98,20 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/egg/map", (req, res, next) => {
+  const { id } = req.user;
+  if (!id) throw new ClientError(400, "invalid request");
+  const sql = `
+              select *
+              from "egg"
+              `;
+  return db
+    .query(sql)
+    .then(res)
+    .then((result) => res.status(200).json(result.rows))
+    .catch((err) => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
