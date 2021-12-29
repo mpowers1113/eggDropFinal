@@ -38,9 +38,9 @@ const Map = (props) => {
         })
         .then((res) => {
           const eggs = res.map((egg) => ({
-            id: +egg.Id,
-            longitude: +egg.longitude,
-            latitude: +egg.latitude,
+            id: egg.Id,
+            longitude: egg.longitude,
+            latitude: egg.latitude,
           }));
           setEggMarkers(eggs);
         })

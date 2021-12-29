@@ -84,8 +84,12 @@ app.get("/api/eggs", (req, res, next) => {
               `;
   return db
     .query(sql)
-    .then(res)
-    .then((result) => res.status(200).json(result.rows))
+    .then((result) => {
+      const [egg] = result.rows;
+      egg.longitude = Number(egg.longitude);
+      egg.latitude = Number(egg.latitude);
+      res.status(200).json([egg]);
+    })
     .catch((err) => next(err));
 });
 
@@ -100,7 +104,13 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   values ($1, $2, $3, $4, $5)
   returning *
   `;
-  const params = [message, filePath, longitude, latitude, id];
+  const params = [
+    message,
+    filePath,
+    Number(longitude),
+    Number(latitude),
+    Number(id),
+  ];
   return db
     .query(sql, params)
     .then((result) => {
