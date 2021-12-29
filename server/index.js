@@ -77,6 +77,22 @@ app.post("/api/auth/sign-in", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/eggs", (req, res, next) => {
+  const sql = `
+              select *
+              from "egg"
+              `;
+  return db
+    .query(sql)
+    .then((result) => {
+      const [egg] = result.rows;
+      egg.longitude = Number(egg.longitude);
+      egg.latitude = Number(egg.latitude);
+      res.status(200).json([egg]);
+    })
+    .catch((err) => next(err));
+});
+
 app.use(authorizationMiddleware);
 
 app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
@@ -88,7 +104,13 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   values ($1, $2, $3, $4, $5)
   returning *
   `;
-  const params = [message, filePath, longitude, latitude, id];
+  const params = [
+    message,
+    filePath,
+    Number(longitude),
+    Number(latitude),
+    Number(id),
+  ];
   return db
     .query(sql, params)
     .then((result) => {
