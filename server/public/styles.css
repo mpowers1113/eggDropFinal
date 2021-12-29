@@ -149,3 +149,71 @@ h1 {
   padding: 1rem 2rem;
   font-size: 18px;
 }
+
+.upper-left {
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  padding: 0.1rem;
+  margin: 0.1rem;
+  cursor: pointer;
+  color: lightgray;
+}
+
+.relative {
+  position: relative;
+}
+
+.navbar-map {
+  background-color: white;
+  position: fixed;
+  bottom: 1rem;
+  width: 100%;
+  padding: 1rem;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 3rem;
+}
+
+.navbar-map i {
+  color: #fc0;
+  cursor: pointer;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input + label {
+  width: 100%;
+  border-radius: 6px;
+  padding: 6px 12px;
+  border: 1px;
+  border-color: #d7d8d8;
+  border-style: solid;
+  font-family: "Atlas Grotesque", sans-serif;
+  font-size: 18px;
+  background-color: rgba(223, 152, 48, 0.5);
+  color: #c16500;
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+}
+
+.file-input + label:hover {
+  background-color: #c16400b4;
+  color: white;
+}
+
+.p1 {
+  padding: 0.3rem;
+}
+
+.red {
+  color: red;
+  margin-bottom: 1rem;
+}
+
+.green {
+  color: green;
+}

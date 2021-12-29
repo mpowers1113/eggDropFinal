@@ -1,16 +1,17 @@
-require('dotenv/config');
-const path = require('path');
+require("dotenv/config");
+const path = require("path");
+const webpack = require("webpack");
 
-const clientPath = path.join(__dirname, 'client');
-const serverPublicPath = path.join(__dirname, 'server/public');
+const clientPath = path.join(__dirname, "client");
+const serverPublicPath = path.join(__dirname, "server/public");
 
 module.exports = {
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: [".js", ".jsx"],
   },
   entry: clientPath,
   output: {
-    path: serverPublicPath
+    path: serverPublicPath,
   },
   module: {
     rules: [
@@ -18,31 +19,33 @@ module.exports = {
         test: /\.jsx?$/,
         include: clientPath,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
-            plugins: [
-              '@babel/plugin-transform-react-jsx'
-            ]
-          }
-        }
-      }
-    ]
+            plugins: ["@babel/plugin-transform-react-jsx"],
+          },
+        },
+      },
+    ],
   },
-  devtool: 'source-map',
+  devtool: "source-map",
   devServer: {
-    host: '0.0.0.0',
+    historyApiFallback: true,
+    host: "0.0.0.0",
     port: process.env.DEV_SERVER_PORT,
     static: {
       directory: serverPublicPath,
-      publicPath: '/',
-      watch: true
+      publicPath: "/",
+      watch: {
+        ignored: path.join(serverPublicPath, "images"),
+      },
     },
     proxy: {
-      '/api': `http://localhost:${process.env.PORT}`
-    }
+      "/api": `http://localhost:${process.env.PORT}`,
+    },
   },
-  stats: 'summary',
+  stats: "summary",
   performance: {
-    hints: false
-  }
+    hints: false,
+  },
+  plugins: [new webpack.EnvironmentPlugin(["MAPBOX_API_KEY"])],
 };
