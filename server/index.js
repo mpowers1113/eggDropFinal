@@ -98,6 +98,13 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/key", (req, res, next) => {
+  const { id } = req.user;
+  if (!id) throw new ClientError(400, "invalid user");
+  const key = process.env.MAPBOX_API_KEY;
+  return res.json(key);
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {

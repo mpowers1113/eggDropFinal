@@ -5,13 +5,11 @@ import Geocoder from "react-map-gl-geocoder";
 import CreateEgg from "./createEggModal";
 import { UserContext } from "../Context/userContext";
 
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoibXBvd2VyczExMTMiLCJhIjoiY2t4Mmo3MTl1MWlyNzJucDJ1d2xtZXA4aiJ9.w4OiI4e8mDRubQC-0vJs3g";
-
 const Map = (props) => {
   const user = useContext(UserContext);
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
+  const [verified, setVerified] = useState(false);
 
   const clearEggData = () => setEggLocation(null);
 
@@ -19,6 +17,26 @@ const Map = (props) => {
     setEggMarkers([...eggMarkers, eggLocation]);
     clearEggData();
   };
+
+  const getKey = () => {
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const req = {
+      method: "GET",
+      headers: {
+        "x-access-token": token,
+      },
+    };
+    fetch("/api/key", req)
+      .then((res) => res.json())
+      .then((res) => setVerified(res))
+      .catch((err) => console.error(err));
+  };
+
+  try {
+    getKey();
+  } catch (error) {
+    console.error(error);
+  }
 
   const prepareDropHandler = (event) => {
     setEggLocation({
@@ -53,7 +71,7 @@ const Map = (props) => {
 
   return (
     <div className="row">
-      {user && (
+      {user && verified && (
         <MapGL
           onDblClick={prepareDropHandler}
           ref={mapRef}
@@ -62,7 +80,7 @@ const Map = (props) => {
           height="100vh"
           mapStyle="mapbox://styles/mapbox/streets-v11"
           onViewportChange={handleViewportChange}
-          mapboxApiAccessToken={MAPBOX_TOKEN}
+          mapboxApiAccessToken={verified}
         >
           {eggMarkers.map((markers) => (
             <Marker
@@ -77,7 +95,7 @@ const Map = (props) => {
           <Geocoder
             mapRef={mapRef}
             onViewportChange={handleGeocoderViewportChange}
-            mapboxApiAccessToken={MAPBOX_TOKEN}
+            mapboxApiAccessToken={verified}
             position="top-right"
           />
           <GeolocateControl
