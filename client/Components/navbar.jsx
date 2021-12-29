@@ -1,7 +1,6 @@
-import React from 'react';
+import React from "react";
 
-const Navbar = props => {
-
+const Navbar = (props) => {
   return (
     <div className="row navbar-map">
       <i className="fas fa-users fa-3x"></i>

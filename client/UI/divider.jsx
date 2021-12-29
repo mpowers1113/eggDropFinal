@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-const Divider = props => {
+const Divider = (props) => {
   return (
     <div className="row justify-align-center lines">
       <div className="column-full line-break">

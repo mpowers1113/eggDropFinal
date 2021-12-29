@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-const ColumnWrapper = props => {
+const ColumnWrapper = (props) => {
   return (
-    <div className={'row flex-column ' + props.className}>{props.children}</div>
+    <div className={"row flex-column " + props.className}>{props.children}</div>
   );
 };
 

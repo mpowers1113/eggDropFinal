@@ -1,11 +1,11 @@
-import React from 'react';
-import Button from '../UI/button';
+import React from "react";
+import Button from "../UI/button";
 
 class CreateEgg extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: ''
+      message: "",
     };
     this.fileInputRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -19,22 +19,22 @@ class CreateEgg extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData();
-    const token = window.localStorage.getItem('eggDrop8081proDgge');
-    formData.append('message', this.state.message);
-    formData.append('image', this.fileInputRef.current.files[0]);
-    formData.append('longitude', this.props.eggLocation.longitude);
-    formData.append('latitude', this.props.eggLocation.latitude);
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    formData.append("message", this.state.message);
+    formData.append("image", this.fileInputRef.current.files[0]);
+    formData.append("longitude", this.props.eggLocation.longitude);
+    formData.append("latitude", this.props.eggLocation.latitude);
     const req = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'x-access-token': token
+        "x-access-token": token,
       },
-      body: formData
+      body: formData,
     };
-    fetch('/api/egg', req)
-      .then(res => res.json())
+    fetch("/api/egg", req)
+      .then((res) => res.json())
       .then(this.props.drop())
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   }
 
   render() {
@@ -60,18 +60,16 @@ class CreateEgg extends React.Component {
                 />
               </div>
               <div>
-                {this.state.message.length <= 0
-                  ? (
+                {this.state.message.length <= 0 ? (
                   <div className="row justify-align-center">
                     <i className="far fa-times-circle fa-2x red"></i>
                   </div>
-                    )
-                  : (
+                ) : (
                   <div className="row justify-align-center">
                     <i className=" green fas fa-check-double fa-2x"></i>
                     <p>Ready to drop!</p>
                   </div>
-                    )}
+                )}
               </div>
               <div className="p1">
                 <input
