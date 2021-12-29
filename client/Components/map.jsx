@@ -5,11 +5,12 @@ import Geocoder from "react-map-gl-geocoder";
 import CreateEgg from "./createEggModal";
 import { UserContext } from "../Context/userContext";
 
+const MAPBOXKEY = process.env.MAPBOX_API_KEY;
+
 const Map = (props) => {
   const user = useContext(UserContext);
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
-  const [verified, setVerified] = useState(false);
 
   const clearEggData = () => setEggLocation(null);
 
@@ -17,26 +18,6 @@ const Map = (props) => {
     setEggMarkers([...eggMarkers, eggLocation]);
     clearEggData();
   };
-
-  const getKey = () => {
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
-    const req = {
-      method: "GET",
-      headers: {
-        "x-access-token": token,
-      },
-    };
-    fetch("/api/key", req)
-      .then((res) => res.json())
-      .then((res) => setVerified(res))
-      .catch((err) => console.error(err));
-  };
-
-  try {
-    getKey();
-  } catch (error) {
-    console.error(error);
-  }
 
   const prepareDropHandler = (event) => {
     setEggLocation({
@@ -71,7 +52,7 @@ const Map = (props) => {
 
   return (
     <div className="row">
-      {user && verified && (
+      {user && (
         <MapGL
           onDblClick={prepareDropHandler}
           ref={mapRef}
@@ -80,7 +61,7 @@ const Map = (props) => {
           height="100vh"
           mapStyle="mapbox://styles/mapbox/streets-v11"
           onViewportChange={handleViewportChange}
-          mapboxApiAccessToken={verified}
+          mapboxApiAccessToken={MAPBOXKEY}
         >
           {eggMarkers.map((markers) => (
             <Marker
@@ -95,7 +76,7 @@ const Map = (props) => {
           <Geocoder
             mapRef={mapRef}
             onViewportChange={handleGeocoderViewportChange}
-            mapboxApiAccessToken={verified}
+            mapboxApiAccessToken={MAPBOXKEY}
             position="top-right"
           />
           <GeolocateControl

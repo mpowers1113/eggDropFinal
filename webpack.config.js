@@ -1,5 +1,6 @@
 require("dotenv/config");
 const path = require("path");
+const webpack = require("webpack");
 
 const clientPath = path.join(__dirname, "client");
 const serverPublicPath = path.join(__dirname, "server/public");
@@ -46,4 +47,5 @@ module.exports = {
   performance: {
     hints: false,
   },
+  plugins: [new webpack.EnvironmentPlugin(["MAPBOX_API_KEY"])],
 };
