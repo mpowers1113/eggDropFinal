@@ -77,6 +77,18 @@ app.post("/api/auth/sign-in", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/eggs", (req, res, next) => {
+  const sql = `
+              select *
+              from "egg"
+              `;
+  return db
+    .query(sql)
+    .then(res)
+    .then((result) => res.status(200).json(result.rows))
+    .catch((err) => next(err));
+});
+
 app.use(authorizationMiddleware);
 
 app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
@@ -95,20 +107,6 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
       const [image] = result.rows;
       res.json(image);
     })
-    .catch((err) => next(err));
-});
-
-app.get("/api/egg/map", (req, res, next) => {
-  const { id } = req.user;
-  if (!id) throw new ClientError(400, "invalid request");
-  const sql = `
-              select *
-              from "egg"
-              `;
-  return db
-    .query(sql)
-    .then(res)
-    .then((result) => res.status(200).json(result.rows))
     .catch((err) => next(err));
 });
 

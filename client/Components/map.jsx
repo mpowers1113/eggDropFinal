@@ -28,14 +28,10 @@ const Map = (props) => {
   useEffect(() => {
     const getEggs = () => {
       if (!user) return;
-      const token = window.localStorage.getItem("eggDrop8081proDgge");
       const req = {
         method: "GET",
-        headers: {
-          "x-access-token": token,
-        },
       };
-      fetch("/api/egg/map", req)
+      fetch("/api/eggs", req)
         .then((res) => {
           if (!res.ok) throw new Error("something went wrong fetching eggs");
           return res.json();
