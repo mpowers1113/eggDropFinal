@@ -57,13 +57,7 @@ const Map = (props) => {
     if (!egg) setTargetEgg(null);
     else {
       const eggId = Number(event.target.id);
-      const req = {
-        method: "GET",
-        headers: {
-          eggId: eggId,
-        },
-      };
-      fetch("/api/details", req)
+      fetch(`/api/eggs/${eggId}`)
         .then((res) => {
           if (!res.ok) throw new Error("something went wrong with details");
           return res.json();

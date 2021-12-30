@@ -77,26 +77,8 @@ app.post("/api/auth/sign-in", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/api/eggs", (req, res, next) => {
-  const sql = `
-              select *
-              from "egg"
-              `;
-  return db
-    .query(sql)
-    .then((result) => {
-      const egg = result.rows;
-      egg.forEach((egg) => {
-        egg.latitude = Number(egg.latitude);
-        egg.longitude = Number(egg.longitude);
-      });
-      res.status(200).json(egg);
-    })
-    .catch((err) => next(err));
-});
-
-app.get("/api/details", (req, res, next) => {
-  const eggId = Number(req.headers.eggid);
+app.get("/api/eggs/:eggId", (req, res, next) => {
+  const eggId = Number(req.params.eggId);
   if (!Number.isInteger(eggId))
     throw new ClientError(400, "invalid request for egg");
   const sql = `
@@ -114,6 +96,23 @@ app.get("/api/details", (req, res, next) => {
       targetEgg.longitude = Number(targetEgg.longitude);
       targetEgg.latitude = Number(targetEgg.latitude);
       res.status(200).json(targetEgg);
+    })
+    .catch((err) => next(err));
+});
+app.get("/api/eggs", (req, res, next) => {
+  const sql = `
+              select *
+              from "egg"
+              `;
+  return db
+    .query(sql)
+    .then((result) => {
+      const egg = result.rows;
+      egg.forEach((egg) => {
+        egg.latitude = Number(egg.latitude);
+        egg.longitude = Number(egg.longitude);
+      });
+      res.status(200).json(egg);
     })
     .catch((err) => next(err));
 });
