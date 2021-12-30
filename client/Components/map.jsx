@@ -10,6 +10,8 @@ import MapGL, { Marker, GeolocateControl } from "react-map-gl";
 import Geocoder from "react-map-gl-geocoder";
 import CreateEgg from "./createEggModal";
 import { UserContext } from "../Context/userContext";
+import EggDetails from "./eggDetails";
+import distanceToEgg from "../Utils/distanceToEgg";
 
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
@@ -17,6 +19,7 @@ const Map = (props) => {
   const user = useContext(UserContext);
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
+  const [targetEgg, setTargetEgg] = useState(null);
 
   const clearEggData = () => setEggLocation(null);
 
@@ -48,6 +51,32 @@ const Map = (props) => {
     };
     getEggs();
   }, []);
+
+  const toggleEggDetails = (event) => {
+    const egg = event.target.getAttribute("data-egg");
+    if (!egg) setTargetEgg(null);
+    else {
+      const eggId = Number(event.target.id);
+      fetch(`/api/eggs/${eggId}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("something went wrong with details");
+          return res.json();
+        })
+        .then((res) => {
+          const distance = distanceToEgg(
+            res.latitude,
+            res.longitude,
+            user.latitude,
+            user.longitude
+          );
+          res.howFar = distance.howFar;
+          res.claimable = distance.claimable;
+          res.metric = distance.metric;
+          setTargetEgg(res);
+        })
+        .catch((err) => console.error(err));
+    }
+  };
 
   const prepareDropHandler = (event) => {
     setEggLocation({
@@ -99,7 +128,11 @@ const Map = (props) => {
               longitude={markers.longitude}
               latitude={markers.latitude}
             >
-              <EggIcon />
+              <EggIcon
+                id={markers.id}
+                dataEgg={"egg"}
+                onClick={toggleEggDetails}
+              />
             </Marker>
           ))}
 
@@ -122,6 +155,9 @@ const Map = (props) => {
               eggLocation={eggLocation}
               drop={dropEgg}
             />
+          )}
+          {targetEgg && (
+            <EggDetails targetEgg={targetEgg} toggleModal={setTargetEgg} />
           )}
         </MapGL>
       )}

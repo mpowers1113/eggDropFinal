@@ -77,6 +77,28 @@ app.post("/api/auth/sign-in", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/eggs/:eggId", (req, res, next) => {
+  const eggId = Number(req.params.eggId);
+  if (!Number.isInteger(eggId))
+    throw new ClientError(400, "invalid request for egg");
+  const sql = `
+               select *
+               from "egg"
+               join "users"
+               on "creator" = "users"."Id"
+               where "egg"."Id" = $1
+              `;
+  const params = [eggId];
+  db.query(sql, params)
+    .then((result) => {
+      const [targetEgg] = result.rows;
+      if (!targetEgg) throw new ClientError(400, "couldn't find that egg");
+      targetEgg.longitude = Number(targetEgg.longitude);
+      targetEgg.latitude = Number(targetEgg.latitude);
+      res.status(200).json(targetEgg);
+    })
+    .catch((err) => next(err));
+});
 app.get("/api/eggs", (req, res, next) => {
   const sql = `
               select *
@@ -85,10 +107,12 @@ app.get("/api/eggs", (req, res, next) => {
   return db
     .query(sql)
     .then((result) => {
-      const [egg] = result.rows;
-      egg.longitude = Number(egg.longitude);
-      egg.latitude = Number(egg.latitude);
-      res.status(200).json([egg]);
+      const egg = result.rows;
+      egg.forEach((egg) => {
+        egg.latitude = Number(egg.latitude);
+        egg.longitude = Number(egg.longitude);
+      });
+      res.status(200).json(egg);
     })
     .catch((err) => next(err));
 });
