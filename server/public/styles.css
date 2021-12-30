@@ -225,3 +225,19 @@ h1 {
 .cursor-pointer {
   cursor: pointer;
 }
+
+.egg-details-img {
+  height: auto;
+  width: 100%;
+  object-fit: contain;
+}
+
+.egg-details-message {
+  font-family: Mulish, sans-serif;
+  font-weight: 600;
+  font-size: xx-large;
+}
+
+.claimed-egg-button {
+  background-color: #ca863e;
+}
