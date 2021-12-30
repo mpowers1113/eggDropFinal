@@ -97,9 +97,8 @@ app.get("/api/eggs", (req, res, next) => {
 
 app.get("/api/details", (req, res, next) => {
   const eggId = Number(req.headers.eggid);
-
-  console.log(eggId);
-  if (!eggId) throw new ClientError(400, "invalid request for egg");
+  if (!Number.isInteger(eggId))
+    throw new ClientError(400, "invalid request for egg");
   const sql = `
                select *
                from "egg"
@@ -110,12 +109,10 @@ app.get("/api/details", (req, res, next) => {
   const params = [eggId];
   db.query(sql, params)
     .then((result) => {
-      console.log(result.rows);
       const [targetEgg] = result.rows;
       if (!targetEgg) throw new ClientError(400, "couldn't find that egg");
       targetEgg.longitude = Number(targetEgg.longitude);
       targetEgg.latitude = Number(targetEgg.latitude);
-      console.log(targetEgg);
       res.status(200).json(targetEgg);
     })
     .catch((err) => next(err));
@@ -143,7 +140,6 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
     .query(sql, params)
     .then((result) => {
       const [image] = result.rows;
-      console.log(image);
       res.json(image);
     })
     .catch((err) => next(err));

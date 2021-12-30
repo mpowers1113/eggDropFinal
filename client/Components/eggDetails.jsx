@@ -48,7 +48,6 @@ const EggDetails = (props) => {
         <Button
           className="submit-sign-up mb1"
           text={props.targetEgg.claimable ? "CLAIM EGG!" : "Get Closer"}
-          click={() => console.log("click")}
           disabled={!props.targetEgg.claimable}
         />
       </BottomSheet>

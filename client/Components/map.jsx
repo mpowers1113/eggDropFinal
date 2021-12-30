@@ -17,7 +17,6 @@ const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
 const Map = (props) => {
   const user = useContext(UserContext);
-  console.log(user.longitude, typeof user.longitude);
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
@@ -38,11 +37,9 @@ const Map = (props) => {
       fetch("/api/eggs", req)
         .then((res) => {
           if (!res.ok) throw new Error("something went wrong fetching eggs");
-          console.log(res);
           return res.json();
         })
         .then((res) => {
-          console.log(res);
           const eggs = res.map((egg) => ({
             id: egg.Id,
             longitude: egg.longitude,
@@ -55,10 +52,10 @@ const Map = (props) => {
     getEggs();
   }, []);
 
-  const toggleEggDetails = (event, data) => {
-    const egg = event.target.getAttribute("value");
+  const toggleEggDetails = (event) => {
+    const egg = event.target.getAttribute("data-egg");
     if (!egg) setTargetEgg(null);
-    if (egg === "egg") {
+    else {
       const eggId = Number(event.target.id);
       const req = {
         method: "GET",
@@ -139,7 +136,7 @@ const Map = (props) => {
             >
               <EggIcon
                 id={markers.id}
-                value={"egg"}
+                dataEgg={"egg"}
                 onClick={toggleEggDetails}
               />
             </Marker>
