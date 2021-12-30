@@ -85,10 +85,38 @@ app.get("/api/eggs", (req, res, next) => {
   return db
     .query(sql)
     .then((result) => {
-      const [egg] = result.rows;
-      egg.longitude = Number(egg.longitude);
-      egg.latitude = Number(egg.latitude);
-      res.status(200).json([egg]);
+      const egg = result.rows;
+      egg.forEach((egg) => {
+        egg.latitude = Number(egg.latitude);
+        egg.longitude = Number(egg.longitude);
+      });
+      res.status(200).json(egg);
+    })
+    .catch((err) => next(err));
+});
+
+app.get("/api/details", (req, res, next) => {
+  const eggId = Number(req.headers.eggid);
+
+  console.log(eggId);
+  if (!eggId) throw new ClientError(400, "invalid request for egg");
+  const sql = `
+               select *
+               from "egg"
+               join "users"
+               on "creator" = "users"."Id"
+               where "egg"."Id" = $1
+              `;
+  const params = [eggId];
+  db.query(sql, params)
+    .then((result) => {
+      console.log(result.rows);
+      const [targetEgg] = result.rows;
+      if (!targetEgg) throw new ClientError(400, "couldn't find that egg");
+      targetEgg.longitude = Number(targetEgg.longitude);
+      targetEgg.latitude = Number(targetEgg.latitude);
+      console.log(targetEgg);
+      res.status(200).json(targetEgg);
     })
     .catch((err) => next(err));
 });
@@ -115,6 +143,7 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
     .query(sql, params)
     .then((result) => {
       const [image] = result.rows;
+      console.log(image);
       res.json(image);
     })
     .catch((err) => next(err));
