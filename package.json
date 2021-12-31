@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "argon2": "^0.28.3",
+    "browser-image-resizer": "^2.2.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
