@@ -7,9 +7,7 @@ const Profile = (props) => {
   const profileEggs = (src, key) => {
     return (
       <div className="profile-square" key={key}>
-        <div className="egg-images">
-          <img src={src} alt="" />
-        </div>
+        <img className="egg-images" src={src} alt="" />
       </div>
     );
   };
@@ -29,20 +27,20 @@ const Profile = (props) => {
         </div>
       </div>
       <div className="row justify-align-center profile-gray center-text">
-        <h1 className="profile-name">{user.data.username}</h1>
+        <h1 className="profile-name profile-h1">{user.data.username}</h1>
       </div>
       <div className="row justify-align-center profile-gray">
         <i className="padding-none margin-none profile-icons fas fa-user-edit"></i>
       </div>
       <div className="row space-between profile-gray profile-gray-text">
         <div className="column-third">
-          <p>eggs</p>
+          <p className="profile-p">eggs</p>
         </div>
         <div className="column-third">
-          <p>followers</p>
+          <p className="profile-p">followers</p>
         </div>
         <div className="column-third">
-          <p>following</p>
+          <p className="profile-p">following</p>
         </div>
       </div>
       <div className="row space-between profile-gray">
@@ -61,12 +59,11 @@ const Profile = (props) => {
       <div className="profile-header-bottom row profile-gray">
         <br></br>
       </div>
-      <div>
-        <div className="row flex-wrap profile-brown">
-          {user.data.foundEggs.map((egg) =>
-            profileEggs(egg.photoUrl, egg.latitude)
-          )}
-        </div>
+
+      <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
+        {user.data.foundEggs.map((egg) =>
+          profileEggs(egg.photoUrl, egg.latitude)
+        )}
       </div>
     </div>
   );

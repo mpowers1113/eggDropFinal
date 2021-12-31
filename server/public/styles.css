@@ -258,7 +258,7 @@ h1 {
   width: 150px;
   height: 150px;
   overflow: hidden;
-  padding: 1rem;
+  margin: 0.5rem;
 }
 
 .column-third {
@@ -310,10 +310,16 @@ h1 {
   min-width: 100%;
   vertical-align: bottom;
   transition: all 1s;
+  overflow: hidden;
 }
 
 .egg-images:hover {
   transform: scale(1.1);
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .circle {
@@ -322,4 +328,20 @@ h1 {
   position: relative;
   overflow: hidden;
   border-radius: 50%;
+}
+
+.space-around {
+  justify-content: space-around;
+}
+
+.profile-p {
+  margin: 0;
+}
+
+.profile-h1 {
+  margin: 0.7;
+}
+
+.profile-egg-icons-div {
+  margin-top: 0.3rem;
 }
