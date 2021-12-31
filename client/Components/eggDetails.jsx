@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BottomSheet } from "react-spring-bottom-sheet";
+import ClientError from "../../server/client-error";
 import Button from "../UI/button";
 
 const EggDetails = (props) => {
@@ -15,7 +16,26 @@ const EggDetails = (props) => {
   date = date[0].split("-");
   const orderedDate = `${date[1]}-${date[2]}-${date[0]}`;
 
-  const claimEggHandler = () => setIsClaimed(true);
+  const claimEggHandler = () => {
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const eggId = { eggId: props.targetEgg.eggId };
+    const req = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "x-access-token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(eggId),
+    };
+    fetch("/api/found", req)
+      .then((res) => {
+        if (!res.ok) throw new ClientError("Something went wrong storing egg");
+        else return res.json();
+      })
+      .then(setIsClaimed(true))
+      .catch((err) => console.error(err));
+  };
 
   return (
     <>

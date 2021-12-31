@@ -41,7 +41,7 @@ const Map = (props) => {
         })
         .then((res) => {
           const eggs = res.map((egg) => ({
-            id: egg.Id,
+            id: egg.eggId,
             longitude: egg.longitude,
             latitude: egg.latitude,
           }));

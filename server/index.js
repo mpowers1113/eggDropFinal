@@ -9,13 +9,10 @@ const errorMiddleware = require("./error-middleware");
 const authorizationMiddleware = require("./authorization-middleware");
 const uploadsMiddleware = require("./uploadsMiddleware");
 const app = express();
-
 const publicPath = path.join(__dirname, "public");
 const staticMiddleware = express.static(publicPath);
 app.use(staticMiddleware);
-
 const jsonMiddleware = express.json();
-
 app.use(jsonMiddleware);
 
 const db = new pg.Pool({
@@ -39,7 +36,7 @@ app.post("/api/auth/sign-up", (req, res, next) => {
       const sql = `
     insert into "users" ("username", "hashedPassword", "email")
     values($1, $2, $3)
-    returning "Id", "username", "email"
+    returning "userId", "username", "email"
     `;
       const params = [username, hashedPassword, email];
       return db.query(sql, params);
@@ -69,7 +66,7 @@ app.post("/api/auth/sign-in", (req, res, next) => {
       const { hashedPassword } = user;
       return argon2.verify(hashedPassword, password).then((isMatching) => {
         if (!isMatching) throw new ClientError(401, "invalid login");
-        const payload = { id: user.Id, username: user.username };
+        const payload = { id: user.userId, username: user.username };
         const token = jwt.sign(payload, process.env.TOKEN_SECRET);
         res.json({ token: token, user: payload });
       });
@@ -82,11 +79,10 @@ app.get("/api/eggs/:eggId", (req, res, next) => {
   if (!Number.isInteger(eggId))
     throw new ClientError(400, "invalid request for egg");
   const sql = `
-               select *
-               from "egg"
-               join "users"
-               on "creator" = "users"."Id"
-               where "egg"."Id" = $1
+  select "e"."photoUrl", "e"."eggId","e"."latitude", "e"."longitude", "e"."createdAt", "e"."message", "u"."username", "u"."profilePhotoUrl", "u"."userId"
+  from "egg" as "e"
+  join "users" as "u" using ("userId")
+  where "eggId" = $1
               `;
   const params = [eggId];
   db.query(sql, params)
@@ -124,7 +120,7 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { message, latitude, longitude } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
-  const sql = `insert into "egg" ("message", "photoUrl", "longitude", "latitude", "creator")
+  const sql = `insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
   values ($1, $2, $3, $4, $5)
   returning *
   `;
@@ -140,6 +136,23 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
     .then((result) => {
       const [image] = result.rows;
       res.json(image);
+    })
+    .catch((err) => next(err));
+});
+
+app.post("/api/found", (req, res, next) => {
+  const { id } = req.user;
+  const { eggId } = req.body;
+  const sql = `insert into "foundEggs" ("foundBy", "eggId")
+               values ($1, $2)
+               returning *
+              `;
+  const params = [id, eggId];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const [foundEgg] = result.rows;
+      res.json(foundEgg);
     })
     .catch((err) => next(err));
 });
