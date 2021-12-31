@@ -12,6 +12,7 @@ import CreateEgg from "./createEggModal";
 import { UserContext } from "../Context/userContext";
 import EggDetails from "./eggDetails";
 import distanceToEgg from "../Utils/distanceToEgg";
+import Navbar from "./navbar";
 
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
@@ -161,6 +162,7 @@ const Map = (props) => {
           )}
         </MapGL>
       )}
+      <Navbar />
     </div>
   );
 };

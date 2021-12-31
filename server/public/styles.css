@@ -167,12 +167,13 @@ h1 {
 .navbar-map {
   background-color: white;
   position: fixed;
-  bottom: 1rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  padding: 1rem;
+  padding: 0.5rem;
   justify-content: space-around;
   align-items: center;
-  border-radius: 3rem;
 }
 
 .navbar-map i {
