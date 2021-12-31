@@ -31,9 +31,30 @@ const Login = (props) => {
     const user = token ? decodeToken(token) : null;
     if (user) {
       const userData = { username: user.username, id: user.id };
-      user && props.setUserValid(userData);
+      props.setUserValid(userData);
+      getUserData(userData);
     }
   }, []);
+
+  const getUserData = (data) => {
+    const userId = data.id;
+    fetch(`/api/profile/${userId}`)
+      .then((res) => {
+        if (!res.ok) {
+          props.setUserValid(res);
+          throw new Error("something went wrong fetching profile data");
+        }
+        return res.json();
+      })
+      .then((res) => {
+        if (res.username) {
+          props.setUserValid(res);
+        } else {
+          props.setUserValid(data);
+        }
+      })
+      .catch((err) => console.error(err));
+  };
 
   const sendLoginData = (userLoginData) => {
     if (loginData.username.length === 0 || loginData.password.length === 0) {
@@ -60,7 +81,7 @@ const Login = (props) => {
         const { token, user } = res;
         window.localStorage.setItem("eggDrop8081proDgge", token);
         const userData = { username: loginData.username, id: user.Id };
-        props.setUserValid(userData);
+        getUserData(userData);
       })
       .catch((err) => console.error(err));
   };

@@ -43,7 +43,7 @@ app.post("/api/auth/sign-up", (req, res, next) => {
     })
     .then((result) => {
       const [user] = result.rows;
-      const payload = { id: user.Id, username: user.username };
+      const payload = { id: user.userId, username: user.username };
       const token = jwt.sign(payload, process.env.TOKEN_SECRET);
       res.json({ token: token, user: payload });
     })
@@ -97,8 +97,7 @@ app.get("/api/eggs/:eggId", (req, res, next) => {
 });
 app.get("/api/eggs", (req, res, next) => {
   const sql = `
-              select *
-              from "egg"
+              select * from "egg"
               `;
   return db
     .query(sql)
@@ -124,9 +123,18 @@ app.get("/api/profile/:userId", (req, res, next) => {
   const params = [userId];
   db.query(sql, params)
     .then((result) => {
-      const profileData = result.rows;
+      if (!result.rows[0]) throw new ClientError(400, "no profile data yet");
+      const profileData = result.rows[0];
+      const user = {
+        username: profileData.username,
+        id: profileData.userId,
+        profilePhotoUrl: profileData.profilePhotoUrl,
+        email: profileData.email,
+        createdAt: profileData.createdAt,
+        eggData: result.rows,
+      };
       if (!profileData) throw new ClientError(400, "invalid request for data");
-      res.status(200).json(profileData);
+      res.status(200).json(user);
     })
     .catch((err) => console.error(err));
 });
