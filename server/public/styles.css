@@ -242,3 +242,84 @@ h1 {
 .claimed-egg-button {
   background-color: #ca863e;
 }
+
+.profile-pic {
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: auto;
+}
+
+.profile-name {
+  color: #acacac;
+}
+
+.profile-square {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+.column-third {
+  flex-basis: calc(100% / 3);
+}
+
+.profile-icons {
+  padding: 1rem;
+  color: #acacac;
+  cursor: pointer;
+}
+
+.profile-icons:hover {
+  color: rgb(209, 199, 186);
+}
+
+.profile-brown {
+  background-color: #ede3d6;
+  height: 100vh;
+  z-index: 7;
+}
+
+.profile-gray {
+  background-color: #eeebeb;
+}
+
+.profile-gray-text {
+  color: #8b8484;
+  font-size: 20px;
+}
+
+.profile-gray-text-bold {
+  color: #656565;
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.profile-header-bottom {
+  padding-bottom: 1rem;
+  border-bottom-right-radius: 35px;
+  border-bottom-left-radius: 35px;
+  box-shadow: rgb(38, 57, 77) 0 20px 30px -10px;
+}
+
+.egg-images {
+  object-fit: cover;
+  object-position: center;
+  max-height: 100%;
+  min-width: 100%;
+  vertical-align: bottom;
+  transition: all 1s;
+}
+
+.egg-images:hover {
+  transform: scale(1.1);
+}
+
+.circle {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+}

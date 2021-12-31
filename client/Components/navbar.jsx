@@ -5,7 +5,7 @@ const Navbar = (props) => {
     <div className="row navbar-map">
       <i className="fas fa-users fa-3x"></i>
       <i className="fas fa-globe fa-3x"></i>
-      <i className="fas fa-user fa-3x"></i>
+      <i className="fas fa-user fa-3x" onClick={props.openProfile}></i>
     </div>
   );
 };

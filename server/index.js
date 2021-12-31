@@ -113,6 +113,24 @@ app.get("/api/eggs", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/profile/:userId", (req, res, next) => {
+  const userId = Number(req.params.userId);
+  if (!Number.isInteger(userId)) throw new ClientError(400, "invalid request");
+  const sql = `select distinct on ("e".*) "e".*, "u"."email", "u"."username", "u"."profilePhotoUrl", "u"."createdAt", "f"."foundBy", "f"."foundAt"
+  from "users" as "u"
+  join "egg" as "e" using ("userId")
+  join "foundEggs" as "f" on "f"."foundBy" = "userId"
+  where "u"."userId" = $1`;
+  const params = [userId];
+  db.query(sql, params)
+    .then((result) => {
+      const profileData = result.rows;
+      if (!profileData) throw new ClientError(400, "invalid request for data");
+      res.status(200).json(profileData);
+    })
+    .catch((err) => console.error(err));
+});
+
 app.use(authorizationMiddleware);
 
 app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
