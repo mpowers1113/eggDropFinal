@@ -79,7 +79,7 @@ app.get("/api/eggs/:eggId", (req, res, next) => {
   if (!Number.isInteger(eggId))
     throw new ClientError(400, "invalid request for egg");
   const sql = `
-  select "e"."photoUrl", "e"."eggId","e"."latitude", "e"."longitude", "e"."createdAt", "e"."message", "u"."username", "u"."profilePhotoUrl", "u"."userId"
+  select "e".*, "u"."username", "u"."profilePhotoUrl", "u"."userId"
   from "egg" as "e"
   join "users" as "u" using ("userId")
   where "eggId" = $1
