@@ -277,8 +277,8 @@ h1 {
 
 .profile-brown {
   background-color: #ede3d6;
-  height: 100vh;
-  z-index: 7;
+  min-width: 375;
+  max-width: 1000;
 }
 
 .profile-gray {
@@ -300,7 +300,7 @@ h1 {
   padding-bottom: 1rem;
   border-bottom-right-radius: 35px;
   border-bottom-left-radius: 35px;
-  box-shadow: rgb(38, 57, 77) 0 20px 30px -10px;
+  box-shadow: rgb(38, 57, 77) 0 20px 30px -20px;
 }
 
 .egg-images {

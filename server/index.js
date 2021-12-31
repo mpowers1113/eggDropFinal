@@ -115,25 +115,38 @@ app.get("/api/eggs", (req, res, next) => {
 app.get("/api/profile/:userId", (req, res, next) => {
   const userId = Number(req.params.userId);
   if (!Number.isInteger(userId)) throw new ClientError(400, "invalid request");
-  const sql = `select distinct on ("e".*) "e".*, "u"."email", "u"."username", "u"."profilePhotoUrl", "u"."createdAt", "f"."foundBy", "f"."foundAt"
+  const userDataQuery = `select "u"."email", "u"."username", "u"."profilePhotoUrl", "u"."createdAt", "u"."userId"
   from "users" as "u"
-  join "egg" as "e" using ("userId")
-  join "foundEggs" as "f" on "f"."foundBy" = "userId"
-  where "u"."userId" = $1`;
+  where "userId" = $1`;
+
+  const eggDataQuery = `select * from "egg" where "userId" = $1`;
+
+  const foundEggQuery = `
+  select "f".*, "e".* from "foundEggs" as "f" join "egg" as "e" using ("eggId")
+  where "f"."foundBy" = $1`;
   const params = [userId];
-  db.query(sql, params)
+  const profileQueries = [
+    db.query(userDataQuery, params),
+    db.query(eggDataQuery, params),
+    db.query(foundEggQuery, params),
+  ];
+  const profilePromises = Promise.all(profileQueries);
+  profilePromises
     .then((result) => {
-      if (!result.rows[0]) throw new ClientError(400, "no profile data yet");
-      const profileData = result.rows[0];
+      const userData = result[0].rows;
+      const createdEggData = result[1].rows;
+      const foundEggData = result[2].rows;
+      if (!result) throw new ClientError(400, "no profile data yet");
       const user = {
-        username: profileData.username,
-        id: profileData.userId,
-        profilePhotoUrl: profileData.profilePhotoUrl,
-        email: profileData.email,
-        createdAt: profileData.createdAt,
-        eggData: result.rows,
+        username: userData[0].username,
+        id: userData[0].userId,
+        profilePhotoUrl: userData[0].profilePhotoUrl,
+        email: userData[0].email,
+        createdAt: userData[0].createdAt,
+        createdEggData: createdEggData,
+        foundEggs: foundEggData,
       };
-      if (!profileData) throw new ClientError(400, "invalid request for data");
+      if (!userData) throw new ClientError(400, "invalid request for data");
       res.status(200).json(user);
     })
     .catch((err) => console.error(err));

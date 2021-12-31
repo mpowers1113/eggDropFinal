@@ -12,7 +12,7 @@ const App = (props) => {
   const [userValid, setUserValid] = useState(null);
 
   const context = {
-    user: userValid,
+    data: userValid,
     longitude: longitude,
     latitude: latitude,
     error: error,

@@ -167,10 +167,10 @@ const Map = (props) => {
             )}
           </MapGL>
         )}
-        {openProfile && (
-          <Profile open={openProfile} closeProfile={setOpenProfile} />
-        )}
       </div>
+      {openProfile && (
+        <Profile open={openProfile} closeProfile={setOpenProfile} />
+      )}
       <Navbar openProfile={viewProfile} />
     </>
   );
