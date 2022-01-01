@@ -112,15 +112,15 @@ app.get("/api/eggs", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/api/profile/:userId", (req, res, next) => {
-  const userId = Number(req.params.userId);
+app.use(authorizationMiddleware);
+
+app.post("/api/profile", (req, res, next) => {
+  const userId = Number(req.user.id);
   if (!Number.isInteger(userId)) throw new ClientError(400, "invalid request");
   const userDataQuery = `select "u"."email", "u"."username", "u"."profilePhotoUrl", "u"."createdAt", "u"."userId"
   from "users" as "u"
   where "userId" = $1`;
-
   const eggDataQuery = `select * from "egg" where "userId" = $1`;
-
   const foundEggQuery = `
   select "f".*, "e".* from "foundEggs" as "f" join "egg" as "e" using ("eggId")
   where "f"."foundBy" = $1`;
@@ -151,8 +151,6 @@ app.get("/api/profile/:userId", (req, res, next) => {
     })
     .catch((err) => console.error(err));
 });
-
-app.use(authorizationMiddleware);
 
 app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { id } = req.user;

@@ -32,13 +32,20 @@ const Login = (props) => {
     if (user) {
       const userData = { username: user.username, id: user.id };
       props.setUserValid(userData);
-      getUserData(userData);
+      getUserData();
     }
   }, []);
 
-  const getUserData = (data) => {
-    const userId = data.id;
-    fetch(`/api/profile/${userId}`)
+  const getUserData = () => {
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const req = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "x-access-token": token,
+      },
+    };
+    fetch(`/api/profile`, req)
       .then((res) => {
         if (!res.ok) {
           props.setUserValid(res);
@@ -46,13 +53,7 @@ const Login = (props) => {
         }
         return res.json();
       })
-      .then((res) => {
-        if (res.username) {
-          props.setUserValid(res);
-        } else {
-          props.setUserValid(data);
-        }
-      })
+      .then((res) => props.setUserValid(res))
       .catch((err) => console.error(err));
   };
 
@@ -81,7 +82,8 @@ const Login = (props) => {
         const { token, user } = res;
         window.localStorage.setItem("eggDrop8081proDgge", token);
         const userData = { username: loginData.username, id: user.Id };
-        getUserData(userData);
+        props.setUserValid(userData);
+        getUserData();
       })
       .catch((err) => console.error(err));
   };
