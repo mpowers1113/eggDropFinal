@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { BottomSheet } from "react-spring-bottom-sheet";
 import ClientError from "../../server/client-error";
+import { UserContext } from "../Context/userContext";
 import Button from "../UI/button";
 
 const EggDetails = (props) => {
+  const user = useContext(UserContext);
   const [open] = useState(props.targetEgg);
   const [isClaimed, setIsClaimed] = useState(false);
 
@@ -33,7 +35,19 @@ const EggDetails = (props) => {
         if (!res.ok) throw new ClientError("Something went wrong storing egg");
         else return res.json();
       })
-      .then(setIsClaimed(true))
+      .then(() => {
+        const foundEgg = {
+          foundBy: user.data.id,
+          eggId: props.targetEgg.eggId,
+          latitude: props.targetEgg.latitude,
+          longitude: props.targetEgg.longitude,
+          photoUrl: props.targetEgg.photoUrl,
+          message: props.targetEgg.message,
+          createdAt: props.targetEgg.createdAt,
+        };
+        user.data.foundEggs.push(foundEgg);
+        setIsClaimed(true);
+      })
       .catch((err) => console.error(err));
   };
 
