@@ -136,7 +136,6 @@ app.post("/api/profile", (req, res, next) => {
       const userData = result[0].rows;
       const createdEggData = result[1].rows;
       const foundEggData = result[2].rows;
-      if (!result) throw new ClientError(400, "no profile data yet");
       const user = {
         username: userData[0].username,
         id: userData[0].userId,
@@ -146,7 +145,6 @@ app.post("/api/profile", (req, res, next) => {
         createdEggData: createdEggData,
         foundEggs: foundEggData,
       };
-      if (!userData) throw new ClientError(400, "invalid request for data");
       res.status(200).json(user);
     })
     .catch((err) => console.error(err));
