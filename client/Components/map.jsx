@@ -12,6 +12,8 @@ import CreateEgg from "./createEggModal";
 import { UserContext } from "../Context/userContext";
 import EggDetails from "./eggDetails";
 import distanceToEgg from "../Utils/distanceToEgg";
+import Navbar from "./navbar";
+import Profile from "../pages/profile";
 
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
@@ -20,6 +22,9 @@ const Map = (props) => {
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
+  const [openProfile, setOpenProfile] = useState(false);
+
+  const viewProfile = () => setOpenProfile(true);
 
   const clearEggData = () => setEggLocation(null);
 
@@ -110,58 +115,64 @@ const Map = (props) => {
   );
 
   return (
-    <div className="row">
-      {user && (
-        <MapGL
-          onDblClick={prepareDropHandler}
-          ref={mapRef}
-          {...viewport}
-          width="100vw"
-          height="100vh"
-          mapStyle="mapbox://styles/mapbox/streets-v11"
-          onViewportChange={handleViewportChange}
-          mapboxApiAccessToken={MAPBOXKEY}
-        >
-          {eggMarkers.map((markers) => (
-            <Marker
-              key={markers.longitude}
-              longitude={markers.longitude}
-              latitude={markers.latitude}
-            >
-              <EggIcon
-                id={markers.id}
-                dataEgg={"egg"}
-                onClick={toggleEggDetails}
-              />
-            </Marker>
-          ))}
-
-          <Geocoder
-            mapRef={mapRef}
-            onViewportChange={handleGeocoderViewportChange}
+    <>
+      <div className="row">
+        {!openProfile && (
+          <MapGL
+            onDblClick={prepareDropHandler}
+            ref={mapRef}
+            {...viewport}
+            width="100vw"
+            height="100vh"
+            mapStyle="mapbox://styles/mapbox/streets-v11"
+            onViewportChange={handleViewportChange}
             mapboxApiAccessToken={MAPBOXKEY}
-            position="top-right"
-          />
-          <GeolocateControl
-            style={{ position: "absolute" }}
-            positionOptions={{ enableHighAccuracy: true }}
-            trackUserLocation={true}
-            auto
-          />
-          {eggLocation !== null && (
-            <CreateEgg
-              user={user}
-              clear={clearEggData}
-              eggLocation={eggLocation}
-              drop={dropEgg}
+          >
+            {eggMarkers.map((markers) => (
+              <Marker
+                key={markers.longitude}
+                longitude={markers.longitude}
+                latitude={markers.latitude}
+              >
+                <EggIcon
+                  id={markers.id}
+                  dataEgg={"egg"}
+                  onClick={toggleEggDetails}
+                />
+              </Marker>
+            ))}
+
+            <Geocoder
+              mapRef={mapRef}
+              onViewportChange={handleGeocoderViewportChange}
+              mapboxApiAccessToken={MAPBOXKEY}
+              position="top-right"
             />
-          )}
-          {targetEgg && (
-            <EggDetails targetEgg={targetEgg} toggleModal={setTargetEgg} />
-          )}
-        </MapGL>
+            <GeolocateControl
+              style={{ position: "absolute" }}
+              positionOptions={{ enableHighAccuracy: true }}
+              trackUserLocation={true}
+              auto
+            />
+            {eggLocation !== null && (
+              <CreateEgg
+                user={user}
+                clear={clearEggData}
+                eggLocation={eggLocation}
+                drop={dropEgg}
+              />
+            )}
+            {targetEgg && (
+              <EggDetails targetEgg={targetEgg} toggleModal={setTargetEgg} />
+            )}
+          </MapGL>
+        )}
+      </div>
+      {openProfile && (
+        <Profile open={openProfile} closeProfile={setOpenProfile} />
       )}
-    </div>
+      <Navbar openProfile={viewProfile} />
+    </>
   );
 };
 

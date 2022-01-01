@@ -31,9 +31,31 @@ const Login = (props) => {
     const user = token ? decodeToken(token) : null;
     if (user) {
       const userData = { username: user.username, id: user.id };
-      user && props.setUserValid(userData);
+      props.setUserValid(userData);
+      getUserData();
     }
   }, []);
+
+  const getUserData = () => {
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const req = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "x-access-token": token,
+      },
+    };
+    fetch(`/api/profile`, req)
+      .then((res) => {
+        if (!res.ok) {
+          props.setUserValid(res);
+          throw new Error("something went wrong fetching profile data");
+        }
+        return res.json();
+      })
+      .then((res) => props.setUserValid(res))
+      .catch((err) => console.error(err));
+  };
 
   const sendLoginData = (userLoginData) => {
     if (loginData.username.length === 0 || loginData.password.length === 0) {
@@ -61,6 +83,7 @@ const Login = (props) => {
         window.localStorage.setItem("eggDrop8081proDgge", token);
         const userData = { username: loginData.username, id: user.Id };
         props.setUserValid(userData);
+        getUserData();
       })
       .catch((err) => console.error(err));
   };

@@ -167,12 +167,13 @@ h1 {
 .navbar-map {
   background-color: white;
   position: fixed;
-  bottom: 1rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  padding: 1rem;
+  padding: 0.5rem;
   justify-content: space-around;
   align-items: center;
-  border-radius: 3rem;
 }
 
 .navbar-map i {
@@ -240,4 +241,107 @@ h1 {
 
 .claimed-egg-button {
   background-color: #ca863e;
+}
+
+.profile-pic {
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: auto;
+}
+
+.profile-name {
+  color: #acacac;
+}
+
+.profile-square {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  margin: 0.5rem;
+}
+
+.column-third {
+  flex-basis: calc(100% / 3);
+}
+
+.profile-icons {
+  padding: 1rem;
+  color: #acacac;
+  cursor: pointer;
+}
+
+.profile-icons:hover {
+  color: rgb(209, 199, 186);
+}
+
+.profile-brown {
+  background-color: #ede3d6;
+  min-width: 375;
+  max-width: 1000;
+}
+
+.profile-gray {
+  background-color: #eeebeb;
+}
+
+.profile-gray-text {
+  color: #8b8484;
+  font-size: 20px;
+}
+
+.profile-gray-text-bold {
+  color: #656565;
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.profile-header-bottom {
+  padding-bottom: 1rem;
+  border-bottom-right-radius: 35px;
+  border-bottom-left-radius: 35px;
+  box-shadow: rgb(38, 57, 77) 0 20px 30px -20px;
+}
+
+.egg-images {
+  object-fit: cover;
+  object-position: center;
+  max-height: 100%;
+  min-width: 100%;
+  vertical-align: bottom;
+  transition: all 1s;
+  overflow: hidden;
+}
+
+.egg-images:hover {
+  transform: scale(1.1);
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.circle {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.space-around {
+  justify-content: space-around;
+}
+
+.profile-p {
+  margin: 0;
+}
+
+.profile-h1 {
+  margin: 0.7;
+}
+
+.profile-egg-icons-div {
+  margin-top: 0.3rem;
 }

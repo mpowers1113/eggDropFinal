@@ -43,7 +43,7 @@ app.post("/api/auth/sign-up", (req, res, next) => {
     })
     .then((result) => {
       const [user] = result.rows;
-      const payload = { id: user.Id, username: user.username };
+      const payload = { id: user.userId, username: user.username };
       const token = jwt.sign(payload, process.env.TOKEN_SECRET);
       res.json({ token: token, user: payload });
     })
@@ -97,8 +97,7 @@ app.get("/api/eggs/:eggId", (req, res, next) => {
 });
 app.get("/api/eggs", (req, res, next) => {
   const sql = `
-              select *
-              from "egg"
+              select * from "egg"
               `;
   return db
     .query(sql)
@@ -114,6 +113,42 @@ app.get("/api/eggs", (req, res, next) => {
 });
 
 app.use(authorizationMiddleware);
+
+app.post("/api/profile", (req, res, next) => {
+  const userId = Number(req.user.id);
+  if (!Number.isInteger(userId)) throw new ClientError(400, "invalid request");
+  const userDataQuery = `select "u"."email", "u"."username", "u"."profilePhotoUrl", "u"."createdAt", "u"."userId"
+  from "users" as "u"
+  where "userId" = $1`;
+  const eggDataQuery = `select * from "egg" where "userId" = $1`;
+  const foundEggQuery = `
+  select "f".*, "e".* from "foundEggs" as "f" join "egg" as "e" using ("eggId")
+  where "f"."foundBy" = $1`;
+  const params = [userId];
+  const profileQueries = [
+    db.query(userDataQuery, params),
+    db.query(eggDataQuery, params),
+    db.query(foundEggQuery, params),
+  ];
+  const profilePromises = Promise.all(profileQueries);
+  profilePromises
+    .then((result) => {
+      const userData = result[0].rows;
+      const createdEggData = result[1].rows;
+      const foundEggData = result[2].rows;
+      const user = {
+        username: userData[0].username,
+        id: userData[0].userId,
+        profilePhotoUrl: userData[0].profilePhotoUrl,
+        email: userData[0].email,
+        createdAt: userData[0].createdAt,
+        createdEggData: createdEggData,
+        foundEggs: foundEggData,
+      };
+      res.status(200).json(user);
+    })
+    .catch((err) => console.error(err));
+});
 
 app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { id } = req.user;
