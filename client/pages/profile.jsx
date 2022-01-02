@@ -23,7 +23,15 @@ const Profile = (props) => {
       </div>
       <div className="row justify-align-center profile-gray">
         <div className="circle">
-          <img className="profile-pic" src="../Images/dummyAvatar.png" alt="" />
+          <img
+            className="profile-pic"
+            src={
+              user.data.profilePhotoUrl
+                ? user.data.profilePHotoUrl
+                : "../Images/dummyAvatar.png"
+            }
+            alt="profile photo"
+          />
         </div>
       </div>
       <div className="row justify-align-center profile-gray center-text">

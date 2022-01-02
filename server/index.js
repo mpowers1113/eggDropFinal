@@ -33,10 +33,12 @@ app.post("/api/auth/sign-up", (req, res, next) => {
   argon2
     .hash(password)
     .then((hashedPassword) => {
-      const sql = `
-    insert into "users" ("username", "hashedPassword", "email")
-    values($1, $2, $3)
-    returning "userId", "username", "email"
+      const sql = `with "insertRow" as (insert into "users" ("username", "hashedPassword", "email")
+      values($1, $2, $3)
+      returning "userId", "username", "email"
+      ),
+      "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'newUser', 'user', $1)) returning *)
+      select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
     `;
       const params = [username, hashedPassword, email];
       return db.query(sql, params);
@@ -116,29 +118,10 @@ app.get("/api/eggs", (req, res, next) => {
 
 app.get("/api/events", (req, res, next) => {
   const sql = `
-  WITH newEggsCTE ("EggCreatedAt", "username", "profilePhotoUrl")
-  AS ( SELECT "e"."createdAt", "u"."username", "u"."profilePhotoUrl"
-       FROM "egg" as "e"
-       JOIN "users" as "u" using ("userId")
-       ORDER BY "e"."createdAt" DESC
-       limit 10
-     ), 
-  newUserCTE ("userCreatedAt", "username", "profilePhotoUrl")
-  AS ( SELECT "u"."createdAt", "u"."username", "u"."profilePhotoUrl"
-       FROM "users" as "u"
-       ORDER BY "u"."createdAt" DESC
-       LIMIT 10
-     ),
-  newFoundEggsCTE ("eggFoundAt", "username", "profilePhotoUrl")
-  AS ( SELECT "f"."foundAt", "u"."username", "u"."profilePhotoUrl"
-       FROM "users" as "u"
-       JOIN "foundEggs" as "f" on "f"."foundBy" = "u"."userId"
-       ORDER BY "f"."foundAt" DESC
-       LIMIT 10
-     )     
-  SELECT "e".*, "n".*, "f".*
-  from newEggsCTE as "e", newUserCTE as "n", newFoundEggsCTE as "f"
-  LIMIT 30`;
+  select * 
+  from "events"
+  order by "events"."createdAt" DESC
+  limit 30`;
   db.query(sql)
     .then((result) => {
       res.status(200).json(result);
@@ -189,9 +172,11 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { message, latitude, longitude } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
-  const sql = `insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
+  const sql = `with "insertRow" as (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
   values ($1, $2, $3, $4, $5)
-  returning *
+  returning *),
+  "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'userId', $5)) returning *)
+  select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
   `;
   const params = [
     message,
@@ -212,9 +197,11 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
 app.post("/api/found", (req, res, next) => {
   const { id } = req.user;
   const { eggId } = req.body;
-  const sql = `insert into "foundEggs" ("foundBy", "eggId")
+  const sql = `with "insertRow" as (insert into "foundEggs" ("foundBy", "eggId")
                values ($1, $2)
-               returning *
+               returning *), 
+               "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'userId', $1)) returning *)
+               select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
               `;
   const params = [id, eggId];
   return db
