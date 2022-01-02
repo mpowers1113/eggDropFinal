@@ -97,7 +97,9 @@ app.get("/api/eggs/:eggId", (req, res, next) => {
 });
 app.get("/api/eggs", (req, res, next) => {
   const sql = `
-              select * from "egg"
+              select "e".* from "egg" as "e"
+              where "e"."eggId" not in 
+              (select "f"."eggId" from "foundEggs" as "f")
               `;
   return db
     .query(sql)
