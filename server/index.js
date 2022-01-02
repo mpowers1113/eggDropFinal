@@ -37,7 +37,7 @@ app.post("/api/auth/sign-up", (req, res, next) => {
       values($1, $2, $3)
       returning "userId", "username", "email"
       ),
-      "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'newUser', 'user', $1)) returning *)
+      "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'newUser', 'username', $1)) returning *)
       select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
     `;
       const params = [username, hashedPassword, email];
@@ -175,7 +175,7 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const sql = `with "insertRow" as (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
   values ($1, $2, $3, $4, $5)
   returning *),
-  "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'userId', $5)) returning *)
+  "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'username', ( select "username" from "users" where "userId" = $5))) returning *)
   select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
   `;
   const params = [
@@ -200,7 +200,7 @@ app.post("/api/found", (req, res, next) => {
   const sql = `with "insertRow" as (insert into "foundEggs" ("foundBy", "eggId")
                values ($1, $2)
                returning *), 
-               "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'userId', $1)) returning *)
+               "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'username', ( select "username" from "users" where "userId" = $1))) returning *)
                select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
               `;
   const params = [id, eggId];
