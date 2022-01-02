@@ -112,6 +112,38 @@ app.get("/api/eggs", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/events", (req, res, next) => {
+  const sql = `
+  WITH newEggsCTE ("EggCreatedAt", "username", "profilePhotoUrl")
+  AS ( SELECT "e"."createdAt", "u"."username", "u"."profilePhotoUrl"
+       FROM "egg" as "e"
+       JOIN "users" as "u" using ("userId")
+       ORDER BY "e"."createdAt" DESC
+       limit 10
+     ), 
+  newUserCTE ("userCreatedAt", "username", "profilePhotoUrl")
+  AS ( SELECT "u"."createdAt", "u"."username", "u"."profilePhotoUrl"
+       FROM "users" as "u"
+       ORDER BY "u"."createdAt" DESC
+       LIMIT 10
+     ),
+  newFoundEggsCTE ("eggFoundAt", "username", "profilePhotoUrl")
+  AS ( SELECT "f"."foundAt", "u"."username", "u"."profilePhotoUrl"
+       FROM "users" as "u"
+       JOIN "foundEggs" as "f" on "f"."foundBy" = "u"."userId"
+       ORDER BY "f"."foundAt" DESC
+       LIMIT 10
+     )     
+  SELECT "e".*, "n".*, "f".*
+  from newEggsCTE as "e", newUserCTE as "n", newFoundEggsCTE as "f"
+  LIMIT 30`;
+  db.query(sql)
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => next(err));
+});
+
 app.use(authorizationMiddleware);
 
 app.post("/api/profile", (req, res, next) => {
