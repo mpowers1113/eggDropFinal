@@ -3,6 +3,9 @@ import { UserContext } from "./Context/userContext";
 import Login from "./Components/login";
 import Map from "./Components/map";
 import { usePosition } from "use-position";
+import EventFeed from "./pages/eventFeed";
+import Profile from "./pages/profile";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const App = (props) => {
   const watch = true;
@@ -18,17 +21,23 @@ const App = (props) => {
     error: error,
   };
 
-  const renderPage = () => {
-    if (userValid && latitude && !error)
-      return (
-        <UserContext.Provider value={context}>
-          <Map />
-        </UserContext.Provider>
-      );
-    else return <Login setUserValid={setUserValid} />;
-  };
-
-  return <>{renderPage()}</>;
+  return (
+    <UserContext.Provider value={context}>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            index
+            element={<Login setUserValid={setUserValid} />}
+          />
+          <Route path="/map" element={<Map />} />
+          <Route path={"/events"} element={<EventFeed />} />
+          <Route path={"/profile"} element={<Profile />} />
+          <Route path={"*"} element={<div>Not found</div>} />
+        </Routes>
+      </BrowserRouter>
+    </UserContext.Provider>
+  );
 };
 
 export default App;
