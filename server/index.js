@@ -213,6 +213,25 @@ app.post("/api/found", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.post("/api/edit/profile", uploadsMiddleware, (req, res, next) => {
+  const id = Number(req.user.id);
+  if (!id) throw new ClientError(400, "invalid request");
+  const filePath = "/images/" + req.file.filename;
+  const sql = `update "users"
+               set "profilePhotoUrl" = ($1)
+               where "userId" = ($2)
+              returning "profilePhotoUrl"
+              `;
+  const params = [filePath, id];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const [profilePhotoUrl] = result.rows;
+      res.json(profilePhotoUrl);
+    })
+    .catch((err) => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {

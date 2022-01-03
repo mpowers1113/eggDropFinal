@@ -1,3 +1,10 @@
+:root {
+  --darkbrown-color: #c16500;
+  --light-brown: #df9830;
+  --dark-grey: #2d2d2d;
+  --egg-white: rgb(238, 235, 235);
+}
+
 .button {
   color: whitesmoke;
   background-color: #c16500;
@@ -185,6 +192,27 @@ h1 {
   display: none;
 }
 
+.profile-file-input {
+  display: none;
+}
+
+.profile-pic-edit-label {
+  width: 200px;
+  height: 200px;
+  padding: 3.5rem 2rem;
+  border-radius: 100px;
+  border: 4px;
+  border-color: var(--egg-white);
+  border-style: dashed;
+  font-family: "Atlas Grotesque", sans-serif;
+  font-size: 24px;
+  background-color: #c4c4c4;
+  color: var(--egg-white);
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+}
+
 .file-input + label {
   width: 100%;
   border-radius: 6px;
@@ -203,7 +231,7 @@ h1 {
 
 .file-input + label:hover {
   background-color: #c16400b4;
-  color: white;
+  color: var(--egg-white);
 }
 
 .p1 {

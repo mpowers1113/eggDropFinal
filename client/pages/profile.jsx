@@ -1,13 +1,69 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { UserContext } from "../Context/userContext";
+import Button from "../UI/button";
 
 const Profile = (props) => {
   const user = useContext(UserContext);
+  const [uploadProfilePhoto, setUploadProfilePhoto] = useState(false);
+
+  const toggleUploadProfile = () => setUploadProfilePhoto(!uploadProfilePhoto);
+
+  const imageInputRef = useRef();
 
   const profileEggs = (src, key) => {
     return (
       <div className="profile-square" key={key}>
         <img className="egg-images" src={src} alt="" />
+      </div>
+    );
+  };
+
+  const handleProfileImageSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    formData.append("image", imageInputRef.current.files[0]);
+    const req = {
+      method: "POST",
+      headers: {
+        "x-access-token": token,
+      },
+      body: formData,
+    };
+    fetch("/api/edit/profile", req)
+      .then((res) => res.json())
+      .then((res) => (user.data.profilePhotoUrl = res.profilePhotoUrl))
+      .then(() => toggleUploadProfile())
+      .catch((err) => console.error(err));
+  };
+
+  const editProfile = () => {
+    return (
+      <div className="profile-gray row justify-align-center flex-column">
+        <form onSubmit={handleProfileImageSubmit}>
+          <input
+            required
+            type="file"
+            name="image"
+            ref={imageInputRef}
+            accept=".png, .jpg, .jpeg, .gif"
+            className="profile-file-input"
+            id="file-upload"
+          />
+          <label
+            className="profile-pic-edit-label center-text"
+            htmlFor="file-upload"
+          >
+            Upload Profile Photo
+          </label>
+          <div className="row justify-align-center">
+            <Button
+              text="Save"
+              type="submit"
+              click={handleProfileImageSubmit}
+            />
+          </div>
+        </form>
       </div>
     );
   };
@@ -21,24 +77,33 @@ const Profile = (props) => {
         ></i>
         <i className="fas fa-history profile-icons fa-2x"></i>
       </div>
-      <div className="row justify-align-center profile-gray">
-        <div className="circle">
-          <img
-            className="profile-pic"
-            src={
-              user.data.profilePhotoUrl
-                ? user.data.profilePHotoUrl
-                : "../Images/defaultprofilephoto.jpeg"
-            }
-            alt="profile photo"
-          />
+      {uploadProfilePhoto === false ? (
+        <div className="row justify-align-center profile-gray">
+          <div className="circle">
+            <img
+              className="profile-pic"
+              src={
+                user.data.profilePhotoUrl
+                  ? user.data.profilePhotoUrl
+                  : "../Images/defaultprofilephoto.jpeg"
+              }
+              alt="profile photo"
+            />
+          </div>
         </div>
-      </div>
+      ) : (
+        editProfile()
+      )}
       <div className="row justify-align-center profile-gray center-text">
         <h1 className="profile-name profile-h1">{user.data.username}</h1>
       </div>
       <div className="row justify-align-center profile-gray">
-        <i className="padding-none margin-none profile-icons fas fa-user-edit"></i>
+        <i
+          onClick={toggleUploadProfile}
+          className={`padding-none margin-none profile-icons fas fa-user-edit ${
+            uploadProfilePhoto && "event-icon"
+          }`}
+        ></i>
       </div>
       <div className="row space-between profile-gray profile-gray-text">
         <div className="column-third">
