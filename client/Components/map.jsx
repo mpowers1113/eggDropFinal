@@ -14,6 +14,7 @@ import EggDetails from "./eggDetails";
 import distanceToEgg from "../Utils/distanceToEgg";
 import Navbar from "./navbar";
 import Profile from "../pages/profile";
+import EventFeed from "../pages/eventFeed";
 
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
@@ -23,6 +24,9 @@ const Map = (props) => {
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
   const [openProfile, setOpenProfile] = useState(false);
+  const [openEventFeed, setOpenEventFeed] = useState(false);
+
+  const viewEventFeed = () => setOpenEventFeed(true);
 
   const viewProfile = () => setOpenProfile(true);
 
@@ -117,7 +121,7 @@ const Map = (props) => {
   return (
     <>
       <div className="row">
-        {!openProfile && (
+        {!openProfile && !openEventFeed && (
           <MapGL
             onDblClick={prepareDropHandler}
             ref={mapRef}
@@ -171,7 +175,13 @@ const Map = (props) => {
       {openProfile && (
         <Profile open={openProfile} closeProfile={setOpenProfile} />
       )}
-      <Navbar openProfile={viewProfile} />
+      {openEventFeed && <EventFeed closeFeed={setOpenEventFeed} />}
+      <Navbar
+        openProfile={viewProfile}
+        closeProfile={setOpenProfile}
+        openEventFeed={viewEventFeed}
+        closeFeed={setOpenEventFeed}
+      />
     </>
   );
 };

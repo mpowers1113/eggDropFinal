@@ -33,10 +33,12 @@ app.post("/api/auth/sign-up", (req, res, next) => {
   argon2
     .hash(password)
     .then((hashedPassword) => {
-      const sql = `
-    insert into "users" ("username", "hashedPassword", "email")
-    values($1, $2, $3)
-    returning "userId", "username", "email"
+      const sql = `with "insertRow" as (insert into "users" ("username", "hashedPassword", "email")
+      values($1, $2, $3)
+      returning "userId", "username", "email"
+      ),
+      "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'newUser', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "username" = $1),'username', $1)) returning *)
+      select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
     `;
       const params = [username, hashedPassword, email];
       return db.query(sql, params);
@@ -97,7 +99,9 @@ app.get("/api/eggs/:eggId", (req, res, next) => {
 });
 app.get("/api/eggs", (req, res, next) => {
   const sql = `
-              select * from "egg"
+              select "e".* from "egg" as "e"
+              where "e"."eggId" not in 
+              (select "f"."eggId" from "foundEggs" as "f")
               `;
   return db
     .query(sql)
@@ -108,6 +112,19 @@ app.get("/api/eggs", (req, res, next) => {
         egg.longitude = Number(egg.longitude);
       });
       res.status(200).json(egg);
+    })
+    .catch((err) => next(err));
+});
+
+app.get("/api/events", (req, res, next) => {
+  const sql = `
+  select * 
+  from "events"
+  order by "events"."createdAt" DESC
+  limit 30`;
+  db.query(sql)
+    .then((result) => {
+      res.status(200).json(result.rows);
     })
     .catch((err) => next(err));
 });
@@ -155,9 +172,11 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { message, latitude, longitude } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
-  const sql = `insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
+  const sql = `with "insertRow" as (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
   values ($1, $2, $3, $4, $5)
-  returning *
+  returning *),
+  "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
+  select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
   `;
   const params = [
     message,
@@ -178,9 +197,11 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
 app.post("/api/found", (req, res, next) => {
   const { id } = req.user;
   const { eggId } = req.body;
-  const sql = `insert into "foundEggs" ("foundBy", "eggId")
+  const sql = `with "insertRow" as (insert into "foundEggs" ("foundBy", "eggId")
                values ($1, $2)
-               returning *
+               returning *), 
+               "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $1), 'username', ( select "username" from "users" where "userId" = $1))) returning *)
+               select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
               `;
   const params = [id, eggId];
   return db
