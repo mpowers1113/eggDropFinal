@@ -24,33 +24,39 @@ const EventFeed = (props) => {
     return data.map((data) => (
       <li key={data.createdAt} className="event-li profile-brown">
         <div className="row space-between align-center event-li-div">
-          <div className="circle-event">
-            <img
-              className="profile-pic"
-              src={
-                data.payload.profilePhotoUrl
-                  ? data.payload.profilePhotoUrl
-                  : "../Images/dummyAvatar.png"
-              }
-              alt="profile photo"
-            />
+          <div className="column-20">
+            <div className="circle-event">
+              <img
+                className="profile-pic"
+                src={
+                  data.payload.profilePhotoUrl
+                    ? data.payload.profilePhotoUrl
+                    : "../Images/defaultprofilephoto.jpeg"
+                }
+                alt="profile photo"
+              />
+            </div>
           </div>
-          <p>
-            {data.payload.type === "foundEgg"
-              ? `${data.payload.username} just found an egg`
-              : data.payload.type === "createdEgg"
-              ? `${data.payload.username} just dropped an egg`
-              : `${data.payload.username} just joined eggDrop!`}
-          </p>
-          <i
-            className={`event-icon fas fa-2x ${
-              data.payload.type === "newUser"
-                ? "fa-user-plus"
-                : data.payload.type === "foundEgg"
-                ? "fa-egg"
-                : "fa-check-double"
-            }`}
-          ></i>
+          <div className="column-65">
+            <p>
+              {data.payload.type === "foundEgg"
+                ? `${data.payload.username} just found an egg`
+                : data.payload.type === "createdEgg"
+                ? `${data.payload.username} just dropped an egg`
+                : `${data.payload.username} just joined eggDrop!`}
+            </p>
+          </div>
+          <div className="column-15">
+            <i
+              className={`event-icon fas fa-2x ${
+                data.payload.type === "newUser"
+                  ? "fa-user-plus"
+                  : data.payload.type === "foundEgg"
+                  ? "fa-egg"
+                  : "fa-check-double"
+              }`}
+            ></i>
+          </div>
         </div>
       </li>
     ));

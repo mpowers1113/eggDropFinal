@@ -44,6 +44,14 @@ body {
   flex-basis: 20%;
 }
 
+.column-15 {
+  flex-basis: 15%;
+}
+
+.column-65 {
+  flex-basis: 65%;
+}
+
 .column-third {
   flex-basis: calc(100% / 3);
 }
@@ -115,8 +123,4 @@ body {
 
 .background-egg-white {
   background-color: var(--egg-white);
-}
-
-.event-div {
-  flex-basis: 80%;
 }

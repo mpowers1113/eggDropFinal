@@ -331,8 +331,8 @@ h1 {
 }
 
 .circle-event {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   position: relative;
   overflow: hidden;
   border-radius: 50%;
@@ -364,7 +364,7 @@ h1 {
 
 .event-li {
   list-style-type: none;
-  border-radius: 20px;
+  border-radius: 30px;
   max-width: 800px;
   min-width: 300px;
   margin: 1rem 2rem;
@@ -376,6 +376,7 @@ h1 {
 
 .event-li-div {
   margin: 0.2rem 0.5rem;
+  min-height: 65px;
 }
 
 .events-ul {

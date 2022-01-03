@@ -28,7 +28,7 @@ const Profile = (props) => {
             src={
               user.data.profilePhotoUrl
                 ? user.data.profilePHotoUrl
-                : "../Images/dummyAvatar.png"
+                : "../Images/defaultprofilephoto.jpeg"
             }
             alt="profile photo"
           />
