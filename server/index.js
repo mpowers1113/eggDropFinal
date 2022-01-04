@@ -129,6 +129,20 @@ app.get("/api/events", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/users", (req, res, next) => {
+  const sql = `
+                select "username", "profilePhotoUrl", "createdAt"
+                from "users"
+                `;
+  return db
+    .query(sql)
+    .then((result) => {
+      const users = result.rows;
+      res.json(users);
+    })
+    .catch((err) => next(err));
+});
+
 app.use(authorizationMiddleware);
 
 app.post("/api/profile", (req, res, next) => {
@@ -172,10 +186,12 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { message, latitude, longitude } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
-  const sql = `with "insertRow" as (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
+  const sql = `with "insertRow" as 
+  (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
   values ($1, $2, $3, $4, $5)
   returning *),
-  "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
+  "insertEvent" as 
+  (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
   select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
   `;
   const params = [
@@ -197,12 +213,14 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
 app.post("/api/found", (req, res, next) => {
   const { id } = req.user;
   const { eggId } = req.body;
-  const sql = `with "insertRow" as (insert into "foundEggs" ("foundBy", "eggId")
-               values ($1, $2)
-               returning *), 
-               "insertEvent" as (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $1), 'username', ( select "username" from "users" where "userId" = $1))) returning *)
-               select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
-              `;
+  const sql = `with "insertRow" as 
+  (insert into "foundEggs" ("foundBy", "eggId")
+  values ($1, $2)
+  returning *), 
+  "insertEvent" as 
+  (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $1), 'username', ( select "username" from "users" where "userId" = $1))) returning *)
+  select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
+  `;
   const params = [id, eggId];
   return db
     .query(sql, params)
@@ -218,10 +236,10 @@ app.post("/api/edit/profile", uploadsMiddleware, (req, res, next) => {
   if (!id) throw new ClientError(400, "invalid request");
   const filePath = "/images/" + req.file.filename;
   const sql = `update "users"
-               set "profilePhotoUrl" = ($1)
-               where "userId" = ($2)
-              returning "profilePhotoUrl"
-              `;
+  set "profilePhotoUrl" = ($1)
+  where "userId" = ($2)
+  returning "profilePhotoUrl"
+  `;
   const params = [filePath, id];
   return db
     .query(sql, params)

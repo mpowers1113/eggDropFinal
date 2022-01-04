@@ -416,3 +416,20 @@ h1 {
 .event-icon {
   color: #c16500;
 }
+
+.follow-button {
+  color: whitesmoke;
+  background-color: #c16500;
+  width: 100%;
+  min-height: 30px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  letter-spacing: 0.2rem;
+  padding: 0.5rem;
+}
+
+.follow-column {
+  margin-right: 0.5rem;
+}
