@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Navbar from "../Components/navbar";
 
 const EventFeed = (props) => {
   const [loadingEvents, setLoadingEvents] = useState(false);
@@ -68,9 +69,12 @@ const EventFeed = (props) => {
   };
 
   return (
-    <div className="row flex-column profile-gray justify-center event-div">
-      <ul className="events-ul">{toggleLoadedEvents()}</ul>
-    </div>
+    <>
+      <div className="row flex-column profile-gray justify-center event-div">
+        <ul className="events-ul">{toggleLoadedEvents()}</ul>
+      </div>
+      <Navbar />
+    </>
   );
 };
 

@@ -1,23 +1,18 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = (props) => {
   return (
     <div className="row navbar-map">
-      <i
-        className="fas fa-users fa-3x"
-        onClick={() => {
-          props.openEventFeed();
-          props.closeProfile();
-        }}
-      ></i>
-      <i className="fas fa-globe fa-3x"></i>
-      <i
-        className="fas fa-user fa-3x"
-        onClick={() => {
-          props.closeFeed(false);
-          props.openProfile();
-        }}
-      ></i>
+      <Link to="/events">
+        <i className="fas fa-users fa-3x"></i>
+      </Link>
+      <Link to="/map">
+        <i className="fas fa-globe fa-3x"></i>
+      </Link>
+      <Link to="/profile">
+        <i className="fas fa-user fa-3x"></i>
+      </Link>
     </div>
   );
 };

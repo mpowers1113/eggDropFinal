@@ -9,6 +9,7 @@ import ColumnWrapper from "../UI/column-wrapper";
 import SignUp from "./signUp";
 import ClientError from "../../server/client-error";
 import decodeToken from "../lib/decode-token";
+import { useNavigate } from "react-router";
 
 const Login = (props) => {
   const [signUp, setSignUp] = useState(false);
@@ -16,6 +17,7 @@ const Login = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [validLoginInput, setValidLoginInput] = useState(true);
+  const navigate = useNavigate();
 
   const loginClickHandler = () => sendLoginData(loginData);
   const signUpClickHandler = () => setSignUp(!signUp);
@@ -54,6 +56,7 @@ const Login = (props) => {
         return res.json();
       })
       .then((res) => props.setUserValid(res))
+      .then(navigate("/map"))
       .catch((err) => console.error(err));
   };
 

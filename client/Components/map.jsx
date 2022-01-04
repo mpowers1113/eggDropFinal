@@ -13,8 +13,7 @@ import { UserContext } from "../Context/userContext";
 import EggDetails from "./eggDetails";
 import distanceToEgg from "../Utils/distanceToEgg";
 import Navbar from "./navbar";
-import Profile from "../pages/profile";
-import EventFeed from "../pages/eventFeed";
+import { useNavigate } from "react-router";
 
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
@@ -23,12 +22,11 @@ const Map = (props) => {
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
-  const [openProfile, setOpenProfile] = useState(false);
-  const [openEventFeed, setOpenEventFeed] = useState(false);
+  const navigate = useNavigate();
 
-  const viewEventFeed = () => setOpenEventFeed(true);
-
-  const viewProfile = () => setOpenProfile(true);
+  useEffect(() => {
+    user.data === null && navigate("/");
+  }, []);
 
   const clearEggData = () => setEggLocation(null);
 
@@ -121,67 +119,56 @@ const Map = (props) => {
   return (
     <>
       <div className="row">
-        {!openProfile && !openEventFeed && (
-          <MapGL
-            onDblClick={prepareDropHandler}
-            ref={mapRef}
-            {...viewport}
-            width="100vw"
-            height="100vh"
-            mapStyle="mapbox://styles/mapbox/streets-v11"
-            onViewportChange={handleViewportChange}
-            mapboxApiAccessToken={MAPBOXKEY}
-          >
-            {eggMarkers.map((markers) => (
-              <Marker
-                key={markers.longitude}
-                longitude={markers.longitude}
-                latitude={markers.latitude}
-              >
-                <EggIcon
-                  id={markers.id}
-                  dataEgg={"egg"}
-                  onClick={toggleEggDetails}
-                />
-              </Marker>
-            ))}
-
-            <Geocoder
-              mapRef={mapRef}
-              onViewportChange={handleGeocoderViewportChange}
-              mapboxApiAccessToken={MAPBOXKEY}
-              position="top-right"
-            />
-            <GeolocateControl
-              style={{ position: "absolute" }}
-              positionOptions={{ enableHighAccuracy: true }}
-              trackUserLocation={true}
-              auto
-            />
-            {eggLocation !== null && (
-              <CreateEgg
-                user={user}
-                clear={clearEggData}
-                eggLocation={eggLocation}
-                drop={dropEgg}
+        <MapGL
+          onDblClick={prepareDropHandler}
+          ref={mapRef}
+          {...viewport}
+          width="100vw"
+          height="100vh"
+          mapStyle="mapbox://styles/mapbox/streets-v11"
+          onViewportChange={handleViewportChange}
+          mapboxApiAccessToken={MAPBOXKEY}
+        >
+          {eggMarkers.map((markers) => (
+            <Marker
+              key={markers.longitude}
+              longitude={markers.longitude}
+              latitude={markers.latitude}
+            >
+              <EggIcon
+                id={markers.id}
+                dataEgg={"egg"}
+                onClick={toggleEggDetails}
               />
-            )}
-            {targetEgg && (
-              <EggDetails targetEgg={targetEgg} toggleModal={setTargetEgg} />
-            )}
-          </MapGL>
-        )}
+            </Marker>
+          ))}
+
+          <Geocoder
+            mapRef={mapRef}
+            onViewportChange={handleGeocoderViewportChange}
+            mapboxApiAccessToken={MAPBOXKEY}
+            position="top-right"
+          />
+          <GeolocateControl
+            style={{ position: "absolute" }}
+            positionOptions={{ enableHighAccuracy: true }}
+            trackUserLocation={true}
+            auto
+          />
+          {eggLocation !== null && (
+            <CreateEgg
+              user={user}
+              clear={clearEggData}
+              eggLocation={eggLocation}
+              drop={dropEgg}
+            />
+          )}
+          {targetEgg && (
+            <EggDetails targetEgg={targetEgg} toggleModal={setTargetEgg} />
+          )}
+        </MapGL>
       </div>
-      {openProfile && (
-        <Profile open={openProfile} closeProfile={setOpenProfile} />
-      )}
-      {openEventFeed && <EventFeed closeFeed={setOpenEventFeed} />}
-      <Navbar
-        openProfile={viewProfile}
-        closeProfile={setOpenProfile}
-        openEventFeed={viewEventFeed}
-        closeFeed={setOpenEventFeed}
-      />
+      <Navbar />
     </>
   );
 };
