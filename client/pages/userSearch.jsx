@@ -69,7 +69,9 @@ const UserSearch = (props) => {
                   <p>{filtered.username}</p>
                 </div>
                 <div className="column-15 follow-column">
-                  <button className="follow-button">follow</button>
+                  <button id={filtered.username} className="follow-button">
+                    follow
+                  </button>
                 </div>
               </div>
             </li>
