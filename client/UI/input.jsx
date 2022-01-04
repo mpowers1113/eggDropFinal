@@ -5,6 +5,7 @@ const Input = (props) => {
     <div className="row justify-align-center">
       <div className="column-50">
         <input
+          value={props.value}
           onChange={props.onChange}
           className={props.className}
           type={props.type}

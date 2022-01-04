@@ -7,6 +7,9 @@ const Navbar = (props) => {
       <Link to="/events">
         <i className="fas fa-users fa-3x"></i>
       </Link>
+      <Link to="/search">
+        <i className="fas fa-search fa-3x"></i>
+      </Link>
       <Link to="/map">
         <i className="fas fa-globe fa-3x"></i>
       </Link>

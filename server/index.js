@@ -129,6 +129,20 @@ app.get("/api/events", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/users", (req, res, next) => {
+  const sql = `
+                select "username", "profilePhotoUrl", "createdAt"
+                from "users"
+                `;
+  return db
+    .query(sql)
+    .then((result) => {
+      const users = result.rows;
+      res.json(users);
+    })
+    .catch((err) => next(err));
+});
+
 app.use(authorizationMiddleware);
 
 app.post("/api/profile", (req, res, next) => {
@@ -232,22 +246,6 @@ app.post("/api/edit/profile", uploadsMiddleware, (req, res, next) => {
     .then((result) => {
       const [profilePhotoUrl] = result.rows;
       res.json(profilePhotoUrl);
-    })
-    .catch((err) => next(err));
-});
-
-app.get("/api/users", (req, res, next) => {
-  const id = Number(req.user.id);
-  if (!id) throw new ClientError(400, "invalid request");
-  const sql = `
-                select "username", "profilePhotoUrl", "createdAt"
-                from "users"
-                `;
-  return db
-    .query(sql)
-    .then((result) => {
-      const users = result.rows;
-      res.json(users);
     })
     .catch((err) => next(err));
 });
