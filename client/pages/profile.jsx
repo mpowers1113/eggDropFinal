@@ -104,7 +104,7 @@ const Profile = (props) => {
             editProfile()
           )}
           <div className="row justify-align-center profile-gray center-text">
-            <h1 className="profile-name profile-h1">{user.username}</h1>
+            <h1 className="profile-name profile-h1">{user.data.username}</h1>
           </div>
           <div className="row justify-align-center profile-gray">
             <i
