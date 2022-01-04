@@ -37,9 +37,9 @@ const SignUp = (props) => {
         else return res.json();
       })
       .then((res) => {
-        setValidSignUp(true);
         props.setNewUser(res);
       })
+      .then(() => props.closeModal())
       .catch((err) => console.error(err));
   };
 
@@ -48,6 +48,7 @@ const SignUp = (props) => {
       setPasswordMatch(false);
     } else {
       setPasswordMatch(true);
+      setValidSignUp(true);
       signUpHandler({
         username: userSubmissionData.username,
         password: userSubmissionData.password,

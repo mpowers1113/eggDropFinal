@@ -145,6 +145,25 @@ app.get("/api/users", (req, res, next) => {
 
 app.use(authorizationMiddleware);
 
+app.post("/api/users/:username/followers", (req, res, next) => {
+  const userRequestingFollowId = Number(req.user.id);
+  const followingUsername = req.params.username;
+  if (!followingUsername || !Number.isInteger(userRequestingFollowId))
+    throw new ClientError(400, "invalid follow request");
+  const sql = `
+              insert into "notifications" ("userId", "payload") 
+              values ((select "userId" from "users" where "username" = $1), json_build_object('type', 'follow', 'fromUserPhoto', ( select "profilePhotoUrl" from "users" where "userId" = $2), 'fromUserUsername', ( select "username" from "users" where "userId" = $2))) returning *
+              `;
+  const params = [followingUsername, userRequestingFollowId];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const notifications = result.rows;
+      res.status(200).json(notifications);
+    })
+    .catch((err) => next(err));
+});
+
 app.post("/api/profile", (req, res, next) => {
   const userId = Number(req.user.id);
   if (!Number.isInteger(userId)) throw new ClientError(400, "invalid request");
@@ -218,8 +237,11 @@ app.post("/api/found", (req, res, next) => {
   values ($1, $2)
   returning *), 
   "insertEvent" as 
-  (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $1), 'username', ( select "username" from "users" where "userId" = $1))) returning *)
-  select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
+  (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $1), 'username', ( select "username" from "users" where "userId" = $1))) returning *),
+  "insertNotification" as
+  (insert into "notifications" ("userId", "payload")
+   values ((select "userId" from "egg" where "eggId" = $2), json_build_object('type', 'foundEgg', 'fromUserPhoto', (select "profilePhotoUrl" from "users" where "userId" = $1), 'fromUserUsername', (select "username" from "users" where "userId" = $1))) returning *)
+  select "r".*, "e".*, "n".* from "insertRow" as "r", "insertEvent" as "e", "insertNotification" as "n"
   `;
   const params = [id, eggId];
   return db

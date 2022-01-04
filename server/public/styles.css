@@ -430,6 +430,10 @@ h1 {
   padding: 0.5rem;
 }
 
+.follow-button:disabled {
+  background-color: var(--light-brown);
+}
+
 .follow-column {
   margin-right: 0.5rem;
 }
