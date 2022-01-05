@@ -73,7 +73,7 @@ CREATE TABLE "public"."notifications" (
 CREATE TABLE "public"."followers" (
 	"followerId" int NOT NULL,
 	"followingId" int NOT NULL,
-	"isAccepted" boolean
+	"isAccepted" boolean not null default FALSE
 ) WITH (
   OIDS=FALSE
 );
