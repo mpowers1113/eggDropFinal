@@ -84,12 +84,15 @@ const Profile = (props) => {
               onClick={() => navigate("/map")}
               className="profile-icons fas fa-arrow-left fa-2x"
             ></i>
-            {user.notifications.length && (
-              <i
-                onClick={() => navigate("/notifications")}
-                className="fas fa-bell fa-2x notifications-icon"
-              ></i>
-            )}
+
+            <i
+              onClick={() => navigate("/notifications")}
+              className={`fas fa-bell fa-2x ${
+                user.notifications.length > 0
+                  ? "notifications-icon"
+                  : "no-notifications"
+              }`}
+            />
           </div>
           {uploadProfilePhoto === false ? (
             <div className="row justify-align-center profile-gray">

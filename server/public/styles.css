@@ -451,3 +451,12 @@ h1 {
   color: var(--darkbrown-color);
   cursor: pointer;
 }
+
+.no-notifications {
+  color: lightgray;
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 0.5rem;
+  cursor: pointer;
+}

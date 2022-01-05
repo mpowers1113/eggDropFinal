@@ -151,7 +151,7 @@ app.post("/api/users/:username/followers", (req, res, next) => {
   if (!followingUsername || !Number.isInteger(userRequestingFollowId))
     throw new ClientError(400, "invalid follow request");
   const sql = `with "insertRow" as
-              (insert into "followers" ("followingId", "followerId") 
+              (insert into "followers" ("followerId", "followingId") 
               select $2, (select "userId" from "users" where "username" = $1)
               where not exists (select 1 from "followers" where "followingId" = $2 and "followerId" = (select "userId" from "users" where "username" = $1))
               returning *),
@@ -182,11 +182,15 @@ app.post("/api/profile", (req, res, next) => {
   const eggDataQuery = `select * from "egg" where "userId" = $1`;
   const foundEggQuery = `select "f".*, "e".* from "foundEggs" as "f" join "egg" as "e" using ("eggId")
                          where "f"."foundBy" = $1`;
+  const followersQuery = `select "username", "profilePhotoUrl" from "users" join "followers" on "users"."userId" = "followers"."followerId" where "followingId" = $1 and "isAccepted" = true`;
+  const followingQuery = `select "username", "profilePhotoUrl" from "users" join "followers" on "users"."userId" = "followers"."followingId" where "followerId" = $1 and "isAccepted" = true`;
   const params = [userId];
   const profileQueries = [
     db.query(userDataQuery, params),
     db.query(eggDataQuery, params),
     db.query(foundEggQuery, params),
+    db.query(followersQuery, params),
+    db.query(followingQuery, params),
   ];
   const profilePromises = Promise.all(profileQueries);
   profilePromises
@@ -194,6 +198,8 @@ app.post("/api/profile", (req, res, next) => {
       const userData = result[0].rows;
       const createdEggData = result[1].rows;
       const foundEggData = result[2].rows;
+      const followersData = result[3].rows;
+      const followingData = result[4].rows;
       const user = {
         username: userData[0].username,
         id: userData[0].userId,
@@ -202,6 +208,8 @@ app.post("/api/profile", (req, res, next) => {
         createdAt: userData[0].createdAt,
         createdEggData: createdEggData,
         foundEggs: foundEggData,
+        followers: followersData,
+        following: followingData,
       };
       res.status(200).json(user);
     })
@@ -293,6 +301,56 @@ app.get("/api/notifications", (req, res, next) => {
     .then((result) => {
       const notifications = result.rows;
       res.status(202).json(notifications);
+    })
+    .catch((err) => next(err));
+});
+
+app.delete("/api/notifications/:id", (req, res, next) => {
+  const userRequestingDelete = Number(req.user.id);
+  const notificationId = Number(req.params.id);
+  if (!Number.isInteger(userRequestingDelete))
+    throw new ClientError("invalid delete request");
+  const sql = `
+              delete from "notifications"
+              where "id" = $1
+              returning *
+              `;
+  const params = [notificationId];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const [deleted] = result.rows;
+      res.status(200).json(deleted);
+    })
+    .catch((err) => next(err));
+});
+
+app.patch("/api/notifications/", (req, res, next) => {
+  const clientId = Number(req.user.id);
+  const notificationId = Number(req.body[0].id);
+  const { fromUserUsername } = req.body[0].payload;
+  if (!Number.isInteger(clientId))
+    throw new ClientError("invalid follow request");
+  const sql = `
+              with "deleteRow" as 
+              (delete from "notifications"
+              where "id" = $1
+              returning *), 
+              "updateRow" as
+              (update "followers"
+               set "isAccepted" = true
+               where "followerId" = (select "userId" from "users" where "username" = $2)
+               and "followingId" = $3
+               returning *
+               )
+               select "d".*, "u".* from "deleteRow" as "d", "updateRow" as "u"
+              `;
+  const params = [notificationId, fromUserUsername, clientId];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const updated = result.rows;
+      res.json(updated);
     })
     .catch((err) => next(err));
 });
