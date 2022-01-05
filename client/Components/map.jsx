@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import EggIcon from "../UI/egg-icon";
 import MapGL, { Marker, GeolocateControl } from "react-map-gl";
+import { usePosition } from "use-position";
 import Geocoder from "react-map-gl-geocoder";
 import CreateEgg from "./createEggModal";
 import { UserContext } from "../Context/userContext";
@@ -19,6 +20,10 @@ import { useNavigate } from "react-router";
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
 const Map = (props) => {
+  const watch = true;
+  const { latitude, longitude, error } = usePosition(watch, {
+    enableHighAccuracy: true,
+  });
   const user = useContext(UserContext);
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
@@ -54,9 +59,9 @@ const Map = (props) => {
             longitude: egg.longitude,
             latitude: egg.latitude,
           }));
+          getNotifications();
           setEggMarkers(eggs);
         })
-        .then(getNotifications())
         .catch((err) => console.error(err));
     };
     getEggs();
@@ -77,12 +82,13 @@ const Map = (props) => {
       })
       .then((res) => {
         user.notifications = res;
-        res.length && setNotifications(true);
       })
+      .then(() => user.notifications.length && setNotifications(true))
       .catch((err) => console.error(err));
   };
 
   const toggleEggDetails = (event) => {
+    if (error) return;
     const egg = event.target.getAttribute("data-egg");
     if (!egg) setTargetEgg(null);
     else {
@@ -96,8 +102,8 @@ const Map = (props) => {
           const distance = distanceToEgg(
             res.latitude,
             res.longitude,
-            user.latitude,
-            user.longitude
+            latitude,
+            longitude
           );
           res.howFar = distance.howFar;
           res.claimable = distance.claimable;

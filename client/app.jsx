@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { UserContext } from "./Context/userContext";
 import Login from "./Components/login";
 import Map from "./Components/map";
-import { usePosition } from "use-position";
+
 import EventFeed from "./pages/eventFeed";
 import Profile from "./pages/profile";
 import Notifications from "./pages/notifications";
@@ -10,17 +10,10 @@ import UserSearch from "./pages/userSearch";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const App = (props) => {
-  const watch = true;
-  const { latitude, longitude, error } = usePosition(watch, {
-    enableHighAccuracy: true,
-  });
   const [userValid, setUserValid] = useState(null);
 
   const context = {
     data: userValid,
-    longitude: longitude,
-    latitude: latitude,
-    error: error,
   };
 
   return (
