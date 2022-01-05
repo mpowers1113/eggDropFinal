@@ -4,9 +4,11 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
 } from "react";
 import EggIcon from "../UI/egg-icon";
 import MapGL, { Marker, GeolocateControl } from "react-map-gl";
+import { usePosition } from "use-position";
 import Geocoder from "react-map-gl-geocoder";
 import CreateEgg from "./createEggModal";
 import { UserContext } from "../Context/userContext";
@@ -18,15 +20,16 @@ import { useNavigate } from "react-router";
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
 const Map = (props) => {
+  const watch = true;
+  const { latitude, longitude, error } = usePosition(watch, {
+    enableHighAccuracy: true,
+  });
   const user = useContext(UserContext);
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
+  const [notifications, setNotifications] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    user.data === null && navigate("/");
-  }, []);
 
   const clearEggData = () => setEggLocation(null);
 
@@ -36,6 +39,10 @@ const Map = (props) => {
   };
 
   useEffect(() => {
+    user.data === null && navigate("/");
+  }, []);
+
+  useLayoutEffect(() => {
     const getEggs = () => {
       if (!user) return;
       const req = {
@@ -52,6 +59,7 @@ const Map = (props) => {
             longitude: egg.longitude,
             latitude: egg.latitude,
           }));
+          getNotifications();
           setEggMarkers(eggs);
         })
         .catch((err) => console.error(err));
@@ -59,7 +67,28 @@ const Map = (props) => {
     getEggs();
   }, []);
 
+  const getNotifications = () => {
+    fetch("/api/notifications", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+      },
+    })
+      .then((res) => {
+        if (!res.ok)
+          throw new Error("something went wrong fetching notification data");
+        return res.json();
+      })
+      .then((res) => {
+        user.notifications = res;
+      })
+      .then(() => user.notifications.length && setNotifications(true))
+      .catch((err) => console.error(err));
+  };
+
   const toggleEggDetails = (event) => {
+    if (error) return;
     const egg = event.target.getAttribute("data-egg");
     if (!egg) setTargetEgg(null);
     else {
@@ -73,8 +102,8 @@ const Map = (props) => {
           const distance = distanceToEgg(
             res.latitude,
             res.longitude,
-            user.latitude,
-            user.longitude
+            latitude,
+            longitude
           );
           res.howFar = distance.howFar;
           res.claimable = distance.claimable;
@@ -147,7 +176,7 @@ const Map = (props) => {
             mapRef={mapRef}
             onViewportChange={handleGeocoderViewportChange}
             mapboxApiAccessToken={MAPBOXKEY}
-            position="top-right"
+            position="top-left"
           />
           <GeolocateControl
             style={{ position: "absolute" }}
@@ -169,6 +198,12 @@ const Map = (props) => {
         </MapGL>
       </div>
       <Navbar />
+      {notifications && (
+        <i
+          onClick={() => navigate("/notifications")}
+          className="fas fa-bell fa-2x notifications-icon"
+        ></i>
+      )}
     </>
   );
 };

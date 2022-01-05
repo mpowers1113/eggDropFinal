@@ -183,6 +183,15 @@ h1 {
   align-items: center;
 }
 
+.notifications-icon {
+  color: rgb(249, 83, 83);
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
 .navbar-map i {
   color: #fc0;
   cursor: pointer;
@@ -436,4 +445,9 @@ h1 {
 
 .follow-column {
   margin-right: 0.5rem;
+}
+
+.notification-follow {
+  color: var(--darkbrown-color);
+  cursor: pointer;
 }
