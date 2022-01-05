@@ -39,6 +39,7 @@ CREATE TABLE "public"."egg" (
 
 CREATE TABLE "public"."events" (
 	"id" serial NOT NULL,
+	"type" text,
 	"payload" json NOT NULL,
 	"createdAt" timestamp with time zone default now(),
 	CONSTRAINT "events_pk" PRIMARY KEY ("id")
@@ -58,11 +59,21 @@ CREATE TABLE "public"."comments" (
   OIDS=FALSE
 );
 
+CREATE TABLE "public"."notifications" (
+    "id" serial NOT NULL,
+    "userId" INT,
+	"payload" json NOT NULL,
+	"createdAt" timestamp with time zone default now(),
+	CONSTRAINT "notifications_pk" PRIMARY KEY ("id")
+) WITH (
+  OIDS=FALSE
+);
 
 
 CREATE TABLE "public"."followers" (
 	"followerId" int NOT NULL,
-	"followingId" int NOT NULL
+	"followingId" int NOT NULL,
+	"isAccepted" boolean not null default FALSE
 ) WITH (
   OIDS=FALSE
 );

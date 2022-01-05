@@ -8,6 +8,7 @@ const UserSearch = (props) => {
   const user = useContext(UserContext);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [searchUserQuery, setSearchUserQuery] = useState("");
+  const [disablebutton, setDisableButton] = useState([]);
   const navigate = useNavigate();
 
   const getUserData = () => {
@@ -19,6 +20,7 @@ const UserSearch = (props) => {
       .then((res) => {
         setLoadingUsers(res);
       })
+
       .catch((err) => console.error(err));
   };
 
@@ -26,6 +28,27 @@ const UserSearch = (props) => {
     user.data === null && navigate("/");
     getUserData();
   }, []);
+
+  const sendFollowRequest = (e) => {
+    const username = e.target.id;
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const req = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "x-access-token": token,
+        "Content-Type": "application/json",
+      },
+    };
+    fetch(`/api/users/${username}/followers`, req)
+      .then((res) => {
+        if (!res.ok)
+          throw new Error("something went wrong sending follow request");
+        else return res.json();
+      })
+      .then(setDisableButton([...disablebutton, e.target.id]))
+      .catch((err) => console.error(err));
+  };
 
   const renderSearchBar = () => {
     const onChangeHandler = (e) => setSearchUserQuery(e.target.value);
@@ -69,7 +92,12 @@ const UserSearch = (props) => {
                   <p>{filtered.username}</p>
                 </div>
                 <div className="column-15 follow-column">
-                  <button id={filtered.username} className="follow-button">
+                  <button
+                    id={filtered.username}
+                    className="follow-button"
+                    disabled={disablebutton.includes(filtered.username)}
+                    onClick={sendFollowRequest}
+                  >
                     follow
                   </button>
                 </div>
