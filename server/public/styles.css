@@ -451,3 +451,7 @@ h1 {
   color: var(--darkbrown-color);
   cursor: pointer;
 }
+
+.deleted-notification {
+  visibility: none;
+}

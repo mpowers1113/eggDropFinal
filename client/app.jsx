@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserContext } from "./Context/userContext";
 import Login from "./Components/login";
 import Map from "./Components/map";
@@ -9,12 +9,45 @@ import Notifications from "./pages/notifications";
 import UserSearch from "./pages/userSearch";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-const App = (props) => {
+const useUserState = () => {
   const [userValid, setUserValid] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+
+  const loadNotifications = async () => {
+    if (loadingNotifications) return;
+    setLoadingNotifications(true);
+    try {
+      const response = await fetch("/api/notifications", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+        },
+      });
+      const jsonRes = await response.json();
+      setNotifications(jsonRes);
+    } catch (err) {
+      console.error(err);
+    }
+    setLoadingNotifications(false);
+  };
 
   const context = {
     data: userValid,
+    notifications: notifications,
+    loadingNotifications,
+    loadNotifications,
+    setUserValid,
   };
+  return context;
+};
+
+const App = (props) => {
+  const context = useUserState();
+  useEffect(() => {
+    context.loadNotifications();
+  }, []);
 
   return (
     <UserContext.Provider value={context}>
@@ -23,7 +56,7 @@ const App = (props) => {
           <Route
             path="/"
             index
-            element={<Login setUserValid={setUserValid} />}
+            element={<Login setUserValid={context.setUserValid} />}
           />
           <Route path="/map" element={<Map />} />
           <Route path={"/events"} element={<EventFeed />} />

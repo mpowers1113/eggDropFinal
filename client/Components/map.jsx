@@ -28,8 +28,9 @@ const Map = (props) => {
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
-  const [notifications, setNotifications] = useState(false);
   const navigate = useNavigate();
+
+  const hasNotifications = user.notifications.length > 0;
 
   const clearEggData = () => setEggLocation(null);
 
@@ -59,33 +60,12 @@ const Map = (props) => {
             longitude: egg.longitude,
             latitude: egg.latitude,
           }));
-          getNotifications();
           setEggMarkers(eggs);
         })
         .catch((err) => console.error(err));
     };
     getEggs();
   }, []);
-
-  const getNotifications = () => {
-    fetch("/api/notifications", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
-      },
-    })
-      .then((res) => {
-        if (!res.ok)
-          throw new Error("something went wrong fetching notification data");
-        return res.json();
-      })
-      .then((res) => {
-        user.notifications = res;
-      })
-      .then(() => user.notifications.length && setNotifications(true))
-      .catch((err) => console.error(err));
-  };
 
   const toggleEggDetails = (event) => {
     if (error) return;
@@ -198,12 +178,13 @@ const Map = (props) => {
         </MapGL>
       </div>
       <Navbar />
-      {notifications && (
+      {hasNotifications && (
         <i
           onClick={() => navigate("/notifications")}
           className="fas fa-bell fa-2x notifications-icon"
         ></i>
       )}
+      {user.loadingNotifications && <span>loading...</span>}
     </>
   );
 };

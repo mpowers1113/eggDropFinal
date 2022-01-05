@@ -297,6 +297,56 @@ app.get("/api/notifications", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.delete("/api/notifications/:id", (req, res, next) => {
+  const userRequestingDelete = Number(req.user.id);
+  const notificationId = Number(req.params.id);
+  if (!Number.isInteger(userRequestingDelete))
+    throw new ClientError("invalid delete request");
+  const sql = `
+              delete from "notifications"
+              where "id" = $1
+              returning *
+              `;
+  const params = [notificationId];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const [deleted] = result.rows;
+      res.status(200).json(deleted);
+    })
+    .catch((err) => next(err));
+});
+
+app.patch("/api/notifications/", (req, res, next) => {
+  const clientId = Number(req.user.id);
+  const notificationId = Number(req.body[0].id);
+  const { fromUserUsername } = req.body[0].payload;
+  if (!Number.isInteger(clientId))
+    throw new ClientError("invalid follow request");
+  const sql = `
+              with "deleteRow" as 
+              (delete from "notifications"
+              where "id" = $1
+              returning *), 
+              "updateRow" as
+              (update "followers"
+               set "isAccepted" = true
+               where "followerId" = (select "userId" from "users" where "username" = $2)
+               and "followingId" = $3
+               returning *
+               )
+               select "d".*, "u".* from "deleteRow" as "d", "updateRow" as "u"
+              `;
+  const params = [notificationId, fromUserUsername, clientId];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const updated = result.rows;
+      res.json(updated);
+    })
+    .catch((err) => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
