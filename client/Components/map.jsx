@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
 } from "react";
 import EggIcon from "../UI/egg-icon";
 import MapGL, { Marker, GeolocateControl } from "react-map-gl";
@@ -22,11 +23,8 @@ const Map = (props) => {
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
+  const [notifications, setNotifications] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    user.data === null && navigate("/");
-  }, []);
 
   const clearEggData = () => setEggLocation(null);
 
@@ -36,6 +34,10 @@ const Map = (props) => {
   };
 
   useEffect(() => {
+    user.data === null && navigate("/");
+  }, []);
+
+  useLayoutEffect(() => {
     const getEggs = () => {
       if (!user) return;
       const req = {
@@ -54,10 +56,31 @@ const Map = (props) => {
           }));
           setEggMarkers(eggs);
         })
+        .then(getNotifications())
         .catch((err) => console.error(err));
     };
     getEggs();
   }, []);
+
+  const getNotifications = () => {
+    fetch("/api/notifications", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+      },
+    })
+      .then((res) => {
+        if (!res.ok)
+          throw new Error("something went wrong fetching notification data");
+        return res.json();
+      })
+      .then((res) => {
+        user.notifications = res;
+        res.length && setNotifications(true);
+      })
+      .catch((err) => console.error(err));
+  };
 
   const toggleEggDetails = (event) => {
     const egg = event.target.getAttribute("data-egg");
@@ -147,7 +170,7 @@ const Map = (props) => {
             mapRef={mapRef}
             onViewportChange={handleGeocoderViewportChange}
             mapboxApiAccessToken={MAPBOXKEY}
-            position="top-right"
+            position="top-left"
           />
           <GeolocateControl
             style={{ position: "absolute" }}
@@ -169,6 +192,12 @@ const Map = (props) => {
         </MapGL>
       </div>
       <Navbar />
+      {notifications && (
+        <i
+          onClick={() => navigate("/notifications")}
+          className="fas fa-bell fa-2x notifications-icon"
+        ></i>
+      )}
     </>
   );
 };

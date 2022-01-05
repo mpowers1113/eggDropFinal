@@ -175,7 +175,8 @@ app.post("/api/users/:username/followers", (req, res, next) => {
 app.post("/api/profile", (req, res, next) => {
   const userId = Number(req.user.id);
   if (!Number.isInteger(userId)) throw new ClientError(400, "invalid request");
-  const userDataQuery = `select "u"."email", "u"."username", "u"."profilePhotoUrl", "u"."createdAt", "u"."userId"
+  const userDataQuery = `select "u"."email", "u"."username", "u"."profilePhotoUrl", "u"."createdAt", 
+                         "u"."userId"
                          from "users" as "u"
                          where "userId" = $1`;
   const eggDataQuery = `select * from "egg" where "userId" = $1`;
@@ -275,6 +276,23 @@ app.post("/api/edit/profile", uploadsMiddleware, (req, res, next) => {
     .then((result) => {
       const [profilePhotoUrl] = result.rows;
       res.json(profilePhotoUrl);
+    })
+    .catch((err) => next(err));
+});
+
+app.get("/api/notifications", (req, res, next) => {
+  const id = Number(req.user.id);
+  if (!id) throw new ClientError(400, "invalid request");
+  const sql = `
+              select * from "notifications"
+              where "userId" = $1 
+              `;
+  const params = [id];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const notifications = result.rows;
+      res.status(202).json(notifications);
     })
     .catch((err) => next(err));
 });

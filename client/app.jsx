@@ -5,6 +5,7 @@ import Map from "./Components/map";
 import { usePosition } from "use-position";
 import EventFeed from "./pages/eventFeed";
 import Profile from "./pages/profile";
+import Notifications from "./pages/notifications";
 import UserSearch from "./pages/userSearch";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -35,6 +36,7 @@ const App = (props) => {
           <Route path={"/events"} element={<EventFeed />} />
           <Route path={"/profile"} element={<Profile />} />
           <Route path={"/search"} element={<UserSearch />} />
+          <Route path={"/notifications"} element={<Notifications />} />
           <Route path={"*"} element={<div>Not found</div>} />
         </Routes>
       </BrowserRouter>

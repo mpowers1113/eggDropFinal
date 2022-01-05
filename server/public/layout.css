@@ -56,6 +56,10 @@ body {
   flex-basis: calc(100% / 3);
 }
 
+.column-40 {
+  flex-basis: 40%;
+}
+
 .column-modal {
   width: 70vw;
   height: auto;
