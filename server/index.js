@@ -129,20 +129,6 @@ app.get("/api/events", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/api/users", (req, res, next) => {
-  const sql = `
-              select "username", "profilePhotoUrl", "createdAt"
-              from "users"
-              `;
-  return db
-    .query(sql)
-    .then((result) => {
-      const users = result.rows;
-      res.json(users);
-    })
-    .catch((err) => next(err));
-});
-
 app.use(authorizationMiddleware);
 
 app.post("/api/users/:username/followers", (req, res, next) => {
@@ -151,17 +137,17 @@ app.post("/api/users/:username/followers", (req, res, next) => {
   if (!followingUsername || !Number.isInteger(userRequestingFollowId))
     throw new ClientError(400, "invalid follow request");
   const sql = `with "insertRow" as
-              (insert into "followers" ("followerId", "followingId") 
-              select $2, (select "userId" from "users" where "username" = $1)
-              where not exists (select 1 from "followers" where "followingId" = $2 and "followerId" = (select "userId" from "users" where "username" = $1))
-              returning *),
-              "insertNotification" as 
-              (insert into "notifications" ("userId", "payload") 
-              select (select "userId" from "users" where "username" = $1), json_build_object('type', 'follow', 'fromUserPhoto', ( select "profilePhotoUrl" from "users" where "userId" = $2), 'fromUserUsername', ( select "username" from "users" where "userId" = $2))
-              where not exists (select 1 from "followers" where "followingId" = $2 and "followerId" = (select "userId" from "users" where "username" = $1))
-              returning *)
-              select "r".*, "n".* from "insertRow" as "r", "insertNotification" as "n"
-              `;
+  (insert into "followers" ("followerId", "followingId") 
+  select $2, (select "userId" from "users" where "username" = $1)
+  where not exists (select 1 from "followers" where "followerId" = $2 and "followingId" = (select "userId" from "users" where "username" = $1))
+  returning *),
+  "insertNotification" as 
+  (insert into "notifications" ("userId", "payload") 
+  select (select "userId" from "users" where "username" = $1), json_build_object('type', 'follow', 'fromUserPhoto', ( select "profilePhotoUrl" from "users" where "userId" = $2), 'fromUserUsername', ( select "username" from "users" where "userId" = $2))
+  where not exists (select 1 from "followers" where "followerId" = $2 and "followingId" = (select "userId" from "users" where "username" = $1) and "isAccepted" = true)
+  returning *)
+  select "r".*, "n".* from "insertRow" as "r", "insertNotification" as "n"
+  `;
   const params = [followingUsername, userRequestingFollowId];
   return db
     .query(sql, params)
@@ -176,12 +162,12 @@ app.post("/api/profile", (req, res, next) => {
   const userId = Number(req.user.id);
   if (!Number.isInteger(userId)) throw new ClientError(400, "invalid request");
   const userDataQuery = `select "u"."email", "u"."username", "u"."profilePhotoUrl", "u"."createdAt", 
-                         "u"."userId"
-                         from "users" as "u"
-                         where "userId" = $1`;
+  "u"."userId"
+  from "users" as "u"
+  where "userId" = $1`;
   const eggDataQuery = `select * from "egg" where "userId" = $1`;
   const foundEggQuery = `select "f".*, "e".* from "foundEggs" as "f" join "egg" as "e" using ("eggId")
-                         where "f"."foundBy" = $1`;
+  where "f"."foundBy" = $1`;
   const followersQuery = `select "username", "profilePhotoUrl" from "users" join "followers" on "users"."userId" = "followers"."followerId" where "followingId" = $1 and "isAccepted" = true`;
   const followingQuery = `select "username", "profilePhotoUrl" from "users" join "followers" on "users"."userId" = "followers"."followingId" where "followerId" = $1 and "isAccepted" = true`;
   const params = [userId];
@@ -222,13 +208,13 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
   const sql = `with "insertRow" as 
-              (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
-              values ($1, $2, $3, $4, $5)
-              returning *),
-              "insertEvent" as 
-              (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
-              select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
-              `;
+  (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
+  values ($1, $2, $3, $4, $5)
+  returning *),
+  "insertEvent" as 
+  (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
+  select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
+  `;
   const params = [
     message,
     filePath,
@@ -249,16 +235,16 @@ app.post("/api/found", (req, res, next) => {
   const { id } = req.user;
   const { eggId } = req.body;
   const sql = `with "insertRow" as 
-              (insert into "foundEggs" ("foundBy", "eggId")
-              values ($1, $2)
-              returning *), 
-              "insertEvent" as 
-              (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $1), 'username', ( select "username" from "users" where "userId" = $1))) returning *),
-              "insertNotification" as
-              (insert into "notifications" ("userId", "payload")
-              values ((select "userId" from "egg" where "eggId" = $2), json_build_object('type', 'foundEgg', 'fromUserPhoto', (select "profilePhotoUrl" from "users" where "userId" = $1), 'fromUserUsername', (select "username" from "users" where "userId" = $1))) returning *)
-              select "r".*, "e".*, "n".* from "insertRow" as "r", "insertEvent" as "e", "insertNotification" as "n"
-              `;
+  (insert into "foundEggs" ("foundBy", "eggId")
+  values ($1, $2)
+  returning *), 
+  "insertEvent" as 
+  (insert into "events" ("payload") values (json_build_object('type', 'foundEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $1), 'username', ( select "username" from "users" where "userId" = $1))) returning *),
+  "insertNotification" as
+  (insert into "notifications" ("userId", "payload")
+  values ((select "userId" from "egg" where "eggId" = $2), json_build_object('type', 'foundEgg', 'fromUserPhoto', (select "profilePhotoUrl" from "users" where "userId" = $1), 'fromUserUsername', (select "username" from "users" where "userId" = $1))) returning *)
+  select "r".*, "e".*, "n".* from "insertRow" as "r", "insertEvent" as "e", "insertNotification" as "n"
+  `;
   const params = [id, eggId];
   return db
     .query(sql, params)
@@ -274,10 +260,10 @@ app.post("/api/edit/profile", uploadsMiddleware, (req, res, next) => {
   if (!id) throw new ClientError(400, "invalid request");
   const filePath = "/images/" + req.file.filename;
   const sql = `update "users"
-              set "profilePhotoUrl" = ($1)
-              where "userId" = ($2)
-              returning "profilePhotoUrl"
-              `;
+  set "profilePhotoUrl" = ($1)
+  where "userId" = ($2)
+  returning "profilePhotoUrl"
+  `;
   const params = [filePath, id];
   return db
     .query(sql, params)
@@ -292,15 +278,33 @@ app.get("/api/notifications", (req, res, next) => {
   const id = Number(req.user.id);
   if (!id) throw new ClientError(400, "invalid request");
   const sql = `
-              select * from "notifications"
-              where "userId" = $1 
-              `;
+  select * from "notifications"
+  where "userId" = $1 
+  `;
   const params = [id];
   return db
     .query(sql, params)
     .then((result) => {
       const notifications = result.rows;
       res.status(202).json(notifications);
+    })
+    .catch((err) => next(err));
+});
+
+app.get("/api/users", (req, res, next) => {
+  const id = Number(req.user.id);
+  if (!id) throw new ClientError(400, "invalid request");
+  const sql = `
+              select "username", "profilePhotoUrl", "createdAt"
+              from "users"
+              where "userId" != $1
+              `;
+  const params = [id];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const users = result.rows;
+      res.json(users);
     })
     .catch((err) => next(err));
 });

@@ -12,7 +12,14 @@ const UserSearch = (props) => {
   const navigate = useNavigate();
 
   const getUserData = () => {
-    fetch("/api/users")
+    const req = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+      },
+    };
+    fetch("/api/users", req)
       .then((res) => {
         if (!res.ok) throw new Error("something went wrong fetching user data");
         return res.json();
@@ -20,7 +27,6 @@ const UserSearch = (props) => {
       .then((res) => {
         setLoadingUsers(res);
       })
-
       .catch((err) => console.error(err));
   };
 

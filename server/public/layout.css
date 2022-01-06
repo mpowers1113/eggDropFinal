@@ -56,6 +56,10 @@ body {
   flex-basis: calc(100% / 3);
 }
 
+.column-two-third {
+  flex-basis: calc(100% / 6);
+}
+
 .column-40 {
   flex-basis: 40%;
 }

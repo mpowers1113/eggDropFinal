@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 const Profile = (props) => {
   const user = useContext(UserContext);
   const [uploadProfilePhoto, setUploadProfilePhoto] = useState(false);
+  const [view, setView] = useState("eggs");
   const navigate = useNavigate();
 
   const toggleUploadProfile = () => setUploadProfilePhoto(!uploadProfilePhoto);
@@ -44,6 +45,49 @@ const Profile = (props) => {
       .catch((err) => console.error(err));
   };
 
+  const renderFollow = (type, event) => {
+    return (
+      <div className="row flex-column profile-brown justify-center profile-egg-icons-div">
+        <ul className="events-ul">
+          {event.map((event, index) => (
+            <li key={type + index} className="event-li profile-gray">
+              <div className="row space-between align-center event-li-div">
+                <div className="column-third">
+                  <div className="circle-event">
+                    <img
+                      className="profile-pic"
+                      src={
+                        event.profilePhotoUrl ||
+                        "../Images/defaultprofilephoto.jpeg"
+                      }
+                      alt="profile photo"
+                    />
+                  </div>
+                </div>
+                <div className="column-third follow-text">
+                  <p>{event.username}</p>
+                </div>
+                <div className="column-third">
+                  <i className="gold follow-icon fas fa-2x fa-egg"></i>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  const renderEggs = () => {
+    return (
+      <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
+        {user.data.foundEggs.map((egg) =>
+          profileEggs(egg.photoUrl, egg.latitude)
+        )}
+      </div>
+    );
+  };
+
   const editProfile = () => {
     return (
       <div className="profile-gray row justify-align-center flex-column">
@@ -75,6 +119,14 @@ const Profile = (props) => {
     );
   };
 
+  const toggleViewHandler = (view) => {
+    if (view === "followers")
+      return renderFollow("followers", user.data.followers);
+    else if (view === "following")
+      return renderFollow("following", user.data.following);
+    else if (view === "eggs") return renderEggs();
+  };
+
   return (
     <>
       {user.data && (
@@ -100,9 +152,8 @@ const Profile = (props) => {
                 <img
                   className="profile-pic"
                   src={
-                    user.data.profilePhotoUrl
-                      ? user.data.profilePhotoUrl
-                      : "../Images/defaultprofilephoto.jpeg"
+                    user.data.profilePhotoUrl ||
+                    "../Images/defaultprofilephoto.jpeg"
                   }
                   alt="profile photo"
                 />
@@ -135,26 +186,34 @@ const Profile = (props) => {
           </div>
           <div className="row space-between profile-gray">
             <div className="column-third">
-              <span className="profile-gray-text-bold">
-                {user.data.foundEggs.length}
+              <span
+                onClick={() => setView("eggs")}
+                className="profile-gray-text-bold cursor-pointer"
+              >
+                {user.data.foundEggs.length || 0}
               </span>
             </div>
             <div className="column-third">
-              <span className="profile-gray-text-bold">256</span>
+              <span
+                onClick={() => setView("followers")}
+                className="profile-gray-text-bold cursor-pointer"
+              >
+                {user.data.followers.length || 0}
+              </span>
             </div>
             <div className="column-third">
-              <span className="profile-gray-text-bold">159</span>
+              <span
+                onClick={() => setView("following")}
+                className="profile-gray-text-bold cursor-pointer"
+              >
+                {user.data.following.length || 0}
+              </span>
             </div>
           </div>
           <div className="profile-header-bottom row profile-gray">
             <br></br>
           </div>
-
-          <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
-            {user.data.foundEggs.map((egg) =>
-              profileEggs(egg.photoUrl, egg.latitude)
-            )}
-          </div>
+          {toggleViewHandler(view)}
         </div>
       )}
       <Navbar />

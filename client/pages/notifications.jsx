@@ -9,7 +9,7 @@ const Notifications = (props) => {
     user.loadNotifications();
   }, []);
 
-  const declineFollowRequestHandler = (e) => {
+  const deleteNotificationHandler = (e) => {
     const id = Number(e.target.id);
     const req = {
       method: "DELETE",
@@ -28,27 +28,26 @@ const Notifications = (props) => {
       .catch((err) => console.error(err));
   };
 
-  const acceptFollowRequestHandler = (e) => {
+  const acceptFollowRequestHandler = async (e) => {
     const notificationId = Number(e.target.id);
     const notificationPayload = user.notifications.filter(
       (each) => each.id === notificationId
     );
-    const req = {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
-      },
-      body: JSON.stringify(notificationPayload),
-    };
-    fetch("/api/notifications", req)
-      .then((res) => {
-        if (!res.ok)
-          throw new Error("something went wrong accepting this follow");
-        return res.json();
-      })
-      .then(user.loadNotifications())
-      .catch((err) => console.error(err));
+    try {
+      const response = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+        },
+        body: JSON.stringify(notificationPayload),
+      });
+      if (!response)
+        throw new Error("something went wrong accepting this notification");
+    } catch (err) {
+      console.error(err);
+    }
+    user.loadNotifications();
   };
 
   const renderFoundEgg = (data) => {
@@ -72,8 +71,12 @@ const Notifications = (props) => {
             <div className="column-65">
               <p>{data.payload.fromUserUsername} just found your egg!</p>
             </div>
-            <div className="column-15">
-              <i className="event-icon fas fa-2x fa-egg"></i>
+            <div className="column-15 row justify-align-center">
+              <i
+                id={data.id}
+                onClick={deleteNotificationHandler}
+                className="fas fa-times cursor-pointer"
+              ></i>
             </div>
           </div>
         </li>
@@ -106,7 +109,7 @@ const Notifications = (props) => {
               <i
                 id={data.id}
                 className="notification-follow fas fa-times fa-2x"
-                onClick={declineFollowRequestHandler}
+                onClick={deleteNotificationHandler}
               ></i>
             </div>
             <div className="column-20">
