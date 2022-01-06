@@ -45,34 +45,30 @@ const Profile = (props) => {
       .catch((err) => console.error(err));
   };
 
-  const renderFollow = (data) => {
+  const renderFollow = (type, event) => {
     return (
       <div className="row flex-column profile-brown justify-center profile-egg-icons-div">
         <ul className="events-ul">
-          {data.map((data) => (
-            <li
-              key={data.username + Math.random()}
-              className="event-li profile-gray"
-            >
+          {event.map((event, index) => (
+            <li key={type + index} className="event-li profile-gray">
               <div className="row space-between align-center event-li-div">
                 <div className="column-third">
                   <div className="circle-event">
                     <img
                       className="profile-pic"
                       src={
-                        data.profilePhotoUrl
-                          ? data.profilePhotoUrl
-                          : "../Images/defaultprofilephoto.jpeg"
+                        event.profilePhotoUrl ||
+                        "../Images/defaultprofilephoto.jpeg"
                       }
                       alt="profile photo"
                     />
                   </div>
                 </div>
-                <div className="column-two-third">
-                  <p>{data.username}</p>
+                <div className="column-third follow-text">
+                  <p>{event.username}</p>
                 </div>
-                <div className="column-15">
-                  <i className="event-icon fas fa-2x fa-egg"></i>
+                <div className="column-third">
+                  <i className="gold follow-icon fas fa-2x fa-egg"></i>
                 </div>
               </div>
             </li>
@@ -124,8 +120,10 @@ const Profile = (props) => {
   };
 
   const toggleViewHandler = (view) => {
-    if (view === "followers") return renderFollow(user.data.followers);
-    else if (view === "following") return renderFollow(user.data.following);
+    if (view === "followers")
+      return renderFollow("followers", user.data.followers);
+    else if (view === "following")
+      return renderFollow("following", user.data.following);
     else if (view === "eggs") return renderEggs();
   };
 
@@ -154,9 +152,8 @@ const Profile = (props) => {
                 <img
                   className="profile-pic"
                   src={
-                    user.data.profilePhotoUrl
-                      ? user.data.profilePhotoUrl
-                      : "../Images/defaultprofilephoto.jpeg"
+                    user.data.profilePhotoUrl ||
+                    "../Images/defaultprofilephoto.jpeg"
                   }
                   alt="profile photo"
                 />
