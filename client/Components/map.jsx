@@ -36,8 +36,8 @@ const Map = (props) => {
 
   const clearEggData = () => setEggLocation(null);
 
-  const dropEgg = () => {
-    setEggMarkers([...eggMarkers, eggLocation]);
+  const dropEgg = (eggData) => {
+    setEggMarkers([...eggMarkers, eggData]);
     clearEggData();
   };
 

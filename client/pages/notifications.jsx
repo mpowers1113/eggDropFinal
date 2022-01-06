@@ -49,10 +49,10 @@ const Notifications = (props) => {
     user.loadNotifications();
   };
 
-  const renderFoundEgg = (data) => {
+  const renderFoundEgg = (data, type) => {
     return (
       <>
-        <li key={data.createdAt} className="event-li profile-brown">
+        <li key={data.id + type} className="event-li profile-brown">
           <div className="row space-between align-center event-li-div">
             <div className="column-20">
               <div className="circle-event">
@@ -83,10 +83,10 @@ const Notifications = (props) => {
     );
   };
 
-  const renderFollowRequest = (data) => {
+  const renderFollowRequest = (data, type) => {
     return (
       <>
-        <li key={data.id} className="event-li profile-brown">
+        <li key={data.id + type} className="event-li profile-brown">
           <div className="row space-between align-center event-li-div">
             <div className="column-20">
               <div className="circle-event">
@@ -130,8 +130,8 @@ const Notifications = (props) => {
         <ul className="events-ul">
           {user.notifications.map((data) =>
             data.payload.type === "follow"
-              ? renderFollowRequest(data)
-              : renderFoundEgg(data)
+              ? renderFollowRequest(data, "follow")
+              : renderFoundEgg(data, "egg")
           )}
         </ul>
       </div>

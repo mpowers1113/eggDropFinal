@@ -40,7 +40,15 @@ class CreateEgg extends React.Component {
     };
     fetch("/api/egg", req)
       .then((res) => res.json())
-      .then(this.props.drop())
+      .then((res) => {
+        const createdEgg = {
+          longitude: this.props.eggLocation.longitude,
+          latitude: this.props.eggLocation.latitude,
+          canClaim: this.state.claim,
+          id: res.eggId,
+        };
+        this.props.drop(createdEgg);
+      })
       .catch((err) => console.error(err));
   }
 
