@@ -1,31 +1,30 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useLayoutEffect } from "react";
 import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
 
 const Notifications = (props) => {
   const user = useContext(UserContext);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     user.loadNotifications();
   }, []);
 
-  const deleteNotificationHandler = (e) => {
+  const deleteNotificationHandler = async (e) => {
     const id = Number(e.target.id);
-    const req = {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
-      },
-    };
-    fetch(`api/notifications/${id}`, req)
-      .then((res) => {
-        if (!res.ok)
-          throw new Error("something went wrong deleting this notification");
-        return res.json();
-      })
-      .then(user.loadNotifications())
-      .catch((err) => console.error(err));
+    try {
+      const response = await fetch(`api/notifications/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+        },
+      });
+      if (!response)
+        throw new Error("something went wrong deleting this notification");
+    } catch (err) {
+      console.error(err);
+    }
+    user.loadNotifications();
   };
 
   const acceptFollowRequestHandler = async (e) => {
@@ -53,7 +52,7 @@ const Notifications = (props) => {
   const renderFoundEgg = (data) => {
     return (
       <>
-        <li key={data.id} className="event-li profile-brown">
+        <li key={data.createdAt} className="event-li profile-brown">
           <div className="row space-between align-center event-li-div">
             <div className="column-20">
               <div className="circle-event">

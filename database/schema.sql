@@ -30,6 +30,7 @@ CREATE TABLE "public"."egg" (
 	"createdAt" timestamp with time zone default now(),
 	"latitude" DECIMAL NOT NULL,
 	"longitude" DECIMAL NOT NULL,
+	"canClaim" TEXT NOT NULL, 
 	CONSTRAINT "egg_pk" PRIMARY KEY ("eggId")
 ) WITH (
   OIDS=FALSE

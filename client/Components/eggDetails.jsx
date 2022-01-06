@@ -46,8 +46,8 @@ const EggDetails = (props) => {
           createdAt: props.targetEgg.createdAt,
         };
         user.data.foundEggs.push(foundEgg);
-        setIsClaimed(true);
       })
+      .then(setIsClaimed(true))
       .catch((err) => console.error(err));
   };
 

@@ -97,24 +97,6 @@ app.get("/api/eggs/:eggId", (req, res, next) => {
     })
     .catch((err) => next(err));
 });
-app.get("/api/eggs", (req, res, next) => {
-  const sql = `
-              select "e".* from "egg" as "e"
-              where "e"."eggId" not in 
-              (select "f"."eggId" from "foundEggs" as "f")
-              `;
-  return db
-    .query(sql)
-    .then((result) => {
-      const egg = result.rows;
-      egg.forEach((egg) => {
-        egg.latitude = Number(egg.latitude);
-        egg.longitude = Number(egg.longitude);
-      });
-      res.status(200).json(egg);
-    })
-    .catch((err) => next(err));
-});
 
 app.get("/api/events", (req, res, next) => {
   const sql = `
@@ -130,6 +112,39 @@ app.get("/api/events", (req, res, next) => {
 });
 
 app.use(authorizationMiddleware);
+
+app.get("/api/eggs", (req, res, next) => {
+  const userId = Number(req.user.id);
+  const anyone = "anyone";
+  const followers = "followers";
+  const allEggQuery = `
+                        select "e".* from "egg" as "e"
+                        where "e"."canClaim" = $1 and "e"."eggId" not in 
+                        (select "f"."eggId" from "foundEggs" as "f")
+                        `;
+  const followerEggQuery = `
+                           select * from "egg"
+                           where "egg"."canClaim" = $1 and "egg"."userId" = (select "followers"."followingId" from "followers" where "followers"."followerId" = $2 and "isAccepted" = true) and "egg"."eggId" not in 
+                           (select "f"."eggId" from "foundEggs" as "f")
+                           `;
+  const allEggParams = [anyone];
+  const followerEggParams = [followers, userId];
+  const eggQueries = [
+    db.query(allEggQuery, allEggParams),
+    db.query(followerEggQuery, followerEggParams),
+  ];
+  const eggPromises = Promise.all(eggQueries);
+  eggPromises
+    .then((result) => {
+      const egg = [...result[0].rows, ...result[1].rows];
+      egg.forEach((egg) => {
+        egg.latitude = Number(egg.latitude);
+        egg.longitude = Number(egg.longitude);
+      });
+      res.status(200).json(egg);
+    })
+    .catch((err) => next(err));
+});
 
 app.post("/api/users/:username/followers", (req, res, next) => {
   const userRequestingFollowId = Number(req.user.id);
@@ -204,12 +219,12 @@ app.post("/api/profile", (req, res, next) => {
 
 app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { id } = req.user;
-  const { message, latitude, longitude } = req.body;
+  const { message, latitude, longitude, canClaim } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
   const sql = `with "insertRow" as 
-  (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId")
-  values ($1, $2, $3, $4, $5)
+  (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim")
+  values ($1, $2, $3, $4, $5, $6)
   returning *),
   "insertEvent" as 
   (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
@@ -221,6 +236,7 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
     Number(longitude),
     Number(latitude),
     Number(id),
+    canClaim,
   ];
   return db
     .query(sql, params)
