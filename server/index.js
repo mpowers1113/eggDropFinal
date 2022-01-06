@@ -153,12 +153,12 @@ app.post("/api/users/:username/followers", (req, res, next) => {
   const sql = `with "insertRow" as
               (insert into "followers" ("followerId", "followingId") 
               select $2, (select "userId" from "users" where "username" = $1)
-              where not exists (select 1 from "followers" where "followingId" = $2 and "followerId" = (select "userId" from "users" where "username" = $1))
+              where not exists (select 1 from "followers" where "followerId" = $2 and "followingId" = (select "userId" from "users" where "username" = $1))
               returning *),
               "insertNotification" as 
               (insert into "notifications" ("userId", "payload") 
               select (select "userId" from "users" where "username" = $1), json_build_object('type', 'follow', 'fromUserPhoto', ( select "profilePhotoUrl" from "users" where "userId" = $2), 'fromUserUsername', ( select "username" from "users" where "userId" = $2))
-              where not exists (select 1 from "followers" where "followingId" = $2 and "followerId" = (select "userId" from "users" where "username" = $1))
+              where not exists (select 1 from "followers" where "followerId" = $2 and "followingId" = (select "userId" from "users" where "username" = $1) and "isAccepted" = true)
               returning *)
               select "r".*, "n".* from "insertRow" as "r", "insertNotification" as "n"
               `;

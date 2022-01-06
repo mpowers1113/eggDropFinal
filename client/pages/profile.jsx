@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 const Profile = (props) => {
   const user = useContext(UserContext);
   const [uploadProfilePhoto, setUploadProfilePhoto] = useState(false);
+  const [view, setView] = useState("eggs");
   const navigate = useNavigate();
 
   const toggleUploadProfile = () => setUploadProfilePhoto(!uploadProfilePhoto);
@@ -44,6 +45,53 @@ const Profile = (props) => {
       .catch((err) => console.error(err));
   };
 
+  const renderFollow = (data) => {
+    return (
+      <div className="row flex-column profile-brown justify-center profile-egg-icons-div">
+        <ul className="events-ul">
+          {data.map((data) => (
+            <li
+              key={data.username + Math.random()}
+              className="event-li profile-gray"
+            >
+              <div className="row space-between align-center event-li-div">
+                <div className="column-third">
+                  <div className="circle-event">
+                    <img
+                      className="profile-pic"
+                      src={
+                        data.profilePhotoUrl
+                          ? data.profilePhotoUrl
+                          : "../Images/defaultprofilephoto.jpeg"
+                      }
+                      alt="profile photo"
+                    />
+                  </div>
+                </div>
+                <div className="column-two-third">
+                  <p>{data.username}</p>
+                </div>
+                <div className="column-15">
+                  <i className="event-icon fas fa-2x fa-egg"></i>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  const renderEggs = () => {
+    return (
+      <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
+        {user.data.foundEggs.map((egg) =>
+          profileEggs(egg.photoUrl, egg.latitude)
+        )}
+      </div>
+    );
+  };
+
   const editProfile = () => {
     return (
       <div className="profile-gray row justify-align-center flex-column">
@@ -73,6 +121,12 @@ const Profile = (props) => {
         </form>
       </div>
     );
+  };
+
+  const toggleViewHandler = (view) => {
+    if (view === "followers") return renderFollow(user.data.followers);
+    else if (view === "following") return renderFollow(user.data.following);
+    else if (view === "eggs") return renderEggs();
   };
 
   return (
@@ -135,26 +189,34 @@ const Profile = (props) => {
           </div>
           <div className="row space-between profile-gray">
             <div className="column-third">
-              <span className="profile-gray-text-bold">
-                {user.data.foundEggs.length}
+              <span
+                onClick={() => setView("eggs")}
+                className="profile-gray-text-bold cursor-pointer"
+              >
+                {user.data.foundEggs.length || 0}
               </span>
             </div>
             <div className="column-third">
-              <span className="profile-gray-text-bold">256</span>
+              <span
+                onClick={() => setView("followers")}
+                className="profile-gray-text-bold cursor-pointer"
+              >
+                {user.data.followers.length || 0}
+              </span>
             </div>
             <div className="column-third">
-              <span className="profile-gray-text-bold">159</span>
+              <span
+                onClick={() => setView("following")}
+                className="profile-gray-text-bold cursor-pointer"
+              >
+                {user.data.following.length || 0}
+              </span>
             </div>
           </div>
           <div className="profile-header-bottom row profile-gray">
             <br></br>
           </div>
-
-          <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
-            {user.data.foundEggs.map((egg) =>
-              profileEggs(egg.photoUrl, egg.latitude)
-            )}
-          </div>
+          {toggleViewHandler(view)}
         </div>
       )}
       <Navbar />
