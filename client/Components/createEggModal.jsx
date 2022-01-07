@@ -8,8 +8,10 @@ export default class CreateEgg extends React.Component {
       message: "",
       claim: "anyone",
       private: false,
+      privateUserId: null,
     };
     this.fileInputRef = React.createRef();
+    this.selectRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
     this.handleClaimChange = this.handleClaimChange.bind(this);
@@ -18,23 +20,57 @@ export default class CreateEgg extends React.Component {
   }
 
   privateEggSelectHandler(event) {
-    // console.log(event.target.value);
+    this.setState({ privateUserId: event.target.value });
   }
 
   handlePrivateChange(event) {
-    this.setState({ claim: "private", private: true });
+    this.state.claim !== "private" &&
+      this.setState({
+        claim: "private",
+        private: true,
+      });
   }
 
   handleClaimChange(event) {
-    this.setState({ claim: event.target.value });
+    this.setState({ claim: event.target.value, private: false });
   }
 
   handleMessageChange(event) {
-    this.setState({ message: event.target.value });
+    this.setState({ message: event.target.value, private: false });
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
+  handlePrivateSubmit() {
+    const formData = new FormData();
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    formData.append("message", this.state.message);
+    formData.append("image", this.fileInputRef.current.files[0]);
+    formData.append("longitude", this.props.eggLocation.longitude);
+    formData.append("latitude", this.props.eggLocation.latitude);
+    formData.append("canClaim", "private");
+    formData.append("privateUserId", Number(this.state.privateUserId));
+    const req = {
+      method: "POST",
+      headers: {
+        "x-access-token": token,
+      },
+      body: formData,
+    };
+    fetch("/api/egg/private", req)
+      .then((res) => res.json())
+      .then((res) => {
+        const createdEgg = {
+          longitude: this.props.eggLocation.longitude,
+          latitude: this.props.eggLocation.latitude,
+          canClaim: this.state.claim,
+          id: res.eggId,
+        };
+        this.props.drop(createdEgg);
+      })
+
+      .catch((err) => console.error(err));
+  }
+
+  handleSubmit() {
     const formData = new FormData();
     const token = window.localStorage.getItem("eggDrop8081proDgge");
     formData.append("message", this.state.message);
@@ -151,6 +187,7 @@ export default class CreateEgg extends React.Component {
                 <div className="row">
                   {this.state.private && (
                     <select
+                      ref={this.selectRef}
                       onChange={this.privateEggSelectHandler}
                       className="select-create-egg"
                     >
@@ -166,7 +203,12 @@ export default class CreateEgg extends React.Component {
                 <Button
                   type="submit"
                   text="Drop Egg"
-                  click={this.handleSubmit}
+                  click={(e) => {
+                    e.preventDefault();
+                    this.state.private === true
+                      ? this.handlePrivateSubmit()
+                      : this.handleSubmit();
+                  }}
                   disabled={this.state.message.length <= 0}
                 />
               </div>
