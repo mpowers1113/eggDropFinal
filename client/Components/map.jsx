@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import EggIcon from "../UI/egg-icon";
 import FollowerEggIcon from "../UI/followers-egg-icon";
+import PrivateEggIcon from "../UI/private-egg-icon";
 import MapGL, { Marker, GeolocateControl } from "react-map-gl";
 import { usePosition } from "use-position";
 import Geocoder from "react-map-gl-geocoder";
@@ -156,6 +157,12 @@ const Map = (props) => {
             >
               {markers.canClaim === "followers" ? (
                 <FollowerEggIcon
+                  id={markers.id}
+                  dataEgg={"egg"}
+                  onClick={toggleEggDetails}
+                />
+              ) : markers.canClaim === "private" ? (
+                <PrivateEggIcon
                   id={markers.id}
                   dataEgg={"egg"}
                   onClick={toggleEggDetails}

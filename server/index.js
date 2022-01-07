@@ -117,6 +117,7 @@ app.get("/api/eggs", (req, res, next) => {
   const userId = Number(req.user.id);
   const anyone = "anyone";
   const followers = "followers";
+  const privateEgg = "private";
   const allEggQuery = `
                         select "e".* from "egg" as "e"
                         where "e"."canClaim" = $1 and "e"."eggId" not in 
@@ -127,16 +128,23 @@ app.get("/api/eggs", (req, res, next) => {
                            where "egg"."canClaim" = $1 and "egg"."userId" = (select "followers"."followingId" from "followers" where "followers"."followerId" = $2 and "isAccepted" = true) and "egg"."eggId" not in 
                            (select "f"."eggId" from "foundEggs" as "f")
                            `;
+  const privateEggQuery = `
+                          select "e".* from "egg" as "e"
+                          where "e"."canClaim" = $1 and "privateUserId" = $2 and "e"."eggId" not in
+                          (select "f"."eggId" from "foundEggs" as "f")
+                          `;
   const allEggParams = [anyone];
   const followerEggParams = [followers, userId];
+  const privateEggParams = [privateEgg, userId];
   const eggQueries = [
     db.query(allEggQuery, allEggParams),
     db.query(followerEggQuery, followerEggParams),
+    db.query(privateEggQuery, privateEggParams),
   ];
   const eggPromises = Promise.all(eggQueries);
   eggPromises
     .then((result) => {
-      const eggs = [...result[0].rows, ...result[1].rows];
+      const eggs = [...result[0].rows, ...result[1].rows, ...result[2].rows];
       eggs.forEach((egg) => {
         egg.latitude = Number(egg.latitude);
         egg.longitude = Number(egg.longitude);
@@ -183,7 +191,7 @@ app.post("/api/profile", (req, res, next) => {
   const eggDataQuery = `select * from "egg" where "userId" = $1`;
   const foundEggQuery = `select "f".*, "e".* from "foundEggs" as "f" join "egg" as "e" using ("eggId")
   where "f"."foundBy" = $1`;
-  const followersQuery = `select "username", "profilePhotoUrl" from "users" join "followers" on "users"."userId" = "followers"."followerId" where "followingId" = $1 and "isAccepted" = true`;
+  const followersQuery = `select "username", "profilePhotoUrl", "userId" from "users" join "followers" on "users"."userId" = "followers"."followerId" where "followingId" = $1 and "isAccepted" = true`;
   const followingQuery = `select "username", "profilePhotoUrl" from "users" join "followers" on "users"."userId" = "followers"."followingId" where "followerId" = $1 and "isAccepted" = true`;
   const params = [userId];
   const profileQueries = [
@@ -222,24 +230,26 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { message, latitude, longitude, canClaim } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
-  const sql = `with "insertRow" as 
-  (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim")
-  values ($1, $2, $3, $4, $5, $6)
-  returning *),
-  "insertEvent" as 
-  (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
-  select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
-  `;
-  const params = [
+  const privateUserId = Number(req.body.privateUserId) || null;
+  const eggQuery = `with "insertRow" as 
+    (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim", "privateUserId")
+    values ($1, $2, $3, $4, $5, $6, $7)
+    returning *),
+    "insertEvent" as 
+    (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
+    select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
+    `;
+  const eggParams = [
     message,
     filePath,
     Number(longitude),
     Number(latitude),
     Number(id),
     canClaim,
+    privateUserId,
   ];
   return db
-    .query(sql, params)
+    .query(eggQuery, eggParams)
     .then((result) => {
       const [image] = result.rows;
       res.json(image);

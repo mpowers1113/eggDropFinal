@@ -1,0 +1,16 @@
+import React from "react";
+
+const PrivateEggIcon = (props) => {
+  return (
+    <img
+      onClick={props.onClick}
+      id={props.id}
+      data-egg={props.dataEgg}
+      className="cursor-pointer"
+      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAADp0lEQVRIiZWUbWhbZRTH/+e5uclNs7V5WZolTba26ypWfJsgOtDpwM66lepE8IWhlFEnMqEI4gf9YD/4wQ8yUNEvE8E5NorFTWedjG3iGDqYTpiaQpytiSWmqW3apLlJ7n2OH2oxaXKTeODCvfc85//j/HnOITQRWzoG90nwKBHaAIAZiyC8nUh88WWjWqqXDIUGW9wqPr3Lp4Ze6XPBa6dFAOffjBofnZpZGiVQiEl7NpEYz/9vQGfnA5pPab06epNre4Gl+nDQUZ6elQID934130OMQw6nHIzFJgu1dIQVoNfpPvVir/Nmv0ZqQVY3JyQufN/v+ZlAx/QV5S0rnZqA/XcMPR1uUR5kgLx2gaEOR61jXkA5PrnTeYII7eHw4K6mAUs6HTnQpakT8QLaNcsmAfAOd6tzBEK8DObXmwIc3PH4yG0em38iXsAL252w1dMHAMar5x/dOk/gqUjkkfsbAuZLcrQ/aEd8xcCdHrWBOgCgw5Vf3CtYHCVTHKgLONwz4MiZvO1GzsRDQXsz4qshxZMzs5//wES3Ak8olgBHoGXoljZFvTpfwj2+5gEM3s0AAfxjOJzrswQsl3hvX6sNSV1is7OR+RXhSw0Pd4FxBVK5uzxhK//QTWwLOhXYRd0Br4poxsDldH4PC/pFQO627KBgwi0IaFObB6R0iYhLQX/AviIE0gzyWQIYDJcNeKZTaxoQy5pYKDKiOdlKJSnBVKFZYZFTEX/nDOB2jw2NIpox/u3AhFclTC+XitLGfmJOWXZgA00lVqoXz/pYsyXiUrBzkx0Rl4KgqlyAST0sMWMJ0FTjk2uLpYaA37IGFoqMhSIjljUxV+CZsam8BOE+FuJbS8C73312MZoxlkqSawpHMwaiGQN/6RLZ0uqT0k3cWDLOKiz9DOpNJE7HymuqzG7XaOJcsvjcQKhyg67ZAgBeh4DLtnrTPA7K+23KmGT0C0En1+tVTdO5hHzp2O96JmdUdrF2W9ZsWXv/Olk8uevSbJYJB/MF7cOGgHT69DKEOPTG9dyy5P9sSelmhS3ZksTsivlNtw/PlwraByR4bG5uPLteT1n/AwCm09HrrpZecW3R6Nu/xbEh4FTgtQts0gTa7AKbNYW3blDeP55UR478tPwewJfjiTMnamnVHdnuyOBTG1V6bbhbW3LbKdi1Uc0UDP7142n9ysWkHmeiw8T8zh9/nhm30mi4EwKBx9odqjHMzHvKzjMRnS0axtFkcnKuXv0/NNyN9rfvHxcAAAAASUVORK5CYII="
+      alt="egg"
+    />
+  );
+};
+
+export default PrivateEggIcon;
