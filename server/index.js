@@ -183,7 +183,7 @@ app.post("/api/profile", (req, res, next) => {
   const eggDataQuery = `select * from "egg" where "userId" = $1`;
   const foundEggQuery = `select "f".*, "e".* from "foundEggs" as "f" join "egg" as "e" using ("eggId")
   where "f"."foundBy" = $1`;
-  const followersQuery = `select "username", "profilePhotoUrl" from "users" join "followers" on "users"."userId" = "followers"."followerId" where "followingId" = $1 and "isAccepted" = true`;
+  const followersQuery = `select "username", "profilePhotoUrl", "userId" from "users" join "followers" on "users"."userId" = "followers"."followerId" where "followingId" = $1 and "isAccepted" = true`;
   const followingQuery = `select "username", "profilePhotoUrl" from "users" join "followers" on "users"."userId" = "followers"."followingId" where "followerId" = $1 and "isAccepted" = true`;
   const params = [userId];
   const profileQueries = [

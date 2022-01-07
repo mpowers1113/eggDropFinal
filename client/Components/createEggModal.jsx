@@ -1,17 +1,28 @@
 import React from "react";
 import Button from "../UI/button";
 
-class CreateEgg extends React.Component {
+export default class CreateEgg extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       message: "",
       claim: "anyone",
+      private: false,
     };
     this.fileInputRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
     this.handleClaimChange = this.handleClaimChange.bind(this);
+    this.handlePrivateChange = this.handlePrivateChange.bind(this);
+    this.privateEggSelectHandler = this.privateEggSelectHandler.bind(this);
+  }
+
+  privateEggSelectHandler(event) {
+    // console.log(event.target.value);
+  }
+
+  handlePrivateChange(event) {
+    this.setState({ claim: "private", private: true });
   }
 
   handleClaimChange(event) {
@@ -125,6 +136,31 @@ class CreateEgg extends React.Component {
                     />
                     <label htmlFor="can-claim-followers">Followers</label>
                   </div>
+                  <div>
+                    <input
+                      onChange={this.handlePrivateChange}
+                      className="create-egg-radio"
+                      type="radio"
+                      id="can-claim-private"
+                      name="claimable-by"
+                      value="private"
+                    />
+                    <label htmlFor="can-claim-private">Private</label>
+                  </div>
+                </div>
+                <div className="row">
+                  {this.state.private && (
+                    <select
+                      onChange={this.privateEggSelectHandler}
+                      className="select-create-egg"
+                    >
+                      {this.props.user.data.followers.map((follower) => (
+                        <option key={follower.userId} value={follower.userId}>
+                          {follower.username}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
                 <Button
@@ -141,5 +177,3 @@ class CreateEgg extends React.Component {
     );
   }
 }
-
-export default CreateEgg;
