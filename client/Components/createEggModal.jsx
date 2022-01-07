@@ -37,8 +37,11 @@ export default class CreateEgg extends React.Component {
     formData.append("longitude", this.props.eggLocation.longitude);
     formData.append("latitude", this.props.eggLocation.latitude);
     formData.append("canClaim", this.state.claim);
-    this.state.claim === "private" &&
+    if (this.state.claim === "private") {
       formData.append("privateUserId", Number(this.selectRef.current.value));
+    } else {
+      formData.append("privateUserId", 0);
+    }
     const req = {
       method: "POST",
       headers: {
