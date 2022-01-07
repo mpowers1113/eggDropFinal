@@ -136,12 +136,12 @@ app.get("/api/eggs", (req, res, next) => {
   const eggPromises = Promise.all(eggQueries);
   eggPromises
     .then((result) => {
-      const egg = [...result[0].rows, ...result[1].rows];
-      egg.forEach((egg) => {
+      const eggs = [...result[0].rows, ...result[1].rows];
+      eggs.forEach((egg) => {
         egg.latitude = Number(egg.latitude);
         egg.longitude = Number(egg.longitude);
       });
-      res.status(200).json(egg);
+      res.status(200).json(eggs);
     })
     .catch((err) => next(err));
 });

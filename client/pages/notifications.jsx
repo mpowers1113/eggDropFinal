@@ -1,13 +1,25 @@
-import React, { useContext, useLayoutEffect } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
 
 const Notifications = (props) => {
   const user = useContext(UserContext);
 
+  const [currentNotifications, setCurrentNotifications] = useState([
+    ...user.notifications,
+  ]);
+
   useLayoutEffect(() => {
     user.loadNotifications();
   }, []);
+
+  const resetNotifications = (id) => {
+    const newNotifications = user.notifications.filter(
+      (notification) => notification.id !== id
+    );
+    if (currentNotifications.length === 1) setCurrentNotifications([]);
+    else setCurrentNotifications([...newNotifications]);
+  };
 
   const deleteNotificationHandler = async (e) => {
     const id = Number(e.target.id);
@@ -24,13 +36,13 @@ const Notifications = (props) => {
     } catch (err) {
       console.error(err);
     }
-    user.loadNotifications();
+    resetNotifications(id);
   };
 
   const acceptFollowRequestHandler = async (e) => {
-    const notificationId = Number(e.target.id);
-    const notificationPayload = user.notifications.filter(
-      (each) => each.id === notificationId
+    const id = Number(e.target.id);
+    const targetNotification = user.notifications.filter(
+      (each) => each.id === id
     );
     try {
       const response = await fetch("/api/notifications", {
@@ -39,14 +51,14 @@ const Notifications = (props) => {
           "Content-Type": "application/json",
           "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
         },
-        body: JSON.stringify(notificationPayload),
+        body: JSON.stringify(targetNotification),
       });
       if (!response)
         throw new Error("something went wrong accepting this notification");
     } catch (err) {
       console.error(err);
     }
-    user.loadNotifications();
+    resetNotifications(id);
   };
 
   const renderFoundEgg = (data, type) => {
@@ -128,7 +140,7 @@ const Notifications = (props) => {
     <>
       <div className="row flex-column profile-gray justify-center event-div">
         <ul className="events-ul">
-          {user.notifications.map((data) =>
+          {currentNotifications.map((data) =>
             data.payload.type === "follow"
               ? renderFollowRequest(data, "follow")
               : renderFoundEgg(data, "egg")
