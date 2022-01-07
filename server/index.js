@@ -385,6 +385,27 @@ app.patch("/api/notifications/", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.get("/api/egg/display/:id", (req, res, next) => {
+  const user = Number(req.user.id);
+  const eggId = Number(req.params.id);
+  if (!Number.isInteger(user)) throw new ClientError("invalid request");
+  const sql = `
+              select "e".*, "u"."username", "f"."foundAt"
+              from "egg" as "e"
+              join "users" as "u" using ("userId")
+              join "foundEggs" as "f" using ("eggId")
+              where "f"."eggId" = $1 and "f"."foundBy" = $2
+              `;
+  const params = [eggId, user];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const eggDisplayData = result.rows[0];
+      res.status(200).json(eggDisplayData);
+    })
+    .catch((err) => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {

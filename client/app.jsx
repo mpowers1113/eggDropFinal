@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { UserContext } from "./Context/userContext";
 import Login from "./Components/login";
 import Map from "./Components/map";
-
 import EventFeed from "./pages/eventFeed";
 import Profile from "./pages/profile";
 import Notifications from "./pages/notifications";
 import UserSearch from "./pages/userSearch";
+import EggDisplay from "./pages/eggDisplay";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const useUserState = () => {
@@ -63,6 +63,7 @@ const App = (props) => {
           <Route path={"/profile"} element={<Profile />} />
           <Route path={"/search"} element={<UserSearch />} />
           <Route path={"/notifications"} element={<Notifications />} />
+          <Route path={"/egg-display/:id"} element={<EggDisplay />} />
           <Route path={"*"} element={<div>Not found</div>} />
         </Routes>
       </BrowserRouter>

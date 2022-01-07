@@ -18,10 +18,23 @@ const Profile = (props) => {
     user.data === null && navigate("/");
   }, []);
 
-  const profileEggs = (src, key) => {
+  const profileEggs = (src, key, id) => {
     return (
-      <div className="profile-square" key={key}>
+      <div
+        onClick={() => navigate(`/egg-display/${id}`)}
+        className="profile-square"
+        key={key}
+      >
         <img className="egg-images" src={src} alt="" />
+      </div>
+    );
+  };
+  const renderEggs = () => {
+    return (
+      <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
+        {user.data.foundEggs.map((egg) =>
+          profileEggs(egg.photoUrl, egg.latitude, egg.eggId)
+        )}
       </div>
     );
   };
@@ -74,16 +87,6 @@ const Profile = (props) => {
             </li>
           ))}
         </ul>
-      </div>
-    );
-  };
-
-  const renderEggs = () => {
-    return (
-      <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
-        {user.data.foundEggs.map((egg) =>
-          profileEggs(egg.photoUrl, egg.latitude)
-        )}
       </div>
     );
   };
