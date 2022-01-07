@@ -46,8 +46,8 @@ const EggDetails = (props) => {
           createdAt: props.targetEgg.createdAt,
         };
         user.data.foundEggs.push(foundEgg);
-        setIsClaimed(true);
       })
+      .then(() => setIsClaimed(true))
       .catch((err) => console.error(err));
   };
 
@@ -67,7 +67,12 @@ const EggDetails = (props) => {
         <div className={"row justify-align-center flex-column"}>
           {!isClaimed && (
             <div className="p1 center-text">
-              <h1>{props.targetEgg.username}&apos;s Egg</h1>
+              <h1>
+                {props.targetEgg.username === user.data.username
+                  ? "Your"
+                  : `${props.targetEgg.username + "s"}`}{" "}
+                Egg
+              </h1>
               <p className="light">
                 <i>Created on {orderedDate}</i>
               </p>

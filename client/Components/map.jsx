@@ -7,6 +7,7 @@ import React, {
   useLayoutEffect,
 } from "react";
 import EggIcon from "../UI/egg-icon";
+import FollowerEggIcon from "../UI/followers-egg-icon";
 import MapGL, { Marker, GeolocateControl } from "react-map-gl";
 import { usePosition } from "use-position";
 import Geocoder from "react-map-gl-geocoder";
@@ -25,6 +26,7 @@ const Map = (props) => {
     enableHighAccuracy: true,
   });
   const user = useContext(UserContext);
+
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
@@ -34,8 +36,8 @@ const Map = (props) => {
 
   const clearEggData = () => setEggLocation(null);
 
-  const dropEgg = () => {
-    setEggMarkers([...eggMarkers, eggLocation]);
+  const dropEgg = (eggData) => {
+    setEggMarkers([...eggMarkers, eggData]);
     clearEggData();
   };
 
@@ -46,8 +48,15 @@ const Map = (props) => {
   useLayoutEffect(() => {
     const getEggs = () => {
       if (!user) return;
+      const token = window.localStorage.getItem("eggDrop8081proDgge");
+
       const req = {
         method: "GET",
+        headers: {
+          Accept: "application/json",
+          "x-access-token": token,
+          "Content-Type": "application/json",
+        },
       };
       fetch("/api/eggs", req)
         .then((res) => {
@@ -59,6 +68,7 @@ const Map = (props) => {
             id: egg.eggId,
             longitude: egg.longitude,
             latitude: egg.latitude,
+            canClaim: egg.canClaim,
           }));
           setEggMarkers(eggs);
         })
@@ -144,11 +154,19 @@ const Map = (props) => {
               longitude={markers.longitude}
               latitude={markers.latitude}
             >
-              <EggIcon
-                id={markers.id}
-                dataEgg={"egg"}
-                onClick={toggleEggDetails}
-              />
+              {markers.canClaim === "followers" ? (
+                <FollowerEggIcon
+                  id={markers.id}
+                  dataEgg={"egg"}
+                  onClick={toggleEggDetails}
+                />
+              ) : (
+                <EggIcon
+                  id={markers.id}
+                  dataEgg={"egg"}
+                  onClick={toggleEggDetails}
+                />
+              )}
             </Marker>
           ))}
 
@@ -173,7 +191,12 @@ const Map = (props) => {
             />
           )}
           {targetEgg && (
-            <EggDetails targetEgg={targetEgg} toggleModal={setTargetEgg} />
+            <EggDetails
+              setEggMarkers={setEggMarkers}
+              eggMarkers={eggMarkers}
+              targetEgg={targetEgg}
+              toggleModal={setTargetEgg}
+            />
           )}
         </MapGL>
       </div>

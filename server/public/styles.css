@@ -183,6 +183,10 @@ h1 {
   align-items: center;
 }
 
+.space-around {
+  justify-content: space-around;
+}
+
 .notifications-icon {
   color: rgb(249, 83, 83);
   position: fixed;
@@ -379,10 +383,6 @@ h1 {
   border-radius: 50%;
 }
 
-.space-around {
-  justify-content: space-around;
-}
-
 .profile-p {
   margin: 0;
 }
@@ -476,4 +476,9 @@ h1 {
   right: 0;
   padding: 0.5rem;
   cursor: pointer;
+}
+
+.create-egg-radio {
+  height: auto;
+  width: auto;
 }

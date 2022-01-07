@@ -1,37 +1,48 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
 
 const Notifications = (props) => {
   const user = useContext(UserContext);
 
-  useEffect(() => {
+  const [currentNotifications, setCurrentNotifications] = useState([
+    ...user.notifications,
+  ]);
+
+  useLayoutEffect(() => {
     user.loadNotifications();
   }, []);
 
-  const deleteNotificationHandler = (e) => {
+  const resetNotifications = (id) => {
+    const newNotifications = user.notifications.filter(
+      (notification) => notification.id !== id
+    );
+    if (currentNotifications.length === 1) setCurrentNotifications([]);
+    else setCurrentNotifications([...newNotifications]);
+  };
+
+  const deleteNotificationHandler = async (e) => {
     const id = Number(e.target.id);
-    const req = {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
-      },
-    };
-    fetch(`api/notifications/${id}`, req)
-      .then((res) => {
-        if (!res.ok)
-          throw new Error("something went wrong deleting this notification");
-        return res.json();
-      })
-      .then(user.loadNotifications())
-      .catch((err) => console.error(err));
+    try {
+      const response = await fetch(`api/notifications/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+        },
+      });
+      if (!response)
+        throw new Error("something went wrong deleting this notification");
+    } catch (err) {
+      console.error(err);
+    }
+    resetNotifications(id);
   };
 
   const acceptFollowRequestHandler = async (e) => {
-    const notificationId = Number(e.target.id);
-    const notificationPayload = user.notifications.filter(
-      (each) => each.id === notificationId
+    const id = Number(e.target.id);
+    const targetNotification = user.notifications.filter(
+      (each) => each.id === id
     );
     try {
       const response = await fetch("/api/notifications", {
@@ -40,20 +51,20 @@ const Notifications = (props) => {
           "Content-Type": "application/json",
           "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
         },
-        body: JSON.stringify(notificationPayload),
+        body: JSON.stringify(targetNotification),
       });
       if (!response)
         throw new Error("something went wrong accepting this notification");
     } catch (err) {
       console.error(err);
     }
-    user.loadNotifications();
+    resetNotifications(id);
   };
 
-  const renderFoundEgg = (data) => {
+  const renderFoundEgg = (data, type) => {
     return (
       <>
-        <li key={data.id} className="event-li profile-brown">
+        <li key={data.id + type} className="event-li profile-brown">
           <div className="row space-between align-center event-li-div">
             <div className="column-20">
               <div className="circle-event">
@@ -84,10 +95,10 @@ const Notifications = (props) => {
     );
   };
 
-  const renderFollowRequest = (data) => {
+  const renderFollowRequest = (data, type) => {
     return (
       <>
-        <li key={data.id} className="event-li profile-brown">
+        <li key={data.id + type} className="event-li profile-brown">
           <div className="row space-between align-center event-li-div">
             <div className="column-20">
               <div className="circle-event">
@@ -129,10 +140,10 @@ const Notifications = (props) => {
     <>
       <div className="row flex-column profile-gray justify-center event-div">
         <ul className="events-ul">
-          {user.notifications.map((data) =>
+          {currentNotifications.map((data) =>
             data.payload.type === "follow"
-              ? renderFollowRequest(data)
-              : renderFoundEgg(data)
+              ? renderFollowRequest(data, "follow")
+              : renderFoundEgg(data, "egg")
           )}
         </ul>
       </div>

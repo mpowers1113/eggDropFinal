@@ -6,10 +6,16 @@ class CreateEgg extends React.Component {
     super(props);
     this.state = {
       message: "",
+      claim: "anyone",
     };
     this.fileInputRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
+    this.handleClaimChange = this.handleClaimChange.bind(this);
+  }
+
+  handleClaimChange(event) {
+    this.setState({ claim: event.target.value });
   }
 
   handleMessageChange(event) {
@@ -24,6 +30,7 @@ class CreateEgg extends React.Component {
     formData.append("image", this.fileInputRef.current.files[0]);
     formData.append("longitude", this.props.eggLocation.longitude);
     formData.append("latitude", this.props.eggLocation.latitude);
+    formData.append("canClaim", this.state.claim);
     const req = {
       method: "POST",
       headers: {
@@ -33,7 +40,15 @@ class CreateEgg extends React.Component {
     };
     fetch("/api/egg", req)
       .then((res) => res.json())
-      .then(this.props.drop())
+      .then((res) => {
+        const createdEgg = {
+          longitude: this.props.eggLocation.longitude,
+          latitude: this.props.eggLocation.latitude,
+          canClaim: this.state.claim,
+          id: res.eggId,
+        };
+        this.props.drop(createdEgg);
+      })
       .catch((err) => console.error(err));
   }
 
@@ -82,6 +97,36 @@ class CreateEgg extends React.Component {
                   id="file-upload"
                 />
                 <label htmlFor="file-upload">Upload Image</label>
+                <div>
+                  <p className="center-text">Who can claim this egg?</p>
+                </div>
+                <div className="row p1 space-around">
+                  <div>
+                    <input
+                      onChange={this.handleClaimChange}
+                      className="create-egg-radio"
+                      type="radio"
+                      id="can-claim-anyone"
+                      name="claimable-by"
+                      value="anyone"
+                      defaultChecked
+                    />
+                    <label htmlFor="can-claim-anyone">Anyone</label>
+                  </div>
+                  <br />
+                  <div>
+                    <input
+                      onChange={this.handleClaimChange}
+                      className="create-egg-radio"
+                      type="radio"
+                      id="can-claim-followers"
+                      name="claimable-by"
+                      value="followers"
+                    />
+                    <label htmlFor="can-claim-followers">Followers</label>
+                  </div>
+                </div>
+
                 <Button
                   type="submit"
                   text="Drop Egg"
