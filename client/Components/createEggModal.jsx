@@ -40,7 +40,7 @@ export default class CreateEgg extends React.Component {
     if (this.state.claim === "private") {
       formData.append("privateUserId", Number(this.selectRef.current.value));
     } else {
-      formData.append("privateUserId", 0);
+      formData.append("privateUserId", null);
     }
     const req = {
       method: "POST",

@@ -230,17 +230,14 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { message, latitude, longitude, canClaim } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
-  const privateUserId = Number(req.body.privateUserId) || 0;
+  const privateUserId = Number(req.body.privateUserId) || null;
   const eggQuery = `with "insertRow" as 
     (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim", "privateUserId")
     values ($1, $2, $3, $4, $5, $6, $7)
     returning *),
     "insertEvent" as 
-    (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *),
-    "insertNotification" as
-    (insert into "notifications" ("userId", "payload")
-    values ($7, json_build_object('type', 'privateEgg', 'fromUserPhoto', (select "profilePhotoUrl" from "users" where "userId" = $5), 'fromUserUsername', (select "username" from "users" where "userId" = $5))) returning *)
-    select "r".*, "e".*, "n".* from "insertRow" as "r", "insertEvent" as "e", "insertNotification" as "n"
+    (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
+    select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
     `;
   const eggParams = [
     message,
