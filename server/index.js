@@ -254,6 +254,7 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
     })
     .catch((err) => next(err));
 });
+
 app.post("/api/egg/private", uploadsMiddleware, (req, res, next) => {
   const { id } = req.user;
   const { message, latitude, longitude, canClaim } = req.body;
