@@ -230,64 +230,60 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { message, latitude, longitude, canClaim } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
   const filePath = "/images/" + req.file.filename;
-  const sql = `with "insertRow" as 
-  (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim")
-  values ($1, $2, $3, $4, $5, $6)
-  returning *),
-  "insertEvent" as 
-  (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
-  select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
-  `;
-  const params = [
-    message,
-    filePath,
-    Number(longitude),
-    Number(latitude),
-    Number(id),
-    canClaim,
-  ];
-  return db
-    .query(sql, params)
-    .then((result) => {
-      const [image] = result.rows;
-      res.json(image);
-    })
-    .catch((err) => next(err));
-});
-
-app.post("/api/egg/private", uploadsMiddleware, (req, res, next) => {
-  const { id } = req.user;
-  const { message, latitude, longitude, canClaim } = req.body;
-  const privateUserId = Number(req.body.privateUserId);
-  if (!message) throw new ClientError(400, "message is a required field");
-  const filePath = "/images/" + req.file.filename;
-  const sql = `with "insertRow" as 
-  (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim", "privateUserId")
-  values ($1, $2, $3, $4, $5, $6, $7)
-  returning *),
-  "insertEvent" as 
-  (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *),
-  "insertNotification" as
-  (insert into "notifications" ("userId", "payload")
-  values ($7, json_build_object('type', 'privateEgg', 'fromUserPhoto', (select "profilePhotoUrl" from "users" where "userId" = $5), 'fromUserUsername', (select "username" from "users" where "userId" = $5))) returning *)
-  select "r".*, "e".*, "n".* from "insertRow" as "r", "insertEvent" as "e", "insertNotification" as "n"
-  `;
-  const params = [
-    message,
-    filePath,
-    Number(longitude),
-    Number(latitude),
-    Number(id),
-    canClaim,
-    privateUserId,
-  ];
-  return db
-    .query(sql, params)
-    .then((result) => {
-      const [image] = result.rows;
-      res.json(image);
-    })
-    .catch((err) => next(err));
+  if (canClaim === "private") {
+    const privateUserId = Number(req.body.privateUserId);
+    const privateEggQuery = `with "insertRow" as 
+    (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim", "privateUserId")
+    values ($1, $2, $3, $4, $5, $6, $7)
+    returning *),
+    "insertEvent" as 
+    (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *),
+    "insertNotification" as
+    (insert into "notifications" ("userId", "payload")
+    values ($7, json_build_object('type', 'privateEgg', 'fromUserPhoto', (select "profilePhotoUrl" from "users" where "userId" = $5), 'fromUserUsername', (select "username" from "users" where "userId" = $5))) returning *)
+    select "r".*, "e".*, "n".* from "insertRow" as "r", "insertEvent" as "e", "insertNotification" as "n"
+    `;
+    const privateEggParams = [
+      message,
+      filePath,
+      Number(longitude),
+      Number(latitude),
+      Number(id),
+      canClaim,
+      privateUserId,
+    ];
+    return db
+      .query(privateEggQuery, privateEggParams)
+      .then((result) => {
+        const [image] = result.rows;
+        res.json(image);
+      })
+      .catch((err) => next(err));
+  } else {
+    const publicEggQuery = `with "insertRow" as 
+      (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim")
+      values ($1, $2, $3, $4, $5, $6)
+      returning *),
+      "insertEvent" as 
+      (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
+      select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
+      `;
+    const publicEggParams = [
+      message,
+      filePath,
+      Number(longitude),
+      Number(latitude),
+      Number(id),
+      canClaim,
+    ];
+    return db
+      .query(publicEggQuery, publicEggParams)
+      .then((result) => {
+        const [image] = result.rows;
+        res.json(image);
+      })
+      .catch((err) => next(err));
+  }
 });
 
 app.post("/api/found", (req, res, next) => {

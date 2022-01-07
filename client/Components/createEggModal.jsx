@@ -8,6 +8,7 @@ export default class CreateEgg extends React.Component {
       claim: "anyone",
       private: false,
       ready: false,
+      privateUserId: null,
     };
     this.fileInputRef = React.createRef();
     this.selectRef = React.createRef();
@@ -27,38 +28,8 @@ export default class CreateEgg extends React.Component {
     else this.setState({ claim: event.target.value, private: false });
   }
 
-  handlePrivateSubmit() {
-    const formData = new FormData();
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
-    formData.append("message", this.messageRef.current.value);
-    formData.append("image", this.fileInputRef.current.files[0]);
-    formData.append("longitude", this.props.eggLocation.longitude);
-    formData.append("latitude", this.props.eggLocation.latitude);
-    formData.append("canClaim", "private");
-    formData.append("privateUserId", Number(this.selectRef.current.value));
-    const req = {
-      method: "POST",
-      headers: {
-        "x-access-token": token,
-      },
-      body: formData,
-    };
-    fetch("/api/egg/private", req)
-      .then((res) => res.json())
-      .then((res) => {
-        const createdEgg = {
-          longitude: this.props.eggLocation.longitude,
-          latitude: this.props.eggLocation.latitude,
-          canClaim: this.state.claim,
-          id: res.eggId,
-        };
-        this.props.drop(createdEgg);
-      })
-
-      .catch((err) => console.error(err));
-  }
-
-  handleSubmit() {
+  handleSubmit(e) {
+    e.preventDefault();
     const formData = new FormData();
     const token = window.localStorage.getItem("eggDrop8081proDgge");
     formData.append("message", this.messageRef.current.value);
@@ -66,6 +37,8 @@ export default class CreateEgg extends React.Component {
     formData.append("longitude", this.props.eggLocation.longitude);
     formData.append("latitude", this.props.eggLocation.latitude);
     formData.append("canClaim", this.state.claim);
+    this.state.claim === "private" &&
+      formData.append("privateUserId", Number(this.selectRef.current.value));
     const req = {
       method: "POST",
       headers: {
@@ -173,7 +146,11 @@ export default class CreateEgg extends React.Component {
                 </div>
                 <div className="row justify-align-center">
                   {this.state.private && (
-                    <select ref={this.selectRef} className="select-create-egg">
+                    <select
+                      ref={this.selectRef}
+                      onChange={this.handleClaimChange}
+                      className="select-create-egg"
+                    >
                       {this.props.user.data.followers.map((follower) => (
                         <option key={follower.userId} value={follower.userId}>
                           {follower.username}
@@ -186,12 +163,7 @@ export default class CreateEgg extends React.Component {
                 <Button
                   type="submit"
                   text="Drop Egg"
-                  click={(e) => {
-                    e.preventDefault();
-                    this.state.private === true
-                      ? this.handlePrivateSubmit()
-                      : this.handleSubmit();
-                  }}
+                  click={this.handleSubmit}
                   disabled={!this.state.ready}
                 />
               </div>
