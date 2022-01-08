@@ -119,17 +119,17 @@ app.get("/api/eggs", (req, res, next) => {
   const followers = "followers";
   const privateEgg = "private";
   const allEggQuery = `
-                        select "e".* from "egg" as "e"
+                        select "e"."longitude", "e"."latitude", "e"."eggId", "e"."userId", "e"."canClaim" from "egg" as "e"
                         where "e"."canClaim" = $1 and "e"."eggId" not in 
                         (select "f"."eggId" from "foundEggs" as "f")
                         `;
   const followerEggQuery = `
-                           select * from "egg"
-                           where "egg"."canClaim" = $1 and "egg"."userId" = (select "followers"."followingId" from "followers" where "followers"."followerId" = $2 and "isAccepted" = true) and "egg"."eggId" not in 
+                           select "e"."longitude", "e"."latitude", "e"."eggId", "e"."userId", "e"."canClaim" from "egg" as "e"
+                           where "e"."canClaim" = $1 and "e"."userId" = (select "followers"."followingId" from "followers" where "followers"."followerId" = $2 and "isAccepted" = true) and "e"."eggId" not in 
                            (select "f"."eggId" from "foundEggs" as "f")
                            `;
   const privateEggQuery = `
-                          select "e".* from "egg" as "e"
+                          select "e"."longitude", "e"."latitude", "e"."eggId", "e"."userId", "e"."canClaim" from "egg" as "e"
                           where "e"."canClaim" = $1 and "privateUserId" = $2 and "e"."eggId" not in
                           (select "f"."eggId" from "foundEggs" as "f")
                           `;
@@ -381,6 +381,27 @@ app.patch("/api/notifications/", (req, res, next) => {
     .then((result) => {
       const updated = result.rows;
       res.json(updated);
+    })
+    .catch((err) => next(err));
+});
+
+app.get("/api/egg/display/:id", (req, res, next) => {
+  const user = Number(req.user.id);
+  const eggId = Number(req.params.id);
+  if (!Number.isInteger(eggId)) throw new ClientError("invalid request");
+  const sql = `
+              select "e".*, "u"."username", "f"."foundAt"
+              from "egg" as "e"
+              join "users" as "u" using ("userId")
+              join "foundEggs" as "f" using ("eggId")
+              where "f"."eggId" = $1 and "f"."foundBy" = $2
+              `;
+  const params = [eggId, user];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const eggDisplayData = result.rows[0];
+      res.status(200).json(eggDisplayData);
     })
     .catch((err) => next(err));
 });

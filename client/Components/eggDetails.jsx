@@ -3,11 +3,13 @@ import { BottomSheet } from "react-spring-bottom-sheet";
 import ClientError from "../../server/client-error";
 import { UserContext } from "../Context/userContext";
 import Button from "../UI/button";
+import { useNavigate } from "react-router";
 
 const EggDetails = (props) => {
   const user = useContext(UserContext);
   const [open] = useState(props.targetEgg);
   const [isClaimed, setIsClaimed] = useState(false);
+  const navigate = useNavigate();
 
   function onDismiss() {
     props.toggleModal(null);
@@ -48,6 +50,7 @@ const EggDetails = (props) => {
         user.data.foundEggs.push(foundEgg);
       })
       .then(() => setIsClaimed(true))
+      .then(() => navigate(`/egg-display/${props.targetEgg.eggId}`))
       .catch((err) => console.error(err));
   };
 

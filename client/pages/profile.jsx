@@ -3,6 +3,7 @@ import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
 import Button from "../UI/button";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 const Profile = (props) => {
   const user = useContext(UserContext);
@@ -18,10 +19,21 @@ const Profile = (props) => {
     user.data === null && navigate("/");
   }, []);
 
-  const profileEggs = (src, key) => {
+  const profileEggs = (src, key, id) => {
     return (
-      <div className="profile-square" key={key}>
-        <img className="egg-images" src={src} alt="" />
+      <Link to={`/egg-display/${id}`}>
+        <div className="profile-square" key={key}>
+          <img className="egg-images" src={src} alt="" />
+        </div>
+      </Link>
+    );
+  };
+  const renderEggs = () => {
+    return (
+      <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
+        {user.data.foundEggs.map((egg) =>
+          profileEggs(egg.photoUrl, egg.latitude, egg.eggId)
+        )}
       </div>
     );
   };
@@ -74,16 +86,6 @@ const Profile = (props) => {
             </li>
           ))}
         </ul>
-      </div>
-    );
-  };
-
-  const renderEggs = () => {
-    return (
-      <div className="flex-wrap space-around profile-brown profile-egg-icons-div">
-        {user.data.foundEggs.map((egg) =>
-          profileEggs(egg.photoUrl, egg.latitude)
-        )}
       </div>
     );
   };
