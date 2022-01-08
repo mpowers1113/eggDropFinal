@@ -196,6 +196,15 @@ h1 {
   cursor: pointer;
 }
 
+.refresh-icon {
+  color: var(--light-brown);
+  position: fixed;
+  top: 3rem;
+  right: 0;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
 .navbar-map i {
   color: #fc0;
   cursor: pointer;

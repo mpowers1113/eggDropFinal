@@ -31,6 +31,7 @@ const Map = (props) => {
   const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
+  const [loadingEggs, setLoadingEggs] = useState(false);
   const navigate = useNavigate();
 
   const hasNotifications = user.notifications.length > 0;
@@ -46,36 +47,39 @@ const Map = (props) => {
     user.data === null && navigate("/");
   }, []);
 
-  useLayoutEffect(() => {
-    const getEggs = () => {
-      if (!user) return;
-      const token = window.localStorage.getItem("eggDrop8081proDgge");
+  const getEggs = () => {
+    if (!user || loadingEggs) return;
+    setLoadingEggs(true);
+    const token = window.localStorage.getItem("eggDrop8081proDgge");
 
-      const req = {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "x-access-token": token,
-          "Content-Type": "application/json",
-        },
-      };
-      fetch("/api/eggs", req)
-        .then((res) => {
-          if (!res.ok) throw new Error("something went wrong fetching eggs");
-          return res.json();
-        })
-        .then((res) => {
-          const eggs = res.map((egg) => ({
-            id: egg.eggId,
-            longitude: egg.longitude,
-            latitude: egg.latitude,
-            canClaim: egg.canClaim,
-          }));
-          setEggMarkers(eggs);
-        })
-        .then(() => user.loadNotifications())
-        .catch((err) => console.error(err));
+    const req = {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "x-access-token": token,
+        "Content-Type": "application/json",
+      },
     };
+    fetch("/api/eggs", req)
+      .then((res) => {
+        if (!res.ok) throw new Error("something went wrong fetching eggs");
+        return res.json();
+      })
+      .then((res) => {
+        const eggs = res.map((egg) => ({
+          id: egg.eggId,
+          longitude: egg.longitude,
+          latitude: egg.latitude,
+          canClaim: egg.canClaim,
+        }));
+        setEggMarkers(eggs);
+      })
+      .then(() => setLoadingEggs(false))
+      .then(() => user.loadNotifications())
+      .catch((err) => console.error(err));
+  };
+
+  useLayoutEffect(() => {
     getEggs();
   }, []);
 
@@ -216,6 +220,10 @@ const Map = (props) => {
         ></i>
       )}
       {user.loadingNotifications && <span>loading...</span>}
+      <i
+        onClick={() => getEggs()}
+        className="fas fa-sync-alt fa-2x refresh-icon"
+      ></i>
     </>
   );
 };
