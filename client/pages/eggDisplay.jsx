@@ -34,51 +34,70 @@ const EggDisplay = (props) => {
     getEggDisplayData();
   }, []);
 
-  return (
-    <div className="profile-gray">
-      {!loadEgg && <div className="row justify-align-center">Loading...</div>}
-      {loadEgg && (
-        <>
-          <div className="row space-between profile-brown egg-display-div">
-            <i
-              onClick={() => navigate("/profile")}
-              className="profile-icons fas fa-arrow-left fa-2x"
-            ></i>
+  const renderHeaderNav = () => {
+    return (
+      <div className="row space-between profile-gray egg-display-div">
+        <i
+          onClick={() => navigate("/profile")}
+          className="profile-icons fas fa-arrow-left fa-2x"
+        ></i>
 
-            <i
-              onClick={() => navigate("/notifications")}
-              className={`fas fa-bell fa-2x ${
-                user.notifications.length > 0
-                  ? "notifications-icon"
-                  : "no-notifications"
-              }`}
-            />
+        <i
+          onClick={() => navigate("/notifications")}
+          className={`fas fa-bell fa-2x ${
+            user.notifications.length > 0
+              ? "notifications-icon"
+              : "no-notifications"
+          }`}
+        />
+      </div>
+    );
+  };
+
+  const renderEggData = () => {
+    return (
+      <div className="profile-gray row flex-column justify-align-center">
+        <div>
+          <h1 className="center-text">{loadEgg.message}</h1>
+        </div>
+        <div className="row">
+          <div className="display-square">
+            <img className="egg-images" src={loadEgg.photoUrl} />
           </div>
-          <div className="profile-brown row flex-column justify-align-center">
-            <div>
-              <h1 className="center-text">{loadEgg.message}</h1>
-            </div>
-            <div className="display-square">
-              <img className="egg-images-display" src={loadEgg.photoUrl} />
-            </div>
-            <div className="row">
-              <h3 className="center-text">{`From: ${loadEgg.username}`}</h3>
-            </div>
-            <div className="row">
-              <h1 className="center-text">{`Created on ${getDateFromTimeStamp(
-                loadEgg.createdAt
-              )}`}</h1>
-            </div>
-            <div className="row">
-              <p className="center-text">{`You found this egg on ${getDateFromTimeStamp(
-                loadEgg.foundAt
-              )}`}</p>
-            </div>
-          </div>
-        </>
-      )}
+        </div>
+        <div className="row">
+          <h3 className="center-text">{`From: ${loadEgg.username}`}</h3>
+        </div>
+        <div className="row">
+          <h1 className="center-text">{`Created on ${getDateFromTimeStamp(
+            loadEgg.createdAt
+          )}`}</h1>
+        </div>
+        <div className="row display-bottom">
+          <p className="center-text">{`You found this egg on ${getDateFromTimeStamp(
+            loadEgg.foundAt
+          )}`}</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderViewToggle = () => {
+    if (!loadEgg)
+      return (
+        <div className="justify-align-center">
+          <h1 className="center-text">Loading...</h1>
+        </div>
+      );
+    if (loadEgg) return renderEggData();
+  };
+
+  return (
+    <>
+      {renderHeaderNav()}
+      {renderViewToggle()}
       <Navbar />
-    </div>
+    </>
   );
 };
 
