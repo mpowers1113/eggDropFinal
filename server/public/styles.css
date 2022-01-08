@@ -556,3 +556,65 @@ h1 {
   transition: all 1s;
   overflow: hidden;
 }
+
+.delete-egg {
+  color: whitesmoke;
+  background-color: #f19c79;
+  width: 100%;
+  min-height: 30px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  letter-spacing: 0.2rem;
+  padding: 0.5rem 2rem;
+}
+
+.delete-egg-no {
+  color: whitesmoke;
+  background-color: #f19c79;
+  width: 100%;
+  min-height: 30px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  letter-spacing: 0.2rem;
+  padding: 0.5rem;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.delete-egg-yes {
+  color: whitesmoke;
+  background-color: #cbdfbd;
+  width: 100%;
+  min-height: 30px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  letter-spacing: 0.2rem;
+  padding: 0.5rem;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.delete-egg:hover {
+  background-color: #ee8559;
+}
+
+.delete-egg-no:hover {
+  background-color: #ee8559;
+}
+
+.delete-egg-yes:hover {
+  background-color: #9ec383;
+}
+
+.center-element {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

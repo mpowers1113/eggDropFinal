@@ -56,7 +56,7 @@ const Login = (props) => {
         return res.json();
       })
       .then((res) => props.setUserValid(res))
-      .then(navigate("/map"))
+      .then(() => navigate("/map"))
       .catch((err) => console.error(err));
   };
 

@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useState } from "react";
+import React, { useContext, useLayoutEffect, useState, useEffect } from "react";
 import { UserContext } from "../Context/userContext";
 import { useNavigate, useParams } from "react-router";
 import getDateFromTimeStamp from "../Utils/getDateFromTimestamp";
@@ -7,8 +7,14 @@ import Navbar from "../Components/navbar";
 const EggDisplay = (props) => {
   const user = useContext(UserContext);
   const [loadEgg, setLoadEgg] = useState(false);
+  const [deleteEggModal, setDeleteEggModal] = useState(false);
+  const [deleteConfirmed, setDeleteConfirmed] = useState(false);
   const navigate = useNavigate();
   const params = useParams();
+
+  useEffect(() => {
+    user.data === null && navigate("/");
+  }, []);
 
   const targetEgg = user.data.foundEggs.filter(
     (egg) => egg.eggId === Number(params.id)
@@ -33,6 +39,23 @@ const EggDisplay = (props) => {
     };
     getEggDisplayData();
   }, []);
+
+  const deleteEggHandler = async () => {
+    const id = targetEgg[0].eggId;
+    try {
+      const response = await fetch(`/api/egg/delete/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+        },
+      });
+      const jsonRes = await response.json();
+      jsonRes && setDeleteConfirmed(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const renderHeaderNav = () => {
     return (
@@ -73,19 +96,54 @@ const EggDisplay = (props) => {
             loadEgg.createdAt
           )}`}</h1>
         </div>
-        <div className="row display-bottom">
+        <div className="row pb1">
           <p className="center-text">{`You found this egg on ${getDateFromTimeStamp(
             loadEgg.foundAt
           )}`}</p>
         </div>
+        {!deleteEggModal && (
+          <div className="row">
+            <button
+              className="delete-egg"
+              onClick={() => setDeleteEggModal(true)}
+            >
+              Delete egg
+            </button>
+          </div>
+        )}
+        {deleteEggModal && (
+          <div className="row flex-column">
+            <p>Are you sure you want to delete this egg?</p>
+            <div className="row justify-align-center">
+              <button
+                className="delete-egg-no"
+                onClick={() => setDeleteEggModal(false)}
+              >
+                No
+              </button>
+              <button className="delete-egg-yes" onClick={deleteEggHandler}>
+                Yes
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderDeletedView = () => {
+    return (
+      <div className="justify-align-center row center-element">
+        <h1 className="center-text">Deleted</h1>
       </div>
     );
   };
 
   const renderViewToggle = () => {
+    if (deleteConfirmed) return renderDeletedView();
     if (!loadEgg)
       return (
-        <div className="justify-align-center">
+        <div className="row justify-align-center center-element">
           <h1 className="center-text">Loading...</h1>
         </div>
       );

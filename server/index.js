@@ -356,6 +356,32 @@ app.delete("/api/notifications/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.delete("/api/egg/delete/:id", (req, res, next) => {
+  const userRequestingDelete = Number(req.user.id);
+  const eggId = Number(req.params.id);
+  if (!Number.isInteger(userRequestingDelete))
+    throw new ClientError("invalid delete request");
+  const sql = `with "deleteEgg" as (
+               delete from "egg"
+                where "egg"."eggId" = $1
+                returning *
+                ), 
+                "deleteFoundEgg" as (
+                  delete from "foundEggs"
+                  where "foundEggs"."eggId" = $1
+                  returning *
+                )
+                select "d".*, "f".* from "deleteEgg" as "d", "deleteFoundEgg" as "f" `;
+  const params = [eggId];
+  return db
+    .query(sql, params)
+    .then((result) => {
+      const [deleted] = result.rows;
+      res.status(200).json(deleted);
+    })
+    .catch((err) => next(err));
+});
+
 app.patch("/api/notifications/", (req, res, next) => {
   const clientId = Number(req.user.id);
   const notificationId = Number(req.body[0].id);
