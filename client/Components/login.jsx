@@ -86,8 +86,8 @@ const Login = (props) => {
         window.localStorage.setItem("eggDrop8081proDgge", token);
         const userData = { username: loginData.username, id: user.Id };
         props.setUserValid(userData);
-        getUserData();
       })
+      .then(() => getUserData())
       .catch((err) => console.error(err));
   };
 

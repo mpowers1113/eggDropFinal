@@ -73,6 +73,7 @@ const Map = (props) => {
           }));
           setEggMarkers(eggs);
         })
+        .then(() => user.loadNotifications())
         .catch((err) => console.error(err));
     };
     getEggs();
