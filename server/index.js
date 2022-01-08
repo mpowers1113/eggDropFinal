@@ -323,7 +323,8 @@ app.get("/api/users", (req, res, next) => {
   const sql = `
               select "username", "profilePhotoUrl", "createdAt"
               from "users"
-              where "userId" != $1
+              where "userId" != $1 and "userId" not in 
+              (select "users"."userId" from "users" join "followers" on "users"."userId" = "followers"."followingId" where "followerId" = $1 and "isAccepted" = true)
               `;
   const params = [id];
   return db
