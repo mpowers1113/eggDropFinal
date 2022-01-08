@@ -40,6 +40,13 @@ const EggDisplay = (props) => {
     getEggDisplayData();
   }, []);
 
+  const resetProfileEggs = () => {
+    const newFoundEggs = user.data.foundEggs.filter(
+      (egg) => egg.eggId !== targetEgg[0].eggId
+    );
+    user.data.foundEggs = [...newFoundEggs];
+  };
+
   const deleteEggHandler = async () => {
     const id = targetEgg[0].eggId;
     try {
@@ -52,6 +59,7 @@ const EggDisplay = (props) => {
       });
       const jsonRes = await response.json();
       jsonRes && setDeleteConfirmed(true);
+      resetProfileEggs();
     } catch (err) {
       console.error(err);
     }
