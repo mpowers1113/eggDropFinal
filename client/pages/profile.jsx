@@ -3,6 +3,7 @@ import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
 import Button from "../UI/button";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 const Profile = (props) => {
   const user = useContext(UserContext);
@@ -20,13 +21,11 @@ const Profile = (props) => {
 
   const profileEggs = (src, key, id) => {
     return (
-      <div
-        onClick={() => navigate(`/egg-display/${id}`)}
-        className="profile-square"
-        key={key}
-      >
-        <img className="egg-images" src={src} alt="" />
-      </div>
+      <Link to={`/egg-display/${id}`}>
+        <div className="profile-square" key={key}>
+          <img className="egg-images" src={src} alt="" />
+        </div>
+      </Link>
     );
   };
   const renderEggs = () => {
