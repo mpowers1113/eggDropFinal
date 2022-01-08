@@ -58,11 +58,11 @@ const EggDisplay = (props) => {
     return (
       <div className="profile-gray row flex-column justify-align-center">
         <div>
-          <h1 className="center-text">{loadEgg.message}</h1>
+          <h1 className="center-text">&quot;{loadEgg.message}&quot;</h1>
         </div>
         <div className="row">
           <div className="display-square">
-            <img className="egg-images" src={loadEgg.photoUrl} />
+            <img className="egg-images-display" src={loadEgg.photoUrl} />
           </div>
         </div>
         <div className="row">

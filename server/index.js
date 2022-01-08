@@ -119,17 +119,17 @@ app.get("/api/eggs", (req, res, next) => {
   const followers = "followers";
   const privateEgg = "private";
   const allEggQuery = `
-                        select "e".* from "egg" as "e"
+                        select "e"."longitude", "e"."latitude", "e"."eggId", "e"."userId" from "egg" as "e"
                         where "e"."canClaim" = $1 and "e"."eggId" not in 
                         (select "f"."eggId" from "foundEggs" as "f")
                         `;
   const followerEggQuery = `
-                           select * from "egg"
-                           where "egg"."canClaim" = $1 and "egg"."userId" = (select "followers"."followingId" from "followers" where "followers"."followerId" = $2 and "isAccepted" = true) and "egg"."eggId" not in 
+                           select "e"."longitude", "e"."latitude", "e"."eggId", "e"."userId" from "egg" as "e"
+                           where "e"."canClaim" = $1 and "e"."userId" = (select "followers"."followingId" from "followers" where "followers"."followerId" = $2 and "isAccepted" = true) and "e"."eggId" not in 
                            (select "f"."eggId" from "foundEggs" as "f")
                            `;
   const privateEggQuery = `
-                          select "e".* from "egg" as "e"
+                          select "e"."longitude", "e"."latitude", "e"."eggId", "e"."userId" from "egg" as "e"
                           where "e"."canClaim" = $1 and "privateUserId" = $2 and "e"."eggId" not in
                           (select "f"."eggId" from "foundEggs" as "f")
                           `;
