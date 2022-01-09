@@ -1,13 +1,19 @@
-import React, { useContext, useLayoutEffect, useState } from "react";
+import React, { useContext, useLayoutEffect, useState, useEffect } from "react";
 import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
+import { useNavigate } from "react-router";
 
 const Notifications = (props) => {
   const user = useContext(UserContext);
+  const navigate = useNavigate();
 
-  const [currentNotifications, setCurrentNotifications] = useState([
-    ...user.notifications,
-  ]);
+  const [currentNotifications, setCurrentNotifications] = useState(
+    user.notifications
+  );
+
+  useEffect(() => {
+    user.data === null && navigate("/");
+  }, []);
 
   useLayoutEffect(() => {
     user.loadNotifications();
@@ -18,7 +24,7 @@ const Notifications = (props) => {
       (notification) => notification.id !== id
     );
     if (currentNotifications.length === 1) setCurrentNotifications([]);
-    else setCurrentNotifications([...newNotifications]);
+    else setCurrentNotifications(newNotifications);
   };
 
   const deleteNotificationHandler = async (e) => {

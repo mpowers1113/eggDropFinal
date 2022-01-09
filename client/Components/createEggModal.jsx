@@ -55,7 +55,7 @@ export default class CreateEgg extends React.Component {
         const createdEgg = {
           longitude: this.props.eggLocation.longitude,
           latitude: this.props.eggLocation.latitude,
-          canClaim: this.state.claim,
+          canClaim: res.canClaim,
           id: res.eggId,
         };
         this.props.drop(createdEgg);
