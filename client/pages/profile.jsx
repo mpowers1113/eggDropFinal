@@ -1,4 +1,10 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
+import React, {
+  useContext,
+  useRef,
+  useState,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
 import Button from "../UI/button";
@@ -14,6 +20,10 @@ const Profile = (props) => {
   const toggleUploadProfile = () => setUploadProfilePhoto(!uploadProfilePhoto);
 
   const imageInputRef = useRef();
+
+  useLayoutEffect(() => {
+    user.loadNotifications();
+  }, []);
 
   useEffect(() => {
     user.data === null && navigate("/");

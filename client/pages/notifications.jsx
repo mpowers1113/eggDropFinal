@@ -7,9 +7,9 @@ const Notifications = (props) => {
   const user = useContext(UserContext);
   const navigate = useNavigate();
 
-  const [currentNotifications, setCurrentNotifications] = useState([
-    ...user.notifications,
-  ]);
+  const [currentNotifications, setCurrentNotifications] = useState(
+    user.notifications
+  );
 
   useEffect(() => {
     user.data === null && navigate("/");
@@ -24,7 +24,7 @@ const Notifications = (props) => {
       (notification) => notification.id !== id
     );
     if (currentNotifications.length === 1) setCurrentNotifications([]);
-    else setCurrentNotifications([...newNotifications]);
+    else setCurrentNotifications(newNotifications);
   };
 
   const deleteNotificationHandler = async (e) => {
