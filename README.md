@@ -1,6 +1,6 @@
 # eggDROP
 
-## Technologies Used: React, Node (Express), Postgresql, CSS3, HTML5, MapBox
+## React, Node (Express), Postgresql, CSS3, HTML5, MapBox
 
 EggDrop is a PokemonGo meets Instagram. It’s a mobile, location-based, geocaching web application for users to share pictures and messages in the form of a scavenger hunt. 
 
