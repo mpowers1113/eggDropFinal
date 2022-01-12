@@ -34,6 +34,33 @@ const Notifications = (props) => {
     setNotificationState(user.notifications);
   };
 
+  useEffect(() => {
+    return () => {
+      const notificationCleanUp = async (id) => {
+        try {
+          const response = await fetch(`api/notifications/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "x-access-token":
+                window.localStorage.getItem("eggDrop8081porDgge"),
+            },
+          });
+          if (!response)
+            throw new Error("something went wrong deleting this notification");
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      const nonFollowNotifications = user.notifications.filter(
+        (data) => data.payload.type !== "follow"
+      );
+      nonFollowNotifications.forEach((notification) => {
+        notificationCleanUp(notification.id);
+      });
+    };
+  }, []);
+
   const deleteNotificationHandler = async (e) => {
     const id = Number(e.target.id);
     try {
@@ -92,15 +119,8 @@ const Notifications = (props) => {
                 />
               </div>
             </div>
-            <div className="column-65">
+            <div className="column-80">
               <p>{data.payload.fromUserUsername} just found your egg!</p>
-            </div>
-            <div className="column-15 row justify-align-center">
-              <i
-                id={data.id}
-                onClick={deleteNotificationHandler}
-                className="fas fa-times cursor-pointer"
-              ></i>
             </div>
           </div>
         </li>
