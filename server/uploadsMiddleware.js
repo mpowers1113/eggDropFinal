@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
 const path = require("path");
 const mime = require("mime");
@@ -15,7 +16,7 @@ const storage = multerS3({
   acl: "public-read",
   key: (req, file, done) => {
     const fileExtension = path.extname(file.originalname);
-    const key = `${Date.now()}${fileExtension}`;
+    const key = `${uuidv4()}${fileExtension}`;
     done(null, key);
   },
   contentType: (req, file, done) => {
