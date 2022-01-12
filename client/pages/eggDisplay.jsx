@@ -65,6 +65,7 @@ const EggDisplay = (props) => {
     } catch (err) {
       console.error(err);
     }
+    navigate("/profile");
   };
 
   const renderHeaderNav = () => {

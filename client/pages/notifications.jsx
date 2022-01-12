@@ -32,6 +32,7 @@ const Notifications = (props) => {
       );
 
     setNotificationState(user.notifications);
+    user.setNotifications(user.notifications);
   };
 
   useEffect(() => {

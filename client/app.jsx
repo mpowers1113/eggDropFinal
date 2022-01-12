@@ -113,6 +113,7 @@ const useUserState = () => {
     validateUserToken,
     loadNotifications,
     setUserValid,
+    setNotifications,
   };
   return context;
 };
