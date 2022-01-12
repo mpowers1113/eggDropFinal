@@ -237,7 +237,7 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
   const { id } = req.user;
   const { message, latitude, longitude, canClaim } = req.body;
   if (!message) throw new ClientError(400, "message is a required field");
-  const filePath = "/images/" + req.file.filename;
+  const filePath = req.file.location;
   const privateUserId = Number(req.body.privateUserId) || null;
   const eggQuery = `with "insertRow" as 
                     (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim", "privateUserId")
@@ -262,6 +262,7 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
       const [image] = result.rows;
       res.json(image);
     })
+    .then(() => res.end())
     .catch((err) => next(err));
 });
 
