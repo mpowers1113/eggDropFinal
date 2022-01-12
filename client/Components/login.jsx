@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InstructionsButton from "../UI/instructionsButton";
 import Instructions from "./instructions";
 import Logo from "../UI/logo";
@@ -35,6 +35,10 @@ const Login = (props) => {
       navigate("/map");
     }
   };
+
+  useEffect(() => {
+    decodeTokenLoginFunc();
+  });
 
   const sendLoginData = (userLoginData) => {
     if (loginData.username.length === 0 || loginData.password.length === 0) {
