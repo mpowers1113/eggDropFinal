@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "../UI/button";
+import LoadingSpinner from "../UI/loadingSpinner";
 
 export default class CreateEgg extends React.Component {
   constructor(props) {
@@ -9,6 +10,7 @@ export default class CreateEgg extends React.Component {
       private: false,
       ready: false,
       privateUserId: null,
+      uploading: false,
     };
     this.fileInputRef = React.createRef();
     this.selectRef = React.createRef();
@@ -30,6 +32,7 @@ export default class CreateEgg extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
+    this.setState({ loading: true });
     const formData = new FormData();
     const token = window.localStorage.getItem("eggDrop8081porDgge");
     formData.append("message", this.messageRef.current.value);
@@ -52,6 +55,7 @@ export default class CreateEgg extends React.Component {
     fetch("/api/egg", req)
       .then((res) => res.json())
       .then((res) => {
+        this.setState({ loading: false });
         const createdEgg = {
           longitude: this.props.eggLocation.longitude,
           latitude: this.props.eggLocation.latitude,
@@ -124,6 +128,7 @@ export default class CreateEgg extends React.Component {
                     />
                     <label htmlFor="can-claim-anyone">Anyone</label>
                   </div>
+                  <>{this.state.loading && <LoadingSpinner />}</>
                   <div>
                     <input
                       onChange={this.handleClaimChange}
