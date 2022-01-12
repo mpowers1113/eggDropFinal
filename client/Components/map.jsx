@@ -4,7 +4,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
 } from "react";
 import EggIcon from "../UI/egg-icon";
 import FollowerEggIcon from "../UI/followers-egg-icon";
@@ -45,8 +44,6 @@ const Map = (props) => {
     user.getUserData();
     user.getEggs();
   }, []);
-
-  useLayoutEffect(() => {}, []);
 
   const toggleEggDetails = (event) => {
     if (error) return;

@@ -17,6 +17,7 @@ const Profile = (props) => {
   const imageInputRef = useRef();
 
   useEffect(() => {
+    user.loadNotifications();
     !user.userDataLoadComplete && user.getUserData();
   }, []);
 

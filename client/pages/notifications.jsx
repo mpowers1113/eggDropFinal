@@ -7,8 +7,6 @@ import LoadingSpinner from "../UI/loadingSpinner";
 const Notifications = (props) => {
   const user = useContext(UserContext);
 
-  let currentNotifications = user.notifications;
-
   const [notificationState, setNotificationState] = useState(false);
 
   useEffect(() => {
@@ -20,18 +18,20 @@ const Notifications = (props) => {
     if (user.notifications.length > 0) return;
     user.loadNotifications();
   }, []);
+
   useEffect(() => {
-    if (user.userDataLoadComplete) setNotificationState(currentNotifications);
-  }, [user.userDataLoadComplete]);
+    if (user.userDataLoadComplete) setNotificationState(user.notifications);
+  }, []);
 
   const resetNotifications = (id) => {
     if (!user.userDataLoadComplete) return;
-    if (currentNotifications.length === 1) setNotificationState([]);
+    if (notificationState.length === 1) user.notifications = [];
     else
-      currentNotifications = currentNotifications.filter(
+      user.notifications = notificationState.filter(
         (notification) => notification.id !== id
       );
-    setNotificationState(currentNotifications);
+
+    setNotificationState(user.notifications);
   };
 
   const deleteNotificationHandler = async (e) => {
@@ -41,7 +41,7 @@ const Notifications = (props) => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+          "x-access-token": window.localStorage.getItem("eggDrop8081porDgge"),
         },
       });
       if (!response)
