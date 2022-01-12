@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../Components/navbar";
+import LoadingSpinner from "../UI/loadingSpinner";
 
 const EventFeed = (props) => {
   const [loadingEvents, setLoadingEvents] = useState(false);
@@ -64,7 +65,7 @@ const EventFeed = (props) => {
   };
 
   const toggleLoadedEvents = () => {
-    if (!loadingEvents) return <h3 className="center-text">Loading...</h3>;
+    if (!loadingEvents) return <LoadingSpinner />;
     else return RenderEvents(loadingEvents);
   };
 

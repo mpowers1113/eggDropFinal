@@ -1,43 +1,45 @@
-import React, { useContext, useLayoutEffect, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../Context/userContext";
 import { useNavigate, useParams } from "react-router";
 import getDateFromTimeStamp from "../Utils/getDateFromTimestamp";
 import Navbar from "../Components/navbar";
+import LoadingSpinner from "../UI/loadingSpinner";
 
 const EggDisplay = (props) => {
   const user = useContext(UserContext);
   const [loadEgg, setLoadEgg] = useState(false);
   const [deleteEggModal, setDeleteEggModal] = useState(false);
   const [deleteConfirmed, setDeleteConfirmed] = useState(false);
+  const [targetEgg, setTargetEgg] = useState(null);
   const navigate = useNavigate();
   const params = useParams();
 
+  let eggParam = null;
+
+  const getEggDisplayData = async () => {
+    eggParam = user.data.foundEggs.filter(
+      (egg) => egg.eggId === Number(params.id)
+    );
+    const id = eggParam[0].eggId;
+    try {
+      const response = await fetch(`/api/egg/display/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": window.localStorage.getItem("eggDrop8081porDgge"),
+        },
+      });
+      const jsonRes = await response.json();
+      setLoadEgg(jsonRes);
+    } catch (err) {
+      console.error(err);
+    }
+    setTargetEgg(eggParam);
+  };
+
   useEffect(() => {
-    user.data === null && navigate("/");
-  }, []);
-
-  const targetEgg = user.data.foundEggs.filter(
-    (egg) => egg.eggId === Number(params.id)
-  );
-
-  useLayoutEffect(() => {
-    const id = targetEgg[0].eggId;
-    const getEggDisplayData = async () => {
-      try {
-        const response = await fetch(`/api/egg/display/${id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
-          },
-        });
-        const jsonRes = await response.json();
-        setLoadEgg(jsonRes);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getEggDisplayData();
+    if (user.data === null) user.getUserData();
+    else getEggDisplayData();
   }, []);
 
   const resetProfileEggs = () => {
@@ -54,7 +56,7 @@ const EggDisplay = (props) => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+          "x-access-token": window.localStorage.getItem("eggDrop8081porDgge"),
         },
       });
       const jsonRes = await response.json();
@@ -63,6 +65,7 @@ const EggDisplay = (props) => {
     } catch (err) {
       console.error(err);
     }
+    navigate("/profile");
   };
 
   const renderHeaderNav = () => {
@@ -87,10 +90,9 @@ const EggDisplay = (props) => {
 
   const renderEggData = () => {
     return (
-      <div className="profile-gray row flex-column justify-align-center">
-        <div>
-          <h1 className="center-text">&quot;{loadEgg.message}&quot;</h1>
-        </div>
+      <div className="profile-gray row flex-column justify-align-center max-height-vh">
+        <h1 className="center-text">&quot;{loadEgg.message}&quot;</h1>
+
         <div className="row">
           <div className="display-square">
             <img className="egg-images-display" src={loadEgg.photoUrl} />
@@ -160,9 +162,11 @@ const EggDisplay = (props) => {
 
   return (
     <>
-      {renderHeaderNav()}
-      {renderViewToggle()}
-      <Navbar />
+      <>{renderHeaderNav()}</>
+      <>{user.userDataLoadComplete ? renderViewToggle() : <LoadingSpinner />}</>
+      <>
+        <Navbar />
+      </>
     </>
   );
 };

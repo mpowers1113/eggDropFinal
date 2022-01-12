@@ -21,7 +21,7 @@ const EggDetails = (props) => {
   const orderedDate = `${date[1]}-${date[2]}-${date[0]}`;
 
   const claimEggHandler = () => {
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
     const eggId = { eggId: props.targetEgg.eggId };
     const req = {
       method: "POST",
@@ -80,18 +80,6 @@ const EggDetails = (props) => {
                 <i>Created on {orderedDate}</i>
               </p>
             </div>
-          )}
-          {isClaimed && (
-            <>
-              <div className="p1 center-text egg-details-message">
-                <p>&quot;{props.targetEgg.message}&quot;</p>
-              </div>
-              <img
-                src={props.targetEgg.photoUrl}
-                alt={`${props.username} secret egg`}
-                className="egg-details-img"
-              ></img>
-            </>
           )}
           {!isClaimed && (
             <div className="center-text">

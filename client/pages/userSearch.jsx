@@ -3,6 +3,7 @@ import Input from "../UI/input";
 import Navbar from "../Components/navbar";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../Context/userContext";
+import LoadingSpinner from "../UI/loadingSpinner";
 
 const UserSearch = (props) => {
   const user = useContext(UserContext);
@@ -16,7 +17,7 @@ const UserSearch = (props) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+        "x-access-token": window.localStorage.getItem("eggDrop8081porDgge"),
       },
     };
     fetch("/api/users", req)
@@ -117,11 +118,14 @@ const UserSearch = (props) => {
 
   return (
     <>
-      <div className="row flex-column profile-gray justify-center event-div">
-        {renderSearchBar()}
-        {!loadingUsers && <h3 className="center-text">Loading...</h3>}
-        {loadingUsers && <RenderUsers />}
-      </div>
+      {!user.userDataLoadComplete && <LoadingSpinner />}
+      {user.userDataLoadComplete && (
+        <div className="row flex-column profile-gray justify-center event-div">
+          {renderSearchBar()}
+          {!loadingUsers && <h3 className="center-text">Loading...</h3>}
+          {loadingUsers && <RenderUsers />}
+        </div>
+      )}
       <Navbar />
     </>
   );
