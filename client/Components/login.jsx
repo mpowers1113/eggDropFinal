@@ -1,5 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState, useContext } from "react";
-import { UserContext } from "../Context/userContext";
+import React, { useState } from "react";
 import InstructionsButton from "../UI/instructionsButton";
 import Instructions from "./instructions";
 import Logo from "../UI/logo";
@@ -8,6 +7,7 @@ import Input from "../UI/input";
 import Divider from "../UI/divider";
 import ColumnWrapper from "../UI/column-wrapper";
 import SignUp from "./signUp";
+import decodeToken from "../lib/decode-token";
 import ClientError from "../../server/client-error";
 import { useNavigate } from "react-router";
 
@@ -18,7 +18,6 @@ const Login = (props) => {
   const [password, setPassword] = useState("");
   const [validLoginInput, setValidLoginInput] = useState(true);
   const navigate = useNavigate();
-  const user = useContext(UserContext);
 
   const loginClickHandler = () => sendLoginData(loginData);
   const signUpClickHandler = () => setSignUp(!signUp);
@@ -29,14 +28,13 @@ const Login = (props) => {
   const passwordHandler = (event) => setPassword(event.target.value);
   const loginData = { username: username, password: password };
 
-  useLayoutEffect(() => {
-    user.validateUserToken();
-  }, []);
-
-  useEffect(() => {
-    user.data && user.getUserData();
-    navigate("/map");
-  });
+  const decodeTokenLoginFunc = () => {
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
+    const userToken = token ? decodeToken(token) : null;
+    if (userToken) {
+      navigate("/map");
+    }
+  };
 
   const sendLoginData = (userLoginData) => {
     if (loginData.username.length === 0 || loginData.password.length === 0) {
@@ -60,9 +58,9 @@ const Login = (props) => {
         }
       })
       .then((res) => {
-        const { token, user } = res;
+        const { token } = res;
         window.localStorage.setItem("eggDrop8081porDgge", token);
-        user.validateUserToken(token);
+        decodeTokenLoginFunc();
       })
       .catch((err) => console.error(err));
   };

@@ -31,7 +31,7 @@ export default class CreateEgg extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     const formData = new FormData();
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
     formData.append("message", this.messageRef.current.value);
     formData.append("image", this.fileInputRef.current.files[0]);
     formData.append("longitude", this.props.eggLocation.longitude);

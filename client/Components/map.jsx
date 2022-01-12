@@ -18,6 +18,7 @@ import EggDetails from "./eggDetails";
 import distanceToEgg from "../Utils/distanceToEgg";
 import Navbar from "./navbar";
 import { useNavigate } from "react-router";
+import LoadingSpinner from "../UI/loadingSpinner";
 
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
@@ -41,7 +42,7 @@ const Map = (props) => {
   };
 
   useEffect(() => {
-    user.validateUserToken();
+    user.getUserData();
     user.getEggs();
   }, []);
 
@@ -185,7 +186,7 @@ const Map = (props) => {
           className="fas fa-bell fa-2x notifications-icon"
         ></i>
       )}
-      {user.loadingNotifications && <span>loading...</span>}
+      {!user.userDataLoadComplete && <LoadingSpinner />}
       <i
         onClick={() => user.getEggs()}
         className="fas fa-sync-alt fa-2x refresh-icon"

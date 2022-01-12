@@ -21,7 +21,7 @@ const EggDetails = (props) => {
   const orderedDate = `${date[1]}-${date[2]}-${date[0]}`;
 
   const claimEggHandler = () => {
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
     const eggId = { eggId: props.targetEgg.eggId };
     const req = {
       method: "POST",

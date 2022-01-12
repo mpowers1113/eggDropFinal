@@ -1,30 +1,37 @@
-import React, { useContext, useLayoutEffect, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
-import { useNavigate } from "react-router";
+
+import LoadingSpinner from "../UI/loadingSpinner";
 
 const Notifications = (props) => {
   const user = useContext(UserContext);
-  const navigate = useNavigate();
 
-  const [currentNotifications, setCurrentNotifications] = useState(
-    user.notifications
-  );
+  let currentNotifications = user.notifications;
+
+  const [notificationState, setNotificationState] = useState(false);
 
   useEffect(() => {
-    user.data === null && navigate("/");
+    if (user.notifications.length > 0) return;
+    !user.userDataLoadComplete && user.getUserData();
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    if (user.notifications.length > 0) return;
     user.loadNotifications();
   }, []);
+  useEffect(() => {
+    if (user.userDataLoadComplete) setNotificationState(currentNotifications);
+  }, [user.userDataLoadComplete]);
 
   const resetNotifications = (id) => {
-    const newNotifications = user.notifications.filter(
-      (notification) => notification.id !== id
-    );
-    if (currentNotifications.length === 1) setCurrentNotifications([]);
-    else setCurrentNotifications(newNotifications);
+    if (!user.userDataLoadComplete) return;
+    if (currentNotifications.length === 1) setNotificationState([]);
+    else
+      currentNotifications = currentNotifications.filter(
+        (notification) => notification.id !== id
+      );
+    setNotificationState(currentNotifications);
   };
 
   const deleteNotificationHandler = async (e) => {
@@ -144,15 +151,18 @@ const Notifications = (props) => {
 
   return (
     <>
-      <div className="row flex-column profile-gray justify-center event-div">
-        <ul className="events-ul">
-          {currentNotifications.map((data) =>
-            data.payload.type === "follow"
-              ? renderFollowRequest(data, "follow")
-              : renderFoundEgg(data, "egg")
-          )}
-        </ul>
-      </div>
+      {notificationState === false && <LoadingSpinner />}
+      {notificationState && (
+        <div className="row flex-column profile-gray justify-center event-div">
+          <ul className="events-ul">
+            {notificationState.map((data) =>
+              data.payload.type === "follow"
+                ? renderFollowRequest(data, "follow")
+                : renderFoundEgg(data, "egg")
+            )}
+          </ul>
+        </div>
+      )}
       <Navbar />
     </>
   );

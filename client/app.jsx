@@ -22,7 +22,7 @@ const useUserState = () => {
   const getUserData = async () => {
     if (loadingUserData || userDataLoadComplete) return;
     setLoadingUserData(true);
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
     const req = {
       method: "POST",
       headers: {
@@ -34,6 +34,7 @@ const useUserState = () => {
       const response = await fetch("/api/profile", req);
       const jsonRes = await response.json();
       setUserValid(jsonRes);
+      loadNotifications();
     } catch (err) {
       console.error(err);
       throw new Error("something went wrong fetching profile data");
@@ -46,13 +47,14 @@ const useUserState = () => {
     if (userDataLoadComplete) return;
     const token = window.localStorage.getItem("eggDrop8081proDgge");
     const user = token ? decodeToken(token) : null;
-    user && getUserData();
+    if (user) getUserData();
+    else return null;
   };
 
   const getEggs = async () => {
     if (loadingEggs) return;
     setLoadingEggs(true);
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
     const req = {
       method: "GET",
       headers: {
@@ -86,7 +88,7 @@ const useUserState = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+          "x-access-token": window.localStorage.getItem("eggDrop8081porDgge"),
         },
       });
       const jsonRes = await response.json();
@@ -119,20 +121,22 @@ const App = (props) => {
   const context = useUserState();
 
   return (
-    <UserContext.Provider value={context}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" index element={<Login />} />
-          <Route path="/map" element={<Map />} />
-          <Route path={"/events"} element={<EventFeed />} />
-          <Route path={"/profile"} element={<Profile />} />
-          <Route path={"/search"} element={<UserSearch />} />
-          <Route path={"/notifications"} element={<Notifications />} />
-          <Route path={"/egg-display/:id"} element={<EggDisplay />} />
-          <Route path={"*"} element={<div>Not found</div>} />
-        </Routes>
-      </BrowserRouter>
-    </UserContext.Provider>
+    <>
+      <UserContext.Provider value={context}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" index element={<Login />} />
+            <Route path="/map" element={<Map />} />
+            <Route path={"/events"} element={<EventFeed />} />
+            <Route path={"/profile"} element={<Profile />} />
+            <Route path={"/search"} element={<UserSearch />} />
+            <Route path={"/notifications"} element={<Notifications />} />
+            <Route path={"/egg-display/:id"} element={<EggDisplay />} />
+            <Route path={"*"} element={<div>Not found</div>} />
+          </Routes>
+        </BrowserRouter>
+      </UserContext.Provider>
+    </>
   );
 };
 

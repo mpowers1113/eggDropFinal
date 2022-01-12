@@ -4,6 +4,7 @@ import { UserContext } from "../Context/userContext";
 import Button from "../UI/button";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../UI/loadingSpinner";
 
 const Profile = (props) => {
   const user = useContext(UserContext);
@@ -16,7 +17,7 @@ const Profile = (props) => {
   const imageInputRef = useRef();
 
   useEffect(() => {
-    !user.userDataLoadComplete && user.validateUserToken();
+    !user.userDataLoadComplete && user.getUserData();
   }, []);
 
   const profileEggs = (src, key, id) => {
@@ -131,6 +132,7 @@ const Profile = (props) => {
 
   return (
     <>
+      {!user.userDataLoadComplete && <LoadingSpinner />}
       {user.userDataLoadComplete && (
         <div className="profile-brown">
           <div className="row space-between profile-gray">
