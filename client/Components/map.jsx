@@ -27,11 +27,8 @@ const Map = (props) => {
     enableHighAccuracy: true,
   });
   const user = useContext(UserContext);
-
-  const [eggMarkers, setEggMarkers] = useState([]);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
-  const [loadingEggs, setLoadingEggs] = useState(false);
   const navigate = useNavigate();
 
   const hasNotifications = user.notifications.length > 0;
@@ -39,49 +36,16 @@ const Map = (props) => {
   const clearEggData = () => setEggLocation(null);
 
   const dropEgg = (eggData) => {
-    setEggMarkers([...eggMarkers, eggData]);
+    user.setEggMarkers([...user.eggMarkers, eggData]);
     clearEggData();
   };
 
   useEffect(() => {
-    user.data === null && navigate("/");
+    user.validateUserToken();
+    user.getEggs();
   }, []);
 
-  const getEggs = () => {
-    if (!user || loadingEggs) return;
-    setLoadingEggs(true);
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
-
-    const req = {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "x-access-token": token,
-        "Content-Type": "application/json",
-      },
-    };
-    fetch("/api/eggs", req)
-      .then((res) => {
-        if (!res.ok) throw new Error("something went wrong fetching eggs");
-        return res.json();
-      })
-      .then((res) => {
-        const eggs = res.map((egg) => ({
-          id: egg.eggId,
-          longitude: egg.longitude,
-          latitude: egg.latitude,
-          canClaim: egg.canClaim,
-        }));
-        setEggMarkers(eggs);
-      })
-      .then(() => setLoadingEggs(false))
-      .then(() => user.loadNotifications())
-      .catch((err) => console.error(err));
-  };
-
-  useLayoutEffect(() => {
-    getEggs();
-  }, []);
+  useLayoutEffect(() => {}, []);
 
   const toggleEggDetails = (event) => {
     if (error) return;
@@ -143,75 +107,77 @@ const Map = (props) => {
 
   return (
     <>
-      <div className="row">
-        <MapGL
-          onDblClick={prepareDropHandler}
-          ref={mapRef}
-          {...viewport}
-          width="100vw"
-          height="100vh"
-          mapStyle="mapbox://styles/mapbox/streets-v11"
-          onViewportChange={handleViewportChange}
-          mapboxApiAccessToken={MAPBOXKEY}
-        >
-          {eggMarkers.map((markers) => (
-            <Marker
-              key={markers.longitude}
-              longitude={markers.longitude}
-              latitude={markers.latitude}
-            >
-              {markers.canClaim === "followers" ? (
-                <FollowerEggIcon
-                  id={markers.id}
-                  dataEgg={"egg"}
-                  onClick={toggleEggDetails}
-                />
-              ) : markers.canClaim === "private" ? (
-                <PrivateEggIcon
-                  id={markers.id}
-                  dataEgg={"egg"}
-                  onClick={toggleEggDetails}
-                />
-              ) : (
-                <EggIcon
-                  id={markers.id}
-                  dataEgg={"egg"}
-                  onClick={toggleEggDetails}
-                />
-              )}
-            </Marker>
-          ))}
-
-          <Geocoder
-            mapRef={mapRef}
-            onViewportChange={handleGeocoderViewportChange}
+      {user.userDataLoadComplete && (
+        <div className="row">
+          <MapGL
+            onDblClick={prepareDropHandler}
+            ref={mapRef}
+            {...viewport}
+            width="100vw"
+            height="100vh"
+            mapStyle="mapbox://styles/mapbox/streets-v11"
+            onViewportChange={handleViewportChange}
             mapboxApiAccessToken={MAPBOXKEY}
-            position="top-left"
-          />
-          <GeolocateControl
-            style={{ position: "absolute" }}
-            positionOptions={{ enableHighAccuracy: true }}
-            trackUserLocation={true}
-            auto
-          />
-          {eggLocation !== null && (
-            <CreateEgg
-              user={user}
-              clear={clearEggData}
-              eggLocation={eggLocation}
-              drop={dropEgg}
+          >
+            {user.eggMarkers.map((markers) => (
+              <Marker
+                key={markers.longitude}
+                longitude={markers.longitude}
+                latitude={markers.latitude}
+              >
+                {markers.canClaim === "followers" ? (
+                  <FollowerEggIcon
+                    id={markers.id}
+                    dataEgg={"egg"}
+                    onClick={toggleEggDetails}
+                  />
+                ) : markers.canClaim === "private" ? (
+                  <PrivateEggIcon
+                    id={markers.id}
+                    dataEgg={"egg"}
+                    onClick={toggleEggDetails}
+                  />
+                ) : (
+                  <EggIcon
+                    id={markers.id}
+                    dataEgg={"egg"}
+                    onClick={toggleEggDetails}
+                  />
+                )}
+              </Marker>
+            ))}
+
+            <Geocoder
+              mapRef={mapRef}
+              onViewportChange={handleGeocoderViewportChange}
+              mapboxApiAccessToken={MAPBOXKEY}
+              position="top-left"
             />
-          )}
-          {targetEgg && (
-            <EggDetails
-              setEggMarkers={setEggMarkers}
-              eggMarkers={eggMarkers}
-              targetEgg={targetEgg}
-              toggleModal={setTargetEgg}
+            <GeolocateControl
+              style={{ position: "absolute" }}
+              positionOptions={{ enableHighAccuracy: true }}
+              trackUserLocation={true}
+              auto
             />
-          )}
-        </MapGL>
-      </div>
+            {eggLocation !== null && (
+              <CreateEgg
+                user={user}
+                clear={clearEggData}
+                eggLocation={eggLocation}
+                drop={dropEgg}
+              />
+            )}
+            {targetEgg && (
+              <EggDetails
+                setEggMarkers={user.eggMarkers}
+                eggMarkers={user.eggMarkers}
+                targetEgg={targetEgg}
+                toggleModal={setTargetEgg}
+              />
+            )}
+          </MapGL>
+        </div>
+      )}
       <Navbar />
       {hasNotifications && (
         <i
@@ -221,7 +187,7 @@ const Map = (props) => {
       )}
       {user.loadingNotifications && <span>loading...</span>}
       <i
-        onClick={() => getEggs()}
+        onClick={() => user.getEggs()}
         className="fas fa-sync-alt fa-2x refresh-icon"
       ></i>
     </>

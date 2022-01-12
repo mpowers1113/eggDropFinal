@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState, useContext } from "react";
+import { UserContext } from "../Context/userContext";
 import InstructionsButton from "../UI/instructionsButton";
 import Instructions from "./instructions";
 import Logo from "../UI/logo";
@@ -8,7 +9,6 @@ import Divider from "../UI/divider";
 import ColumnWrapper from "../UI/column-wrapper";
 import SignUp from "./signUp";
 import ClientError from "../../server/client-error";
-import decodeToken from "../lib/decode-token";
 import { useNavigate } from "react-router";
 
 const Login = (props) => {
@@ -18,6 +18,7 @@ const Login = (props) => {
   const [password, setPassword] = useState("");
   const [validLoginInput, setValidLoginInput] = useState(true);
   const navigate = useNavigate();
+  const user = useContext(UserContext);
 
   const loginClickHandler = () => sendLoginData(loginData);
   const signUpClickHandler = () => setSignUp(!signUp);
@@ -28,37 +29,14 @@ const Login = (props) => {
   const passwordHandler = (event) => setPassword(event.target.value);
   const loginData = { username: username, password: password };
 
-  useEffect(() => {
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
-    const user = token ? decodeToken(token) : null;
-    if (user) {
-      const userData = { username: user.username, id: user.id };
-      props.setUserValid(userData);
-      getUserData();
-    }
+  useLayoutEffect(() => {
+    user.validateUserToken();
   }, []);
 
-  const getUserData = () => {
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
-    const req = {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "x-access-token": token,
-      },
-    };
-    fetch(`/api/profile`, req)
-      .then((res) => {
-        if (!res.ok) {
-          props.setUserValid(res);
-          throw new Error("something went wrong fetching profile data");
-        }
-        return res.json();
-      })
-      .then((res) => props.setUserValid(res))
-      .then(() => navigate("/map"))
-      .catch((err) => console.error(err));
-  };
+  useEffect(() => {
+    user.data && user.getUserData();
+    navigate("/map");
+  });
 
   const sendLoginData = (userLoginData) => {
     if (loginData.username.length === 0 || loginData.password.length === 0) {
@@ -83,11 +61,9 @@ const Login = (props) => {
       })
       .then((res) => {
         const { token, user } = res;
-        window.localStorage.setItem("eggDrop8081proDgge", token);
-        const userData = { username: loginData.username, id: user.Id };
-        props.setUserValid(userData);
+        window.localStorage.setItem("eggDrop8081porDgge", token);
+        user.validateUserToken(token);
       })
-      .then(() => getUserData())
       .catch((err) => console.error(err));
   };
 

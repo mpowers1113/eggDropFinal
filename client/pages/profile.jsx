@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useRef,
-  useState,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import Navbar from "../Components/navbar";
 import { UserContext } from "../Context/userContext";
 import Button from "../UI/button";
@@ -21,12 +15,8 @@ const Profile = (props) => {
 
   const imageInputRef = useRef();
 
-  useLayoutEffect(() => {
-    user.loadNotifications();
-  }, []);
-
   useEffect(() => {
-    user.data === null && navigate("/");
+    !user.userDataLoadComplete && user.validateUserToken();
   }, []);
 
   const profileEggs = (src, key, id) => {
@@ -141,7 +131,7 @@ const Profile = (props) => {
 
   return (
     <>
-      {user.data && (
+      {user.userDataLoadComplete && (
         <div className="profile-brown">
           <div className="row space-between profile-gray">
             <i

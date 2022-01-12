@@ -619,3 +619,11 @@ h1 {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.max-height-vh {
+  max-height: 80vh;
+}
+
+.max-height-vh h1 {
+  margin: 0;
+}

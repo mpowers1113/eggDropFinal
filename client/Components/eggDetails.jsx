@@ -81,18 +81,6 @@ const EggDetails = (props) => {
               </p>
             </div>
           )}
-          {isClaimed && (
-            <>
-              <div className="p1 center-text egg-details-message">
-                <p>&quot;{props.targetEgg.message}&quot;</p>
-              </div>
-              <img
-                src={props.targetEgg.photoUrl}
-                alt={`${props.username} secret egg`}
-                className="egg-details-img"
-              ></img>
-            </>
-          )}
           {!isClaimed && (
             <div className="center-text">
               <h2>Distance from Egg: </h2>

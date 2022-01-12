@@ -149,11 +149,7 @@ export default class CreateEgg extends React.Component {
                 </div>
                 <div className="row justify-align-center">
                   {this.state.private && (
-                    <select
-                      ref={this.selectRef}
-                      onChange={this.handleClaimChange}
-                      className="select-create-egg"
-                    >
+                    <select ref={this.selectRef} className="select-create-egg">
                       {this.props.user.data.followers.map((follower) => (
                         <option key={follower.userId} value={follower.userId}>
                           {follower.username}

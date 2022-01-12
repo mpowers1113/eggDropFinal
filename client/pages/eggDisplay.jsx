@@ -87,10 +87,9 @@ const EggDisplay = (props) => {
 
   const renderEggData = () => {
     return (
-      <div className="profile-gray row flex-column justify-align-center">
-        <div>
-          <h1 className="center-text">&quot;{loadEgg.message}&quot;</h1>
-        </div>
+      <div className="profile-gray row flex-column justify-align-center max-height-vh">
+        <h1 className="center-text">&quot;{loadEgg.message}&quot;</h1>
+
         <div className="row">
           <div className="display-square">
             <img className="egg-images-display" src={loadEgg.photoUrl} />
