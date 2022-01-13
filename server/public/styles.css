@@ -216,8 +216,18 @@ h1 {
   position: fixed;
   top: 0;
   right: 0;
-  padding: 0.5rem;
+  padding: 0.3rem;
   cursor: pointer;
+}
+
+.notifications-icon-display {
+  color: rgb(249, 83, 83);
+  padding: 0.3rem;
+  cursor: pointer;
+}
+
+.egg-display-header {
+  align-items: center;
 }
 
 .refresh-icon {
@@ -344,7 +354,7 @@ h1 {
 }
 
 .profile-icons {
-  padding: 1rem;
+  padding: 0.3rem;
   color: #acacac;
   cursor: pointer;
 }
@@ -513,10 +523,7 @@ h1 {
 
 .no-notifications {
   color: lightgray;
-  position: fixed;
-  top: 0;
-  right: 0;
-  padding: 0.5rem;
+  padding: 0.3rem;
   cursor: pointer;
 }
 

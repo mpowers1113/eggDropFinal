@@ -19,7 +19,10 @@ const Login = (props) => {
   const [validLoginInput, setValidLoginInput] = useState(true);
   const navigate = useNavigate();
 
-  const loginClickHandler = () => sendLoginData(loginData);
+  const loginClickHandler = (e) => {
+    e.preventDefault();
+    sendLoginData(loginData);
+  };
   const signUpClickHandler = () => setSignUp(!signUp);
   const toggleInstructionsHandler = () => setInstructions(!instructions);
 
@@ -69,13 +72,36 @@ const Login = (props) => {
       .catch((err) => console.error(err));
   };
 
+  const guestLoginHandler = () => {
+    const guest = { username: "guest", password: "guest" };
+    fetch("/api/auth/sign-in", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(guest),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          setValidLoginInput("invalid");
+          throw new ClientError("something went wrong in your login");
+        } else {
+          return res.json();
+        }
+      })
+      .then((res) => {
+        const { token } = res;
+        window.localStorage.setItem("eggDrop8081porDgge", token);
+        decodeTokenLoginFunc();
+      })
+      .catch((err) => console.error(err));
+  };
+
   return (
     <div>
       {signUp && (
-        <SignUp
-          closeModal={signUpClickHandler}
-          setNewUser={props.setUserValid}
-        />
+        <SignUp closeModal={signUpClickHandler} decode={decodeTokenLoginFunc} />
       )}
 
       {!instructions && (
@@ -85,46 +111,45 @@ const Login = (props) => {
       {instructions && <Instructions onFinish={toggleInstructionsHandler} />}
 
       <ColumnWrapper>
-        <Logo />
-        <Input
-          onFocus={onFocusInputHandler}
-          onChange={usernameHandler}
-          className={"sign-up-input login"}
-          type={"text"}
-          id={"username"}
-        />
-        <Input
-          onFocus={onFocusInputHandler}
-          className={"sign-up-input mb1"}
-          type={"password"}
-          id={"password"}
-          onChange={passwordHandler}
-        />
+        <form>
+          <Logo />
+          <Input
+            onFocus={onFocusInputHandler}
+            onChange={usernameHandler}
+            className={"sign-up-input login"}
+            type={"text"}
+            id={"username"}
+          />
+          <Input
+            onFocus={onFocusInputHandler}
+            className={"sign-up-input mb1"}
+            type={"password"}
+            id={"password"}
+            onChange={passwordHandler}
+          />
 
-        {validLoginInput === "empty" && (
-          <div className="row justify-align-center">
-            <p className="password-check">
-              username and password cannot be empty
-            </p>
-          </div>
-        )}
+          {validLoginInput === "empty" && (
+            <div className="row justify-align-center">
+              <p className="password-check">
+                username and password cannot be empty
+              </p>
+            </div>
+          )}
 
-        {validLoginInput === "invalid" && (
-          <div className="row justify-align-center">
-            <p className="password-check">invalid login</p>
-          </div>
-        )}
+          {validLoginInput === "invalid" && (
+            <div className="row justify-align-center">
+              <p className="password-check">invalid login</p>
+            </div>
+          )}
 
-        <Button text={"Login"} click={loginClickHandler} />
+          <Button text={"Login"} click={loginClickHandler} />
+        </form>
 
         <Button text={"Sign Up"} click={signUpClickHandler} />
 
         <Divider text={"OR"} />
 
-        <Button
-          click={() => props.setUserValid({ username: "Guest", id: 1 })}
-          text={"Guest"}
-        />
+        <Button click={guestLoginHandler} text={"Guest"} />
       </ColumnWrapper>
     </div>
   );

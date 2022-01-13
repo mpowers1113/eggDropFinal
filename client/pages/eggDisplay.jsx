@@ -70,17 +70,26 @@ const EggDisplay = (props) => {
 
   const renderHeaderNav = () => {
     return (
-      <div className="row space-between profile-gray egg-display-div">
+      <div className="row space-between profile-gray egg-display-header">
         <i
           onClick={() => navigate("/profile")}
           className="profile-icons fas fa-arrow-left fa-2x"
         ></i>
-
+        {!deleteEggModal && (
+          <div>
+            <button
+              className="delete-egg"
+              onClick={() => setDeleteEggModal(true)}
+            >
+              Delete egg
+            </button>
+          </div>
+        )}
         <i
           onClick={() => navigate("/notifications")}
           className={`fas fa-bell fa-2x ${
             user.notifications.length > 0
-              ? "notifications-icon"
+              ? "notifications-icon-display"
               : "no-notifications"
           }`}
         />
@@ -113,16 +122,7 @@ const EggDisplay = (props) => {
             loadEgg.foundAt
           )}`}</p>
         </div>
-        {!deleteEggModal && (
-          <div className="row">
-            <button
-              className="delete-egg"
-              onClick={() => setDeleteEggModal(true)}
-            >
-              Delete egg
-            </button>
-          </div>
-        )}
+
         {deleteEggModal && (
           <div className="overlay">
             <div className="row center-element delete-egg-modal flex-column">
