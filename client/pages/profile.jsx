@@ -9,6 +9,7 @@ import LoadingSpinner from "../UI/loadingSpinner";
 const Profile = (props) => {
   const user = useContext(UserContext);
   const [uploadProfilePhoto, setUploadProfilePhoto] = useState(false);
+
   const [view, setView] = useState("eggs");
   const navigate = useNavigate();
 
@@ -43,6 +44,22 @@ const Profile = (props) => {
   const userLogoutHandler = () => {
     window.localStorage.removeItem("eggDrop8081porDgge");
     navigate("/");
+  };
+
+  const renderLogoutModal = () => {
+    return (
+      <div className="row delete-egg-modal flex-column">
+        <p>Are you sure you want to log out?</p>
+        <div className="row justify-align-center">
+          <button className="delete-egg-no" onClick={() => setView("eggs")}>
+            No
+          </button>
+          <button className="delete-egg-yes" onClick={userLogoutHandler}>
+            Yes
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const handleProfileImageSubmit = (event) => {
@@ -134,6 +151,7 @@ const Profile = (props) => {
     else if (view === "following")
       return renderFollow("following", user.data.following);
     else if (view === "eggs") return renderEggs();
+    else if (view === "logout") return renderLogoutModal();
   };
 
   return (
@@ -183,7 +201,7 @@ const Profile = (props) => {
               }`}
             ></i>
             <i
-              onClick={userLogoutHandler}
+              onClick={() => setView("logout")}
               className="fas ml1 fa-sign-out-alt mb1 p2 profile-icons"
             ></i>
           </div>
