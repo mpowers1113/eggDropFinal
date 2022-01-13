@@ -43,7 +43,7 @@ const Profile = (props) => {
   const handleProfileImageSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData();
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
     formData.append("image", imageInputRef.current.files[0]);
     const req = {
       method: "POST",
@@ -70,10 +70,7 @@ const Profile = (props) => {
                   <div className="circle-event">
                     <img
                       className="profile-pic"
-                      src={
-                        event.profilePhotoUrl ||
-                        "../Images/defaultprofilephoto.jpeg"
-                      }
+                      src={event.profilePhotoUrl || ""}
                       alt="profile photo"
                     />
                   </div>

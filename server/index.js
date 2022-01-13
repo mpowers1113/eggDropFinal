@@ -442,6 +442,12 @@ app.get("/api/egg/display/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
+app.use((req, res) => {
+  res.sendFile("/index.html", {
+    root: path.join(__dirname, "public"),
+  });
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
