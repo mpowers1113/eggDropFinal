@@ -78,6 +78,10 @@ h1 {
   padding-bottom: 0.3rem;
 }
 
+.mb1 {
+  margin-bottom: 0.3rem;
+}
+
 .egg-logo {
   background-image: url("./egg.svg");
   background-position: center;
@@ -242,6 +246,10 @@ h1 {
   right: 0;
   cursor: pointer;
   padding: 0.5rem;
+}
+
+.ml1 {
+  margin-left: 1rem;
 }
 
 .map-instructions-button {
@@ -437,8 +445,9 @@ h1 {
 }
 
 .circle {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
+  margin-top: 0.2rem;
   position: relative;
   overflow: hidden;
   border-radius: 50%;

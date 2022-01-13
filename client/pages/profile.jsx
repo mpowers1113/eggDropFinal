@@ -40,6 +40,11 @@ const Profile = (props) => {
     );
   };
 
+  const userLogoutHandler = () => {
+    window.localStorage.removeItem("eggDrop8081porDgge");
+    navigate("/");
+  };
+
   const handleProfileImageSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -70,7 +75,10 @@ const Profile = (props) => {
                   <div className="circle-event">
                     <img
                       className="profile-pic"
-                      src={event.profilePhotoUrl || ""}
+                      src={
+                        event.profilePhotoUrl ||
+                        "https://t3.ftcdn.net/jpg/00/64/67/80/240_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg"
+                      }
                       alt="profile photo"
                     />
                   </div>
@@ -155,7 +163,7 @@ const Profile = (props) => {
                   className="profile-pic"
                   src={
                     user.data.profilePhotoUrl ||
-                    "../images/defaultprofilephoto.jpeg"
+                    "https://t3.ftcdn.net/jpg/00/64/67/80/240_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg"
                   }
                   alt="profile photo"
                 />
@@ -170,9 +178,13 @@ const Profile = (props) => {
           <div className="row justify-align-center profile-gray">
             <i
               onClick={toggleUploadProfile}
-              className={`padding-none margin-none profile-icons fas fa-user-edit ${
+              className={`profile-icons p2 mb1 fas fa-user-edit ${
                 uploadProfilePhoto && "event-icon"
               }`}
+            ></i>
+            <i
+              onClick={userLogoutHandler}
+              className="fas ml1 fa-sign-out-alt mb1 p2 profile-icons"
             ></i>
           </div>
           <div className="row space-between profile-gray profile-gray-text">
