@@ -523,6 +523,9 @@ h1 {
 
 .no-notifications {
   color: lightgray;
+  position: fixed;
+  top: 0;
+  left: 0;
   padding: 0.3rem;
   cursor: pointer;
 }

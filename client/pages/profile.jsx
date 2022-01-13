@@ -155,7 +155,7 @@ const Profile = (props) => {
                   className="profile-pic"
                   src={
                     user.data.profilePhotoUrl ||
-                    "../Images/defaultprofilephoto.jpeg"
+                    "../images/defaultprofilephoto.jpeg"
                   }
                   alt="profile photo"
                 />

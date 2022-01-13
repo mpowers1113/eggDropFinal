@@ -90,7 +90,7 @@ const Notifications = (props) => {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": window.localStorage.getItem("eggDrop8081proDgge"),
+          "x-access-token": window.localStorage.getItem("eggDrop8081porDgge"),
         },
         body: JSON.stringify(targetNotification),
       });
