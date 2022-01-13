@@ -45,7 +45,7 @@ const useUserState = () => {
 
   const validateUserToken = () => {
     if (userDataLoadComplete) return;
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
     const user = token ? decodeToken(token) : null;
     if (user) getUserData();
     else return null;
