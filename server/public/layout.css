@@ -65,12 +65,12 @@ body {
 }
 
 .column-modal {
-  width: 70vw;
+  width: 90vw;
   height: auto;
   text-align: center;
   border-radius: 1rem;
   background-color: var(--egg-white);
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 .margin-none {

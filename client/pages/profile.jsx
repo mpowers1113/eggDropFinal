@@ -139,7 +139,7 @@ const Profile = (props) => {
           <div className="row space-between profile-gray">
             <i
               onClick={() => navigate("/map")}
-              className="profile-icons fas fa-arrow-left fa-2x"
+              className="profile-icons fixed-back-arrow fas fa-arrow-left fa-2x"
             ></i>
 
             <i

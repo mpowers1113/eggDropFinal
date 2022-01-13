@@ -19,6 +19,18 @@
   padding: 0.5rem;
 }
 
+.light-brown-text {
+  color: var(--light-brown);
+}
+
+.dark-brown-text {
+  color: var(--darkbrown-color);
+}
+
+.dark-gray-text {
+  color: var(--dark-grey);
+}
+
 .button:hover {
   background-color: #a75702;
 }
@@ -56,6 +68,14 @@ input:focus {
 
 h1 {
   color: #717171;
+}
+
+.radio-options {
+  flex-basis: 40%;
+}
+
+.pb1 {
+  padding-bottom: 0.3rem;
 }
 
 .egg-logo {
@@ -118,6 +138,10 @@ h1 {
   font-size: 50px;
 }
 
+.pt1 {
+  padding-top: 0.5rem;
+}
+
 .overlay {
   display: flex;
   align-items: center;
@@ -178,7 +202,7 @@ h1 {
   left: 0;
   right: 0;
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.3rem;
   justify-content: space-around;
   align-items: center;
 }
@@ -325,6 +349,14 @@ h1 {
   cursor: pointer;
 }
 
+.fixed-back-arrow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
 .profile-icons:hover {
   color: rgb(209, 199, 186);
 }
@@ -402,6 +434,7 @@ h1 {
 
 .profile-egg-icons-div {
   margin-top: 0.3rem;
+  padding-bottom: 3.5rem;
 }
 
 .no-margin {
@@ -621,11 +654,24 @@ h1 {
 }
 
 .max-height-vh {
-  max-height: 80vh;
+  max-height: 100vh;
 }
 
-.max-height-vh h1 {
-  margin: 0;
+.max-height-vh h1,
+p,
+h2,
+h3 {
+  margin: 0.2rem;
+}
+
+.delete-egg-modal {
+  background-color: var(--egg-white);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.delete-egg-modal p {
+  padding: 1rem;
 }
 
 #bars1 {
@@ -745,4 +791,10 @@ h1 {
   66% { background-size: 5px 40px, 5px 40px, 5px 40px, 5px 55px, 5px 40px, 5px 40px; }
   83% { background-size: 5px 40px, 5px 40px, 5px 40px, 5px 40px, 5px 55px, 5px 40px; }
   100% { background-size: 5px 40px, 5px 40px, 5px 40px, 5px 40px, 5px 40px, 5px 55px; }
+}
+
+@media screen and (max-width: 575px) {
+  .max-height-vh {
+    max-height: 50%;
+  }
 }

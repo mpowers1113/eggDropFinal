@@ -52,8 +52,8 @@ const Instructions = (props) => {
           <div className="column-modal">
             <i className="dark-brown fas fa-users fa-4x"></i>
             <h3 className="light">
-              Lastly, choose who can see this egg. Choose from all your
-              followers, or send it to someone special.
+              Lastly, choose who can see this egg. Choose from all users, all
+              your followers, or send it to someone special.
             </h3>
           </div>
           <div className="row justify-align-center">

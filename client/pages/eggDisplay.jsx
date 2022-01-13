@@ -90,8 +90,10 @@ const EggDisplay = (props) => {
 
   const renderEggData = () => {
     return (
-      <div className="profile-gray row flex-column justify-align-center max-height-vh">
-        <h1 className="center-text">&quot;{loadEgg.message}&quot;</h1>
+      <div className="profile-gray-text row flex-column justify-align-center max-height-vh egg-display-queries pt1">
+        <h3 className="profile-gray center-text">
+          &quot;{loadEgg.message}&quot;
+        </h3>
 
         <div className="row">
           <div className="display-square">
@@ -99,15 +101,15 @@ const EggDisplay = (props) => {
           </div>
         </div>
         <div className="row">
-          <h3 className="center-text">{`From: ${loadEgg.username}`}</h3>
+          <h3 className="center-text profile-gray-text">{`From: ${loadEgg.username}`}</h3>
         </div>
         <div className="row">
-          <h1 className="center-text">{`Created on ${getDateFromTimeStamp(
+          <p className="center-text dark-brown-text">{`Created on ${getDateFromTimeStamp(
             loadEgg.createdAt
-          )}`}</h1>
+          )}`}</p>
         </div>
-        <div className="row pb1">
-          <p className="center-text">{`You found this egg on ${getDateFromTimeStamp(
+        <div className="row">
+          <p className="center-text light-brown-text">{`You found this egg on ${getDateFromTimeStamp(
             loadEgg.foundAt
           )}`}</p>
         </div>
@@ -122,18 +124,20 @@ const EggDisplay = (props) => {
           </div>
         )}
         {deleteEggModal && (
-          <div className="row flex-column">
-            <p>Are you sure you want to delete this egg?</p>
-            <div className="row justify-align-center">
-              <button
-                className="delete-egg-no"
-                onClick={() => setDeleteEggModal(false)}
-              >
-                No
-              </button>
-              <button className="delete-egg-yes" onClick={deleteEggHandler}>
-                Yes
-              </button>
+          <div className="overlay">
+            <div className="row center-element delete-egg-modal flex-column">
+              <p>Are you sure you want to delete this egg?</p>
+              <div className="row justify-align-center">
+                <button
+                  className="delete-egg-no"
+                  onClick={() => setDeleteEggModal(false)}
+                >
+                  No
+                </button>
+                <button className="delete-egg-yes" onClick={deleteEggHandler}>
+                  Yes
+                </button>
+              </div>
             </div>
           </div>
         )}

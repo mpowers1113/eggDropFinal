@@ -38,7 +38,7 @@ const UserSearch = (props) => {
 
   const sendFollowRequest = (e) => {
     const username = e.target.id;
-    const token = window.localStorage.getItem("eggDrop8081proDgge");
+    const token = window.localStorage.getItem("eggDrop8081porDgge");
     const req = {
       method: "POST",
       headers: {
