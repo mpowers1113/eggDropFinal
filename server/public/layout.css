@@ -24,11 +24,13 @@ body {
 }
 
 .container {
-  width: 1000px;
+  max-width: 1000px;
+  margin: auto;
 }
 
 .row {
   display: flex;
+  max-width: 1000px;
 }
 
 .column-80 {

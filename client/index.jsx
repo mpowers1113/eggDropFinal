@@ -2,4 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./app";
 
-ReactDOM.render(<App />, document.querySelector("#root"));
+ReactDOM.render(
+  <div className="container">
+    <App />
+  </div>,
+  document.querySelector("#root")
+);

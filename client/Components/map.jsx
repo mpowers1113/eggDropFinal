@@ -200,23 +200,25 @@ const Map = (props) => {
                 toggleModal={setTargetEgg}
               />
             )}
+            {hasNotifications && (
+              <i
+                onClick={() => navigate("/notifications")}
+                className="fas fa-bell fa-2x notifications-icon"
+              ></i>
+            )}
+            <MapInstructionsButton click={toggleInstructionsHandler} />
+            <i
+              onClick={() => user.getEggs()}
+              className="fas fa-sync-alt fa-2x refresh-icon"
+            ></i>
           </MapGL>
         </div>
       )}
       {instructions && <Instructions onFinish={toggleInstructionsHandler} />}
-      <MapInstructionsButton click={toggleInstructionsHandler} />
+
       <Navbar />
-      {hasNotifications && (
-        <i
-          onClick={() => navigate("/notifications")}
-          className="fas fa-bell fa-2x notifications-icon"
-        ></i>
-      )}
+
       {!user.userDataLoadComplete && <LoadingSpinner />}
-      <i
-        onClick={() => user.getEggs()}
-        className="fas fa-sync-alt fa-2x refresh-icon"
-      ></i>
     </>
   );
 };

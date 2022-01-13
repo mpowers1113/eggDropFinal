@@ -206,10 +206,8 @@ h1 {
 
 .navbar-map {
   background-color: white;
-  position: fixed;
+  position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
   width: 100%;
   padding: 0.3rem;
   justify-content: space-around;
@@ -222,10 +220,10 @@ h1 {
 
 .notifications-icon {
   color: rgb(249, 83, 83);
-  position: fixed;
+  position: absolute;
   top: 0;
-  right: 0;
-  padding: 0.3rem;
+  right: 0.5rem;
+  padding: 0.5rem;
   cursor: pointer;
 }
 
@@ -241,9 +239,9 @@ h1 {
 
 .refresh-icon {
   color: var(--light-brown);
-  position: fixed;
+  position: absolute;
   top: 3rem;
-  right: 0;
+  right: 0.5rem;
   cursor: pointer;
   padding: 0.5rem;
 }
@@ -254,9 +252,9 @@ h1 {
 
 .map-instructions-button {
   color: var(--light-brown);
-  position: fixed;
+  position: absolute;
   top: 6rem;
-  right: 0;
+  right: 0.5rem;
   cursor: pointer;
   padding: 0.5rem;
 }
@@ -386,7 +384,7 @@ h1 {
 }
 
 .fixed-back-arrow {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   padding: 0.5rem;
@@ -550,7 +548,7 @@ h1 {
 
 .no-notifications {
   color: lightgray;
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   padding: 0.3rem;
