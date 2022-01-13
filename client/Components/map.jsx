@@ -6,6 +6,8 @@ import React, {
   useEffect,
 } from "react";
 import EggIcon from "../UI/egg-icon";
+import MapInstructionsButton from "../UI/mapInstructionsButton";
+import Instructions from "./instructions";
 import FollowerEggIcon from "../UI/followers-egg-icon";
 import PrivateEggIcon from "../UI/private-egg-icon";
 import MapGL, {
@@ -33,6 +35,9 @@ const Map = (props) => {
   const user = useContext(UserContext);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
+  const [instructions, setInstructions] = useState(false);
+  const toggleInstructionsHandler = () => setInstructions(!instructions);
+
   const navigate = useNavigate();
 
   const hasNotifications = user.notifications.length > 0;
@@ -186,6 +191,8 @@ const Map = (props) => {
           </MapGL>
         </div>
       )}
+      {instructions && <Instructions onFinish={toggleInstructionsHandler} />}
+      <MapInstructionsButton click={toggleInstructionsHandler} />
       <Navbar />
       {hasNotifications && (
         <i
