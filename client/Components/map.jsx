@@ -132,6 +132,7 @@ const Map = (props) => {
         <div className="row">
           <MapGL
             onDblClick={prepareDropHandler}
+            doubleClickZoom={false}
             ref={mapRef}
             {...viewport}
             width="100vw"

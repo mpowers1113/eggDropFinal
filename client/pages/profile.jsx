@@ -5,7 +5,6 @@ import Button from "../UI/button";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "../UI/loadingSpinner";
-
 const Profile = (props) => {
   const user = useContext(UserContext);
   const [uploadProfilePhoto, setUploadProfilePhoto] = useState(false);
