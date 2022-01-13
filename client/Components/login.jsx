@@ -45,7 +45,7 @@ const Login = (props) => {
       setValidLoginInput("empty");
       return;
     }
-    fetch("http://localhost:3000/api/auth/sign-in", {
+    fetch("/api/auth/sign-in", {
       method: "POST",
       headers: {
         Accept: "application/json",
