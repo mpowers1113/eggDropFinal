@@ -18,6 +18,13 @@ export default class CreateEgg extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleReadyToSubmit = this.handleReadyToSubmit.bind(this);
     this.handleClaimChange = this.handleClaimChange.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
+  }
+
+  handleCloseModal(event) {
+    if (event.target.id === "8") {
+      this.props.clear();
+    }
   }
 
   handleReadyToSubmit() {
@@ -69,13 +76,9 @@ export default class CreateEgg extends React.Component {
 
   render() {
     return (
-      <div className="overlay">
+      <div id="8" onClick={this.handleCloseModal} className="overlay">
         <div className="row justify-align-center flex-column">
-          <div className="relative column-modal">
-            <i
-              onClick={this.props.clear}
-              className="fas fa-times upper-left"
-            ></i>
+          <div className="relative column-modal drop-modal">
             <form>
               <div className="p1">
                 <input
@@ -84,6 +87,7 @@ export default class CreateEgg extends React.Component {
                   type="text"
                   id="message"
                   name="message"
+                  maxLength="21"
                   placeholder="Enter message..."
                   ref={this.messageRef}
                 />
@@ -112,10 +116,11 @@ export default class CreateEgg extends React.Component {
                   onClick={this.handleReadyToSubmit}
                 />
                 <label htmlFor="file-upload">Upload Image</label>
-                <div>
-                  <p className="center-text">Who can claim this egg?</p>
+                <div className="p1">
+                  <p className="p1 center-text">Who can claim this egg?</p>
                 </div>
-                <div className="row p1 space-around">
+
+                <div className="row p1 space-around flex-column">
                   <div>
                     <input
                       onChange={this.handleClaimChange}
@@ -129,7 +134,7 @@ export default class CreateEgg extends React.Component {
                     <label htmlFor="can-claim-anyone">Anyone</label>
                   </div>
                   <>{this.state.loading && <LoadingSpinner />}</>
-                  <div>
+                  <div className="p1">
                     <input
                       onChange={this.handleClaimChange}
                       className="create-egg-radio"
@@ -140,7 +145,7 @@ export default class CreateEgg extends React.Component {
                     />
                     <label htmlFor="can-claim-followers">Followers</label>
                   </div>
-                  <div>
+                  <div className="p1">
                     <input
                       onChange={this.handleClaimChange}
                       className="create-egg-radio"

@@ -8,7 +8,11 @@ import React, {
 import EggIcon from "../UI/egg-icon";
 import FollowerEggIcon from "../UI/followers-egg-icon";
 import PrivateEggIcon from "../UI/private-egg-icon";
-import MapGL, { Marker, GeolocateControl } from "react-map-gl";
+import MapGL, {
+  Marker,
+  GeolocateControl,
+  AttributionControl,
+} from "react-map-gl";
 import { usePosition } from "use-position";
 import Geocoder from "react-map-gl-geocoder";
 import CreateEgg from "./createEggModal";
@@ -91,6 +95,10 @@ const Map = (props) => {
     []
   );
 
+  const attributionStyle = {
+    logoPosition: "top-left",
+  };
+
   const handleGeocoderViewportChange = useCallback(
     (newViewport) => {
       const geocoderDefaultOverrides = { transitionDuration: 1000 };
@@ -114,9 +122,11 @@ const Map = (props) => {
             width="100vw"
             height="100vh"
             mapStyle="mapbox://styles/mapbox/streets-v11"
+            attributionControl={false}
             onViewportChange={handleViewportChange}
             mapboxApiAccessToken={MAPBOXKEY}
           >
+            <AttributionControl compact={true} style={attributionStyle} />
             {user.eggMarkers.map((markers) => (
               <Marker
                 key={markers.longitude}
