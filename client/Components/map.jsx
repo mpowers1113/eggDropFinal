@@ -6,6 +6,9 @@ import React, {
   useEffect,
 } from "react";
 import EggIcon from "../UI/egg-icon";
+import { isMobile } from "react-device-detect";
+import MapInstructionsButton from "../UI/mapInstructionsButton";
+import Instructions from "./instructions";
 import FollowerEggIcon from "../UI/followers-egg-icon";
 import PrivateEggIcon from "../UI/private-egg-icon";
 import MapGL, {
@@ -33,6 +36,9 @@ const Map = (props) => {
   const user = useContext(UserContext);
   const [eggLocation, setEggLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
+  const [instructions, setInstructions] = useState(false);
+  const toggleInstructionsHandler = () => setInstructions(!instructions);
+
   const navigate = useNavigate();
 
   const hasNotifications = user.notifications.length > 0;
@@ -45,6 +51,7 @@ const Map = (props) => {
   };
 
   useEffect(() => {
+    if (user.userDataLoadComplete) return;
     user.getUserData();
     user.getEggs();
   }, []);
@@ -99,6 +106,14 @@ const Map = (props) => {
     logoPosition: "top-left",
   };
 
+  const eventRecognizerOptions = isMobile
+    ? {
+        pan: { threshold: 10 },
+        tap: { threshold: 5 },
+        doubletap: { taps: 2 },
+      }
+    : {};
+
   const handleGeocoderViewportChange = useCallback(
     (newViewport) => {
       const geocoderDefaultOverrides = { transitionDuration: 1000 };
@@ -123,6 +138,7 @@ const Map = (props) => {
             height="100vh"
             mapStyle="mapbox://styles/mapbox/streets-v11"
             attributionControl={false}
+            eventRecognizerOptions={eventRecognizerOptions}
             onViewportChange={handleViewportChange}
             mapboxApiAccessToken={MAPBOXKEY}
           >
@@ -186,6 +202,8 @@ const Map = (props) => {
           </MapGL>
         </div>
       )}
+      {instructions && <Instructions onFinish={toggleInstructionsHandler} />}
+      <MapInstructionsButton click={toggleInstructionsHandler} />
       <Navbar />
       {hasNotifications && (
         <i

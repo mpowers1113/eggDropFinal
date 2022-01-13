@@ -9,6 +9,7 @@ import LoadingSpinner from "../UI/loadingSpinner";
 const Profile = (props) => {
   const user = useContext(UserContext);
   const [uploadProfilePhoto, setUploadProfilePhoto] = useState(false);
+
   const [view, setView] = useState("eggs");
   const navigate = useNavigate();
 
@@ -36,6 +37,29 @@ const Profile = (props) => {
         {user.data.foundEggs.map((egg) =>
           profileEggs(egg.photoUrl, egg.latitude, egg.eggId)
         )}
+      </div>
+    );
+  };
+
+  const userLogoutHandler = () => {
+    window.localStorage.removeItem("eggDrop8081porDgge");
+    navigate("/");
+  };
+
+  const renderLogoutModal = () => {
+    return (
+      <div className="overlay">
+        <div className="row center-element delete-egg-modal flex-column profile-gray-text">
+          <p>Are you sure you want to log out?</p>
+          <div className="row justify-align-center">
+            <button className="delete-egg-no" onClick={() => setView("eggs")}>
+              No
+            </button>
+            <button className="delete-egg-yes" onClick={userLogoutHandler}>
+              Yes
+            </button>
+          </div>
+        </div>
       </div>
     );
   };
@@ -70,7 +94,10 @@ const Profile = (props) => {
                   <div className="circle-event">
                     <img
                       className="profile-pic"
-                      src={event.profilePhotoUrl || ""}
+                      src={
+                        event.profilePhotoUrl ||
+                        "https://t3.ftcdn.net/jpg/00/64/67/80/240_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg"
+                      }
                       alt="profile photo"
                     />
                   </div>
@@ -126,6 +153,7 @@ const Profile = (props) => {
     else if (view === "following")
       return renderFollow("following", user.data.following);
     else if (view === "eggs") return renderEggs();
+    else if (view === "logout") return renderLogoutModal();
   };
 
   return (
@@ -155,7 +183,7 @@ const Profile = (props) => {
                   className="profile-pic"
                   src={
                     user.data.profilePhotoUrl ||
-                    "../images/defaultprofilephoto.jpeg"
+                    "https://t3.ftcdn.net/jpg/00/64/67/80/240_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg"
                   }
                   alt="profile photo"
                 />
@@ -170,9 +198,13 @@ const Profile = (props) => {
           <div className="row justify-align-center profile-gray">
             <i
               onClick={toggleUploadProfile}
-              className={`padding-none margin-none profile-icons fas fa-user-edit ${
+              className={`profile-icons p2 mb1 fas fa-user-edit ${
                 uploadProfilePhoto && "event-icon"
               }`}
+            ></i>
+            <i
+              onClick={() => setView("logout")}
+              className="fas ml1 fa-sign-out-alt mb1 p2 profile-icons"
             ></i>
           </div>
           <div className="row space-between profile-gray profile-gray-text">

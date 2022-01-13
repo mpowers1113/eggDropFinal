@@ -76,21 +76,19 @@ const EggDisplay = (props) => {
           className="profile-icons fas fa-arrow-left fa-2x"
         ></i>
         {!deleteEggModal && (
-          <div>
-            <button
-              className="delete-egg"
-              onClick={() => setDeleteEggModal(true)}
-            >
-              Delete egg
-            </button>
-          </div>
+          <button
+            className="delete-egg"
+            onClick={() => setDeleteEggModal(true)}
+          >
+            Delete egg
+          </button>
         )}
         <i
           onClick={() => navigate("/notifications")}
           className={`fas fa-bell fa-2x ${
             user.notifications.length > 0
-              ? "notifications-icon-display"
-              : "no-notifications"
+              ? "profile-icons red-background"
+              : " light-gray"
           }`}
         />
       </div>

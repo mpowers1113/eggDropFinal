@@ -78,6 +78,10 @@ h1 {
   padding-bottom: 0.3rem;
 }
 
+.mb1 {
+  margin-bottom: 0.3rem;
+}
+
 .egg-logo {
   background-image: url("./egg.svg");
   background-position: center;
@@ -126,6 +130,10 @@ h1 {
   color: red;
 }
 
+.red-background {
+  color: red;
+}
+
 .egg-text {
   color: #c16500;
   font-weight: 700;
@@ -166,7 +174,8 @@ h1 {
 }
 
 .light {
-  font-weight: 300;
+  font-weight: 400;
+  line-height: 2;
 }
 
 .question {
@@ -239,6 +248,19 @@ h1 {
   padding: 0.5rem;
 }
 
+.ml1 {
+  margin-left: 1rem;
+}
+
+.map-instructions-button {
+  color: var(--light-brown);
+  position: fixed;
+  top: 6rem;
+  right: 0;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
 .navbar-map i {
   color: #fc0;
   cursor: pointer;
@@ -296,6 +318,10 @@ h1 {
 
 .p1 {
   padding: 0.3rem;
+}
+
+.p2 {
+  padding: 1rem;
 }
 
 .red {
@@ -419,8 +445,9 @@ h1 {
 }
 
 .circle {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
+  margin-top: 0.2rem;
   position: relative;
   overflow: hidden;
   border-radius: 50%;
@@ -604,7 +631,7 @@ h1 {
 .delete-egg {
   color: whitesmoke;
   background-color: #f19c79;
-  width: 100%;
+  max-width: 50%;
   min-height: 30px;
   border-radius: 6px;
   border: none;
@@ -677,11 +704,16 @@ h3 {
 .delete-egg-modal {
   background-color: var(--egg-white);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 0.5rem;
 }
 
 .delete-egg-modal p {
   padding: 1rem;
+}
+
+.light-gray {
+  color: lightgray;
+  padding: 0.3rem;
 }
 
 #bars1 {
