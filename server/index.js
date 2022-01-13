@@ -111,9 +111,7 @@ app.get("/api/events", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.use(authorizationMiddleware);
-
-app.get("/api/eggs", (req, res, next) => {
+app.get("/api/eggs", authorizationMiddleware, (req, res, next) => {
   const userId = Number(req.user.id);
   const anyone = "anyone";
   const followers = "followers";
@@ -154,12 +152,15 @@ app.get("/api/eggs", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.post("/api/users/:username/followers", (req, res, next) => {
-  const userRequestingFollowId = Number(req.user.id);
-  const followingUsername = req.params.username;
-  if (!followingUsername || !Number.isInteger(userRequestingFollowId))
-    throw new ClientError(400, "invalid follow request");
-  const sql = `with "insertRow" as
+app.post(
+  "/api/users/:username/followers",
+  authorizationMiddleware,
+  (req, res, next) => {
+    const userRequestingFollowId = Number(req.user.id);
+    const followingUsername = req.params.username;
+    if (!followingUsername || !Number.isInteger(userRequestingFollowId))
+      throw new ClientError(400, "invalid follow request");
+    const sql = `with "insertRow" as
                 (insert into "followers" ("followerId", "followingId") 
                 select $2, (select "userId" from "users" where "username" = $1)
                 where not exists (select 1 from "followers" where "followerId" = $2 and "followingId" = (select "userId" from "users" where "username" = $1))
@@ -171,17 +172,18 @@ app.post("/api/users/:username/followers", (req, res, next) => {
                 returning *)
               select "r".*, "n".* from "insertRow" as "r", "insertNotification" as "n"
   `;
-  const params = [followingUsername, userRequestingFollowId];
-  return db
-    .query(sql, params)
-    .then((result) => {
-      const notifications = result.rows;
-      res.status(200).json(notifications);
-    })
-    .catch((err) => next(err));
-});
+    const params = [followingUsername, userRequestingFollowId];
+    return db
+      .query(sql, params)
+      .then((result) => {
+        const notifications = result.rows;
+        res.status(200).json(notifications);
+      })
+      .catch((err) => next(err));
+  }
+);
 
-app.post("/api/profile", (req, res, next) => {
+app.post("/api/profile", authorizationMiddleware, (req, res, next) => {
   const userId = Number(req.user.id);
   if (!Number.isInteger(userId)) throw new ClientError(400, "invalid request");
   const notificationQuery = `
@@ -233,13 +235,17 @@ app.post("/api/profile", (req, res, next) => {
     .catch((err) => console.error(err));
 });
 
-app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
-  const { id } = req.user;
-  const { message, latitude, longitude, canClaim } = req.body;
-  if (!message) throw new ClientError(400, "message is a required field");
-  const filePath = req.file.location;
-  const privateUserId = Number(req.body.privateUserId) || null;
-  const eggQuery = `with "insertRow" as 
+app.post(
+  "/api/egg",
+  uploadsMiddleware,
+  authorizationMiddleware,
+  (req, res, next) => {
+    const { id } = req.user;
+    const { message, latitude, longitude, canClaim } = req.body;
+    if (!message) throw new ClientError(400, "message is a required field");
+    const filePath = req.file.location;
+    const privateUserId = Number(req.body.privateUserId) || null;
+    const eggQuery = `with "insertRow" as 
                     (insert into "egg" ("message", "photoUrl", "longitude", "latitude", "userId", "canClaim", "privateUserId")
                     values ($1, $2, $3, $4, $5, $6, $7)
                     returning *),
@@ -247,26 +253,27 @@ app.post("/api/egg", uploadsMiddleware, (req, res, next) => {
                     (insert into "events" ("payload") values (json_build_object('type', 'createdEgg', 'profilePhotoUrl', ( select "profilePhotoUrl" from "users" where "userId" = $5), 'username', ( select "username" from "users" where "userId" = $5))) returning *)
                     select "r".*, "e".* from "insertRow" as "r", "insertEvent" as "e"
                     `;
-  const eggParams = [
-    message,
-    filePath,
-    Number(longitude),
-    Number(latitude),
-    Number(id),
-    canClaim,
-    privateUserId,
-  ];
-  return db
-    .query(eggQuery, eggParams)
-    .then((result) => {
-      const [image] = result.rows;
-      res.json(image);
-    })
-    .then(() => res.end())
-    .catch((err) => next(err));
-});
+    const eggParams = [
+      message,
+      filePath,
+      Number(longitude),
+      Number(latitude),
+      Number(id),
+      canClaim,
+      privateUserId,
+    ];
+    return db
+      .query(eggQuery, eggParams)
+      .then((result) => {
+        const [image] = result.rows;
+        res.json(image);
+      })
+      .then(() => res.end())
+      .catch((err) => next(err));
+  }
+);
 
-app.post("/api/found", (req, res, next) => {
+app.post("/api/found", authorizationMiddleware, (req, res, next) => {
   const { id } = req.user;
   const { eggId } = req.body;
   const sql = `with "insertRow" as 
@@ -290,26 +297,31 @@ app.post("/api/found", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.post("/api/edit/profile", uploadsMiddleware, (req, res, next) => {
-  const id = Number(req.user.id);
-  if (!id) throw new ClientError(400, "invalid request");
-  const filePath = "/images/" + req.file.filename;
-  const sql = `update "users"
+app.post(
+  "/api/edit/profile",
+  uploadsMiddleware,
+  authorizationMiddleware,
+  (req, res, next) => {
+    const id = Number(req.user.id);
+    if (!id) throw new ClientError(400, "invalid request");
+    const filePath = req.file.location;
+    const sql = `update "users"
                 set "profilePhotoUrl" = ($1)
                 where "userId" = ($2)
                 returning "profilePhotoUrl"
                 `;
-  const params = [filePath, id];
-  return db
-    .query(sql, params)
-    .then((result) => {
-      const [profilePhotoUrl] = result.rows;
-      res.json(profilePhotoUrl);
-    })
-    .catch((err) => next(err));
-});
+    const params = [filePath, id];
+    return db
+      .query(sql, params)
+      .then((result) => {
+        const [profilePhotoUrl] = result.rows;
+        res.json(profilePhotoUrl);
+      })
+      .catch((err) => next(err));
+  }
+);
 
-app.get("/api/notifications", (req, res, next) => {
+app.get("/api/notifications", authorizationMiddleware, (req, res, next) => {
   const id = Number(req.user.id);
   if (!id) throw new ClientError(400, "invalid request");
   const sql = `
@@ -326,7 +338,7 @@ app.get("/api/notifications", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/api/users", (req, res, next) => {
+app.get("/api/users", authorizationMiddleware, (req, res, next) => {
   const id = Number(req.user.id);
   if (!id) throw new ClientError(400, "invalid request");
   const sql = `
@@ -345,27 +357,31 @@ app.get("/api/users", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.delete("/api/notifications/:id", (req, res, next) => {
-  const userRequestingDelete = Number(req.user.id);
-  const notificationId = Number(req.params.id);
-  if (!Number.isInteger(userRequestingDelete))
-    throw new ClientError("invalid delete request");
-  const sql = `
+app.delete(
+  "/api/notifications/:id",
+  authorizationMiddleware,
+  (req, res, next) => {
+    const userRequestingDelete = Number(req.user.id);
+    const notificationId = Number(req.params.id);
+    if (!Number.isInteger(userRequestingDelete))
+      throw new ClientError("invalid delete request");
+    const sql = `
               delete from "notifications"
               where "id" = $1
               returning *
               `;
-  const params = [notificationId];
-  return db
-    .query(sql, params)
-    .then((result) => {
-      const [deleted] = result.rows;
-      res.status(200).json(deleted);
-    })
-    .catch((err) => next(err));
-});
+    const params = [notificationId];
+    return db
+      .query(sql, params)
+      .then((result) => {
+        const [deleted] = result.rows;
+        res.status(200).json(deleted);
+      })
+      .catch((err) => next(err));
+  }
+);
 
-app.delete("/api/egg/delete/:id", (req, res, next) => {
+app.delete("/api/egg/delete/:id", authorizationMiddleware, (req, res, next) => {
   const userRequestingDelete = Number(req.user.id);
   const eggId = Number(req.params.id);
   if (!Number.isInteger(userRequestingDelete))
@@ -391,7 +407,7 @@ app.delete("/api/egg/delete/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.patch("/api/notifications/", (req, res, next) => {
+app.patch("/api/notifications/", authorizationMiddleware, (req, res, next) => {
   const clientId = Number(req.user.id);
   const notificationId = Number(req.body[0].id);
   const { fromUserUsername } = req.body[0].payload;
@@ -421,7 +437,7 @@ app.patch("/api/notifications/", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/api/egg/display/:id", (req, res, next) => {
+app.get("/api/egg/display/:id", authorizationMiddleware, (req, res, next) => {
   const user = Number(req.user.id);
   const eggId = Number(req.params.id);
   if (!Number.isInteger(eggId)) throw new ClientError("invalid request");
@@ -444,7 +460,7 @@ app.get("/api/egg/display/:id", (req, res, next) => {
 
 app.use((req, res) => {
   res.sendFile("/index.html", {
-    root: path.join(__dirname, "public"),
+    root: publicPath,
   });
 });
 
