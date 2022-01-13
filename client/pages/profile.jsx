@@ -48,15 +48,17 @@ const Profile = (props) => {
 
   const renderLogoutModal = () => {
     return (
-      <div className="row delete-egg-modal flex-column">
-        <p>Are you sure you want to log out?</p>
-        <div className="row justify-align-center">
-          <button className="delete-egg-no" onClick={() => setView("eggs")}>
-            No
-          </button>
-          <button className="delete-egg-yes" onClick={userLogoutHandler}>
-            Yes
-          </button>
+      <div className="overlay">
+        <div className="row center-element delete-egg-modal flex-column profile-gray-text">
+          <p>Are you sure you want to log out?</p>
+          <div className="row justify-align-center">
+            <button className="delete-egg-no" onClick={() => setView("eggs")}>
+              No
+            </button>
+            <button className="delete-egg-yes" onClick={userLogoutHandler}>
+              Yes
+            </button>
+          </div>
         </div>
       </div>
     );

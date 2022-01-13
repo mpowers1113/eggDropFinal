@@ -88,7 +88,7 @@ const EggDisplay = (props) => {
           className={`fas fa-bell fa-2x ${
             user.notifications.length > 0
               ? "profile-icons red-background"
-              : "profile-icons"
+              : " light-gray"
           }`}
         />
       </div>

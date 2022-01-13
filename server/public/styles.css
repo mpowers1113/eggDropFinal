@@ -704,11 +704,16 @@ h3 {
 .delete-egg-modal {
   background-color: var(--egg-white);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 0.5rem;
 }
 
 .delete-egg-modal p {
   padding: 1rem;
+}
+
+.light-gray {
+  color: lightgray;
+  padding: 0.3rem;
 }
 
 #bars1 {
