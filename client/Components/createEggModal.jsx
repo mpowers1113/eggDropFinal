@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "../UI/button";
 import LoadingSpinner from "../UI/loadingSpinner";
+import { readAndCompressImage } from "browser-image-resizer";
 
 export default class CreateEgg extends React.Component {
   constructor(props) {
@@ -37,13 +38,19 @@ export default class CreateEgg extends React.Component {
     else this.setState({ claim: event.target.value, private: false });
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
+    const config = {
+      quality: 0.5,
+      width: 400,
+      height: 600,
+      autoRotate: true,
+      mimeType: "image/png" || "image/jpg",
+    };
     this.setState({ loading: true });
     const formData = new FormData();
     const token = window.localStorage.getItem("eggDrop8081porDgge");
     formData.append("message", this.messageRef.current.value);
-    formData.append("image", this.fileInputRef.current.files[0]);
     formData.append("longitude", this.props.eggLocation.longitude);
     formData.append("latitude", this.props.eggLocation.latitude);
     formData.append("canClaim", this.state.claim);
@@ -52,26 +59,33 @@ export default class CreateEgg extends React.Component {
     } else {
       formData.append("privateUserId", null);
     }
-    const req = {
-      method: "POST",
-      headers: {
-        "x-access-token": token,
-      },
-      body: formData,
-    };
-    fetch("/api/egg", req)
-      .then((res) => res.json())
-      .then((res) => {
-        this.setState({ loading: false });
-        const createdEgg = {
-          longitude: this.props.eggLocation.longitude,
-          latitude: this.props.eggLocation.latitude,
-          canClaim: res.canClaim,
-          id: res.eggId,
-        };
-        this.props.drop(createdEgg);
-      })
-      .catch((err) => console.error(err));
+    try {
+      const resizedImage = await readAndCompressImage(
+        this.fileInputRef.current.files[0],
+        config
+      );
+
+      formData.append("image", resizedImage);
+      const req = {
+        method: "POST",
+        headers: {
+          "x-access-token": token,
+        },
+        body: formData,
+      };
+      const response = await fetch("/api/egg", req);
+      const jsonRes = await response.json();
+      this.setState({ loading: false });
+      const createdEgg = {
+        longitude: this.props.eggLocation.longitude,
+        latitude: this.props.eggLocation.latitude,
+        canClaim: jsonRes.canClaim,
+        id: jsonRes.eggId,
+      };
+      this.props.drop(createdEgg);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   render() {
