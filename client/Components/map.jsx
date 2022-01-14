@@ -16,7 +16,6 @@ import MapGL, {
   GeolocateControl,
   AttributionControl,
 } from "react-map-gl";
-import { usePosition } from "use-position";
 import Geocoder from "react-map-gl-geocoder";
 import CreateEgg from "./createEggModal";
 import { UserContext } from "../Context/userContext";
@@ -29,15 +28,25 @@ import LoadingSpinner from "../UI/loadingSpinner";
 const MAPBOXKEY = process.env.MAPBOX_API_KEY;
 
 const Map = (props) => {
-  const watch = true;
-  const { latitude, longitude, error } = usePosition(watch, {
-    enableHighAccuracy: true,
-  });
   const user = useContext(UserContext);
   const [eggLocation, setEggLocation] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
   const [instructions, setInstructions] = useState(false);
   const toggleInstructionsHandler = () => setInstructions(!instructions);
+
+  useEffect(() => {
+    const options = { timeout: 5000, maximumAge: 0 };
+    const successGeo = (pos) => {
+      const crd = pos.coords;
+      const position = { longitude: crd.longitude, latitude: crd.latitude };
+      setUserLocation(position);
+    };
+    function error(err) {
+      console.warn(`ERROR(${err.code}): ${err.message}`);
+    }
+    navigator.geolocation.getCurrentPosition(successGeo, error, options);
+  }, [targetEgg]);
 
   const navigate = useNavigate();
 
@@ -57,7 +66,6 @@ const Map = (props) => {
   }, []);
 
   const toggleEggDetails = (event) => {
-    if (error) return;
     const egg = event.target.getAttribute("data-egg");
     if (!egg) setTargetEgg(null);
     else {
@@ -71,8 +79,8 @@ const Map = (props) => {
           const distance = distanceToEgg(
             res.latitude,
             res.longitude,
-            latitude,
-            longitude
+            userLocation.latitude,
+            userLocation.longitude
           );
           res.howFar = distance.howFar;
           res.claimable = distance.claimable;
