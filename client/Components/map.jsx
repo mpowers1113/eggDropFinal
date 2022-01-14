@@ -172,7 +172,7 @@ const Map = (props) => {
               mapRef={mapRef}
               onViewportChange={handleViewportChange}
               mapboxApiAccessToken={MAPBOXKEY}
-              position="top-left"
+              position={isMobile ? "top-left" : "bottom-left"}
               placeholder="Search location by name"
             />
             <GeolocateControl

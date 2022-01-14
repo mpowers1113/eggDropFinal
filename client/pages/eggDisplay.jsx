@@ -87,8 +87,8 @@ const EggDisplay = (props) => {
           onClick={() => navigate("/notifications")}
           className={`fas fa-bell fa-2x ${
             user.notifications.length > 0
-              ? "profile-icons red-background"
-              : " light-gray"
+              ? "notifications-icon-display"
+              : "profile-icons"
           }`}
         />
       </div>

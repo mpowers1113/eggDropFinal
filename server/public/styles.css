@@ -207,7 +207,6 @@ h1 {
 .navbar-map {
   background-color: white;
   position: fixed;
-  bottom: 0;
   width: 100%;
   padding: 0.3rem;
   justify-content: space-around;
@@ -221,16 +220,17 @@ h1 {
 .notifications-icon {
   color: rgb(249, 83, 83);
   position: absolute;
-  top: 0;
   right: 0.5rem;
   padding: 0.5rem;
   cursor: pointer;
+  filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
 }
 
 .notifications-icon-display {
   color: rgb(249, 83, 83);
   padding: 0.3rem;
   cursor: pointer;
+  filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
 }
 
 .egg-display-header {
@@ -238,12 +238,13 @@ h1 {
 }
 
 .refresh-icon {
-  color: var(--light-brown);
+  color: #fc0;
   position: absolute;
   top: 3rem;
   right: 0.5rem;
   cursor: pointer;
   padding: 0.5rem;
+  filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
 }
 
 .ml1 {
@@ -251,12 +252,13 @@ h1 {
 }
 
 .map-instructions-button {
-  color: var(--light-brown);
+  color: #fc0;
   position: absolute;
   top: 6rem;
   right: 0.5rem;
   cursor: pointer;
   padding: 0.5rem;
+  filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
 }
 
 .navbar-map i {
@@ -385,7 +387,6 @@ h1 {
 
 .fixed-back-arrow {
   position: absolute;
-  top: 0;
   left: 0;
   padding: 0.5rem;
   cursor: pointer;
@@ -549,7 +550,6 @@ h1 {
 .no-notifications {
   color: lightgray;
   position: absolute;
-  top: 0;
   right: 0;
   padding: 0.3rem;
   cursor: pointer;
@@ -836,5 +836,70 @@ h3 {
 @media screen and (max-width: 575px) {
   .max-height-vh {
     max-height: 50%;
+  }
+}
+
+@media screen and (max-width: 411px) {
+  .navbar-map {
+    bottom: 0;
+  }
+
+  .fixed-back-arrow {
+    top: 0;
+  }
+
+  .no-notifications {
+    top: 0;
+  }
+
+  .notifications-icon {
+    top: 0;
+  }
+
+  .map-instructions-button {
+    top: 6rem;
+  }
+
+  .refresh-icon {
+    top: 3rem;
+  }
+
+  .event-div {
+    margin-top: 0;
+  }
+}
+
+@media screen and (min-width: 411px) {
+  .navbar-map {
+    top: 0;
+    border-radius: 6px;
+  }
+
+  .event-div {
+    margin-top: 5rem;
+  }
+
+  .fixed-back-arrow {
+    top: 4rem;
+  }
+
+  .no-notifications {
+    top: 4rem;
+  }
+
+  .notifications-icon {
+    top: 4rem;
+  }
+
+  .map-instructions-button {
+    top: 10rem;
+  }
+
+  .refresh-icon {
+    top: 7rem;
+  }
+
+  .egg-display-header {
+    margin-top: 5rem;
   }
 }

@@ -161,18 +161,18 @@ const Profile = (props) => {
       {!user.userDataLoadComplete && <LoadingSpinner />}
       {user.userDataLoadComplete && (
         <div className="profile-brown">
-          <div className="row space-between profile-gray">
+          <div className="row space-between profile-gray egg-display-header">
             <i
               onClick={() => navigate("/map")}
-              className="profile-icons fixed-back-arrow fas fa-arrow-left fa-2x"
+              className="profile-icons fas fa-arrow-left fa-2x"
             ></i>
 
             <i
               onClick={() => navigate("/notifications")}
               className={`fas fa-bell fa-2x ${
                 user.notifications.length > 0
-                  ? "notifications-icon"
-                  : "no-notifications"
+                  ? "notifications-icon-display"
+                  : "profile-icons"
               }`}
             />
           </div>
