@@ -101,7 +101,7 @@ export default class CreateEgg extends React.Component {
                   type="text"
                   id="message"
                   name="message"
-                  maxLength="21"
+                  maxLength="120"
                   placeholder="Enter message..."
                   ref={this.messageRef}
                 />

@@ -714,6 +714,14 @@ h3 {
   padding: 0.3rem;
 }
 
+.column-modal {
+  height: auto;
+  text-align: center;
+  border-radius: 1rem;
+  background-color: var(--egg-white);
+  padding: 0.5rem;
+}
+
 #bars1 {
   display: block;
   position: absolute;
@@ -840,6 +848,10 @@ h3 {
 }
 
 @media screen and (max-width: 411px) {
+  .column-modal {
+    width: 90vw;
+  }
+
   .navbar-map {
     bottom: 0;
   }
@@ -870,6 +882,10 @@ h3 {
 }
 
 @media screen and (min-width: 411px) {
+  .column-modal {
+    width: 370px;
+  }
+
   .navbar-map {
     top: 0;
     border-radius: 6px;
