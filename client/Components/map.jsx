@@ -122,18 +122,6 @@ const Map = (props) => {
       }
     : {};
 
-  const handleGeocoderViewportChange = useCallback(
-    (newViewport) => {
-      const geocoderDefaultOverrides = { transitionDuration: 1000 };
-
-      return handleViewportChange({
-        ...newViewport,
-        ...geocoderDefaultOverrides,
-      });
-    },
-    [handleViewportChange]
-  );
-
   return (
     <>
       {user.userDataLoadComplete && (
@@ -182,13 +170,14 @@ const Map = (props) => {
 
             <Geocoder
               mapRef={mapRef}
-              onViewportChange={handleGeocoderViewportChange}
+              onViewportChange={handleViewportChange}
               mapboxApiAccessToken={MAPBOXKEY}
               position="top-left"
+              placeholder="Search location by name"
             />
             <GeolocateControl
               style={{ position: "absolute" }}
-              positionOptions={{ enableHighAccuracy: true }}
+              positionOptions={{ enableHighAccuracy: false }}
               trackUserLocation={true}
               auto
             />
