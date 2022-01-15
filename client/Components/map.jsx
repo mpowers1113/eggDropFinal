@@ -61,9 +61,9 @@ const Map = (props) => {
   };
 
   useEffect(() => {
+    user.getEggs();
     if (user.userDataLoadComplete) return;
     user.getUserData();
-    user.getEggs();
   }, []);
 
   const toggleEggDetails = (event) => {
