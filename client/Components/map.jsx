@@ -6,7 +6,6 @@ import React, {
   useEffect,
 } from "react";
 import EggIcon from "../UI/egg-icon";
-import { isMobile } from "react-device-detect";
 import MapInstructionsButton from "../UI/mapInstructionsButton";
 import Instructions from "./instructions";
 import FollowerEggIcon from "../UI/followers-egg-icon";
@@ -49,6 +48,8 @@ const Map = (props) => {
   }, [targetEgg]);
 
   const navigate = useNavigate();
+
+  const isMobile = screen.width > 411 ? "bottom-left" : "top-left";
 
   const hasNotifications = user.notifications.length > 0;
 
@@ -172,7 +173,7 @@ const Map = (props) => {
               mapRef={mapRef}
               onViewportChange={handleViewportChange}
               mapboxApiAccessToken={MAPBOXKEY}
-              position={isMobile ? "top-left" : "bottom-left"}
+              position={isMobile}
               placeholder="Search location by name"
             />
             <GeolocateControl
