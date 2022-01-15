@@ -64,7 +64,7 @@ const UserSearch = (props) => {
         <Input
           className={"sign-up-input mb1"}
           type={"text"}
-          id={"search"}
+          id={"search for a user..."}
           value={searchUserQuery}
           onChange={onChangeHandler}
         />

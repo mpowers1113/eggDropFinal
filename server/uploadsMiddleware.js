@@ -1,6 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
-const path = require("path");
 const mime = require("mime");
 const multerS3 = require("multer-s3");
 const S3 = require("aws-sdk/clients/s3");
@@ -15,12 +14,12 @@ const storage = multerS3({
   bucket: process.env.S3_BUCKET,
   acl: "public-read",
   key: (req, file, done) => {
-    const fileExtension = path.extname(file.originalname);
+    const fileExtension = ".jpg";
     const key = `${uuidv4() + Date.now()}${fileExtension}`;
     done(null, key);
   },
   contentType: (req, file, done) => {
-    const contentType = mime.getType(file.originalname);
+    const contentType = mime.getType(file.mimetype);
     done(null, contentType);
   },
 });

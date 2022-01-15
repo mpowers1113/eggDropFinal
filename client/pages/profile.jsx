@@ -161,18 +161,18 @@ const Profile = (props) => {
       {!user.userDataLoadComplete && <LoadingSpinner />}
       {user.userDataLoadComplete && (
         <div className="profile-brown">
-          <div className="row space-between profile-gray">
+          <div className="row space-between profile-gray egg-display-header">
             <i
               onClick={() => navigate("/map")}
-              className="profile-icons fixed-back-arrow fas fa-arrow-left fa-2x"
+              className="profile-icons fas fa-arrow-left fa-2x"
             ></i>
 
             <i
               onClick={() => navigate("/notifications")}
               className={`fas fa-bell fa-2x ${
                 user.notifications.length > 0
-                  ? "notifications-icon"
-                  : "no-notifications"
+                  ? "notifications-icon-display"
+                  : "profile-icons"
               }`}
             />
           </div>
@@ -183,7 +183,7 @@ const Profile = (props) => {
                   className="profile-pic"
                   src={
                     user.data.profilePhotoUrl ||
-                    "https://t3.ftcdn.net/jpg/00/64/67/80/240_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg"
+                    "../Images/defaultprofilephoto.jpeg"
                   }
                   alt="profile photo"
                 />
