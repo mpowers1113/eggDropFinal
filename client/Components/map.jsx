@@ -32,6 +32,7 @@ const Map = (props) => {
   const [userLocation, setUserLocation] = useState(null);
   const [targetEgg, setTargetEgg] = useState(null);
   const [instructions, setInstructions] = useState(false);
+  const [loadingMap, setLoadingMap] = useState(true);
   const toggleInstructionsHandler = () => setInstructions(!instructions);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const Map = (props) => {
 
   const navigate = useNavigate();
 
-  const isMobile = screen.width > 411 ? "bottom-left" : "top-left";
+  const isMobile = screen.width > 768 ? "bottom-left" : "top-left";
 
   const hasNotifications = user.notifications.length > 0;
 
@@ -61,6 +62,7 @@ const Map = (props) => {
   };
 
   useEffect(() => {
+    user.loadNotifications();
     user.getEggs();
     if (user.userDataLoadComplete) return;
     user.getUserData();
@@ -133,6 +135,7 @@ const Map = (props) => {
             ref={mapRef}
             {...viewport}
             width="100vw"
+            onLoad={() => setLoadingMap(false)}
             height="100vh"
             mapStyle="mapbox://styles/mapbox/streets-v11"
             attributionControl={false}
@@ -140,6 +143,7 @@ const Map = (props) => {
             onViewportChange={handleViewportChange}
             mapboxApiAccessToken={MAPBOXKEY}
           >
+            {loadingMap && <LoadingSpinner />}
             <AttributionControl compact={true} style={attributionStyle} />
             {user.eggMarkers.map((markers) => (
               <Marker
