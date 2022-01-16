@@ -1,7 +1,5 @@
 # eggDROP
 
-![eggDropLogo](https://github.com/mpowers1113/eggDropFinal/blob/master/egg-drop-preview-img.png "eggDropLogo")
-
 ## [Log in as 'Guest' to try it out here.](https://www.eggdrop.live "eggDROP")
 
 ## Watch My Live Demonstration on Youtube!
@@ -68,9 +66,12 @@ By hiding the egg contents from the client until they claim the egg, and adding 
 
 ## Stretch Features
 
-- User can drop an egg that they currently own: Rather than having to create a new egg, the user can drop an egg that they currently own. By limiting the total number of eggs a user can own to 12 (their 'egg carton'), users would be encouraged to reshare their claimed eggs. This would help ensure a more linear claim-to-drop ratio and limit the total number of eggs in the database. 
-- User can only see eggs within an X mile radius: Rather than rendering an egg in New York when the user is in Los Angeles, the user would only see eggs within X miles of their current location. With Postgres's earth_distance function, this would be a rather simple addition to the current select statement that would improve the app's efficiency. 
-- Users can trade eggs. Eggs are quite similar to NFTs in that only one user can own a given egg, and the egg contains a unique ID and details about it's creator. With an added 'Marketplace' feature, users would have the option to trade eggs with other users, or purchase eggs from other users based on perceived value. Furthermore, a business could create eggs for product promotion in the same way Nike 'drops' a limited supply of new sneakers. The eggs would then be redeemable for discounts, free-products, or anything of the business's choosing. 
+1. User can drop an egg that they currently own: 
+   Rather than having to create a new egg, the user can drop an egg that they currently own. By limiting the total number of eggs a user can own to 12 (their 'egg carton'), users would be encouraged to reshare their claimed eggs. This would help ensure a more linear claim-to-drop ratio and limit the total number of eggs in the database.    
+2. User can only see eggs within an X mile radius: 
+   Rather than rendering an egg in New York when the user is in Los Angeles, the user would only see eggs within X miles of their current location. With Postgres's earth_distance function, this would be a rather simple addition to the current select statement that would improve the app's efficiency.    
+3. Users can trade eggs: 
+   Eggs are quite similar to NFTs in that only one user can own a given egg, and the egg contains a unique ID and details about it's creator. With an added 'Marketplace' feature, users would have the option to trade eggs with other users, or purchase eggs from other users based on perceived value. Furthermore, a business could create eggs for product promotion in the same way Nike 'drops' a limited supply of new sneakers. The eggs would then be redeemable for discounts, free-products, or anything of the business's choosing.    
 
 ## Development
 
