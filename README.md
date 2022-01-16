@@ -8,7 +8,7 @@
 " target="_blank"><img src="http://img.youtube.com/vi/2FjTO4m3IUo/0.jpg" 
 alt="egg-drop-demo" width="480" height="360" border="10" /></a>
 
-## Technologies Used 
+## Technologies Used
 
 -React.js
 -Node.js
@@ -46,6 +46,16 @@ Using EggDrop, a user can limit who sees their content by location, and even spe
 
 By hiding the egg contents from the client until they claim the egg, and adding a random ID generator to image URLs, the egg contents are further protected.
 
+## Creating an Egg:
+
+<img src="create-egg-demo.gif" 
+alt="IMAGE ALT TEXT HERE" width="300" height="auto" border="10" />
+
+## Claiming an Egg:
+
+<img src="quickDemo.gif" 
+alt="IMAGE ALT TEXT HERE" width="300" height="auto" border="10" />
+
 ## Features:
 
 1. User can create a password protected account.
@@ -63,28 +73,33 @@ By hiding the egg contents from the client until they claim the egg, and adding 
     - Followers Only Eggs (claimable by followers)
     - Private Eggs (claimable by only one of their chosen followers)
 
-
 ## Stretch Features
 
-1. User can drop an egg that they currently own: 
-   Rather than having to create a new egg, the user can drop an egg that they currently own. By limiting the total number of eggs a user can own to 12 (their 'egg carton'), users would be encouraged to reshare their claimed eggs. This would help ensure a more linear claim-to-drop ratio and limit the total number of eggs in the database.    
-2. User can only see eggs within an X mile radius: 
-   Rather than rendering an egg in New York when the user is in Los Angeles, the user would only see eggs within X miles of their current location. With Postgres's earth_distance function, this would be a rather simple addition to the current select statement that would improve the app's efficiency.    
-3. Users can trade eggs: 
-   Eggs are quite similar to NFTs in that only one user can own a given egg, and the egg contains a unique ID and details about it's creator. With an added 'Marketplace' feature, users would have the option to trade eggs with other users, or purchase eggs from other users based on perceived value. Furthermore, a business could create eggs for product promotion in the same way Nike 'drops' a limited supply of new sneakers. The eggs would then be redeemable for discounts, free-products, or anything of the business's choosing.    
+1. **User can drop an egg that they currently own:**
+
+   Rather than having to create a new egg, the user can drop an egg that they currently own. By limiting the total number of eggs a user can own to 12 (their 'egg carton'), users would be encouraged to reshare their claimed eggs. This would help ensure a more linear claim-to-drop ratio and limit the total number of eggs in the database.
+
+2. **User can only see eggs within an X mile radius:**
+
+   Rather than rendering an egg in New York when the user is in Los Angeles, the user would only see eggs within X miles of their current location. With Postgres's earth_distance function, this would be a rather simple addition to the current select statement that would improve the app's efficiency.
+
+3. **Users can trade eggs:**
+
+   Eggs are quite similar to NFTs in that only one user can own a given egg, and the egg contains a unique ID and details about it's creator. With an added 'Marketplace' feature, users would have the option to trade eggs with other users, or purchase eggs from other users based on perceived value.
+
+   Furthermore, a business could create eggs for product promotion in the same way Nike 'drops' a limited supply of new sneakers. The eggs would then be redeemable for discounts, free-products, or anything of the business's choosing.
 
 ## Development
 
 ### System Requirements
 
--Node.js 17 or higher
--PostgreSQL 14 or higher
--npm 7 or higher
+- Node.js 17 or higher
+- PostgreSQL 14 or higher
+- npm 7 or higher
 
 1. Clone the repository.
 
-`git clone git@github.com:mpowers1113/eggDropFinal.git
- cd eggDropFinal`
+`git clone git@github.com:mpowers1113/eggDropFinal.git cd eggDropFinal`
 
 2. Install dependencies with NPM.
 
@@ -94,6 +109,6 @@ By hiding the egg contents from the client until they claim the egg, and adding 
 
 `npm run db:import`
 
-4. Start the project. Once started you can view the application by opening http://localhost:3000 in your browswer and allowing the app to use your current location. 
+4. Start the project. Once started you can view the application by opening http://localhost:3000 in your browswer and allowing the app to use your current location.
 
 `npm run dev`
