@@ -30,7 +30,7 @@ By hiding the egg contents from the client until they claim the egg, and adding 
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=2FjTO4m3IUo
 " target="_blank"><img src="http://img.youtube.com/vi/2FjTO4m3IUo/0.jpg" 
-alt="egg-drop-demo" width="240" height="180" border="10" /></a>
+alt="egg-drop-demo" width="480" height="360" border="10" /></a>
 
 ## Features:
 
