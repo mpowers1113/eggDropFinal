@@ -44,7 +44,7 @@ export default class CreateEgg extends React.Component {
       quality: 0.5,
       width: 400,
       height: 600,
-      autoRotate: true,
+      autoRotate: false,
       mimeType: "image/png" || "image/jpg",
     };
     this.setState({ loading: true });

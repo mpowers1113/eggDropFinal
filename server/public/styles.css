@@ -841,13 +841,13 @@ h3 {
   100% { background-size: 5px 40px, 5px 40px, 5px 40px, 5px 40px, 5px 40px, 5px 55px; }
 }
 
-@media screen and (max-width: 575px) {
+@media screen and (max-width: 768px) {
   .max-height-vh {
     max-height: 50%;
   }
 }
 
-@media screen and (max-width: 411px) {
+@media screen and (max-width: 768px) {
   .column-modal {
     width: 90vw;
   }
@@ -881,7 +881,7 @@ h3 {
   }
 }
 
-@media screen and (min-width: 411px) {
+@media screen and (min-width: 768px) {
   .column-modal {
     width: 370px;
   }
